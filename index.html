@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retirement Planning Hub — Advisor Workspace</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0f1e2e; --navy-mid: #1a2f44; --navy-light: #243d56;
+  --accent: #3d8b6e; --accent-light: #4aa882; --accent-pale: #e6f4ef;
+  --gold: #c8953a; --gold-pale: #fdf4e7;
+  --warn: #c0392b; --warn-pale: #fdeae8;
+  --blue: #2563a8; --blue-pale: #e8f0fc;
+  --purple: #6b3fa0; --purple-pale: #f3eeff;
+  --bg: #f7f6f3; --bg2: #ffffff; --bg3: #f0efe9;
+  --text: #1a1a18; --text2: #5a5a54; --text3: #9a9a90;
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14);
+  --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+  --r: 8px; --rl: 12px;
+  --sidebar-w: 220px;
+}
+html, body { height: 100%; overflow: hidden; }
+body { font-family: var(--font); font-size: 14px; background: var(--bg); color: var(--text); display: flex; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--navy); display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
+.sidebar-logo { padding: 20px 16px 16px; border-bottom: 0.5px solid rgba(255,255,255,0.08); }
+.logo-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+.logo-title { font-size: 15px; font-weight: 500; color: #fff; line-height: 1.3; }
+.sidebar-section { padding: 14px 0 4px; }
+.sidebar-section-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.28); padding: 0 16px; margin-bottom: 4px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 16px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13px; transition: background 0.1s, color 0.1s; position: relative; user-select: none; }
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+.nav-item.active { background: rgba(61,139,110,0.22); color: #6fcfae; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: #4aa882; }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.18); flex-shrink: 0; }
+.nav-item.active .nav-dot { background: #4aa882; }
+.nav-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 10px; background: rgba(200,149,58,0.25); color: #e8b96a; }
+.sidebar-footer { margin-top: auto; padding: 12px 16px; border-top: 0.5px solid rgba(255,255,255,0.08); }
+.client-badge { display: flex; align-items: center; gap: 9px; }
+.client-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(61,139,110,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #6fcfae; }
+.client-name { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; }
+.client-sub { font-size: 11px; color: rgba(255,255,255,0.32); }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 52px; border-bottom: 0.5px solid var(--border2); flex-shrink: 0; background: var(--bg2); }
+.breadcrumb { font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+.breadcrumb .current { color: var(--text); font-weight: 500; }
+.topbar-actions { display: flex; gap: 8px; }
+.content { flex: 1; overflow-y: auto; padding: 28px; }
+
+/* PAGES */
+.page { display: none; } .page.active { display: block; }
+
+/* COMMON COMPONENTS */
+.page-header { margin-bottom: 22px; }
+.page-title { font-size: 20px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.pillar-tag { display: inline-flex; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 10px; margin-bottom: 8px; }
+.tag-income { background: var(--accent-pale); color: #2a6b52; }
+.tag-tax { background: var(--gold-pale); color: #7a5a1a; }
+.tag-ltc { background: var(--blue-pale); color: #1a3a6a; }
+.tag-estate { background: var(--purple-pale); color: #4a2a7a; }
+.tag-risk { background: var(--warn-pale); color: #8a2a1a; }
+.tag-roth { background: var(--purple-pale); color: #4a2a7a; }
+
+.card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--rl); padding: 18px 20px; margin-bottom: 16px; }
+.card-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 14px; }
+
+.metric-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px; }
+.metric-card { background: var(--bg3); border-radius: var(--r); padding: 13px 15px; }
+.metric-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+.metric-value { font-size: 20px; font-weight: 500; color: var(--text); font-family: var(--mono); }
+.metric-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+.btn { font-family: var(--font); font-size: 13px; padding: 7px 16px; border-radius: var(--r); border: 0.5px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: background 0.1s; }
+.btn:hover { background: var(--bg3); color: var(--text); }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent-light); color: #fff; }
+
+.form-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 13px 18px; margin-bottom: 14px; }
+.form-grid-2 { grid-template-columns: 1fr 1fr; }
+.form-grid-4 { grid-template-columns: repeat(4,1fr); }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 12px; font-weight: 500; color: var(--text2); }
+.form-input { font-family: var(--font); font-size: 13px; padding: 7px 10px; border: 0.5px solid var(--border2); border-radius: var(--r); background: var(--bg2); color: var(--text); outline: none; }
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(61,139,110,0.1); }
+select.form-input { cursor: pointer; }
+
+.section-tabs { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; }
+.stab { font-family: var(--font); font-size: 13px; padding: 9px 16px; border: none; border-bottom: 2px solid transparent; background: transparent; color: var(--text2); cursor: pointer; margin-bottom: -0.5px; }
+.stab:hover { color: var(--text); }
+.stab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+.notice { padding: 11px 15px; border-radius: var(--r); font-size: 13px; line-height: 1.6; margin-bottom: 14px; border: 0.5px solid; }
+.notice-ok { background: var(--accent-pale); border-color: rgba(61,139,110,0.25); color: #2a6b52; }
+.notice-caution { background: var(--gold-pale); border-color: rgba(200,149,58,0.25); color: #7a5a1a; }
+.notice-warn { background: var(--warn-pale); border-color: rgba(192,57,43,0.2); color: #7a2a1a; }
+.notice-blue { background: var(--blue-pale); border-color: rgba(37,99,168,0.15); color: #1a3a6a; }
+.notice-purple { background: var(--purple-pale); border-color: rgba(107,63,160,0.2); color: #4a2a7a; }
+
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.check-item { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 8px 12px; border: 0.5px solid var(--border); border-radius: var(--r); cursor: pointer; transition: background 0.1s; }
+.check-item:hover { background: var(--bg3); }
+.check-box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.check-item.checked .check-box { background: var(--accent); border-color: var(--accent); }
+.check-tick { display: none; width: 10px; height: 10px; }
+.check-item.checked .check-tick { display: block; fill: none; stroke: white; stroke-width: 2; }
+.check-item.checked .check-text { color: var(--text2); text-decoration: line-through; }
+
+.tab-panel { display: none; } .tab-panel.active { display: block; }
+
+.tag { display: inline-block; font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 6px; margin-left: 4px; }
+.tag-green { background: var(--accent-pale); color: #2a6b52; }
+.tag-gold { background: var(--gold-pale); color: #7a5a1a; }
+.tag-warn { background: var(--warn-pale); color: #8a2a1a; }
+.tag-blue { background: var(--blue-pale); color: #1a3a6a; }
+.tag-purple { background: var(--purple-pale); color: #4a2a7a; }
+
+/* DATA TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); padding: 7px 10px; text-align: right; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
+.data-table th:first-child { text-align: left; padding-left: 16px; }
+.data-table td { padding: 8px 10px; text-align: right; border-bottom: 0.5px solid var(--border); font-family: var(--mono); color: var(--text); }
+.data-table td:first-child { text-align: left; font-family: var(--font); padding-left: 16px; }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* SLIDER */
+.slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.slider-label { font-size: 12px; color: var(--text2); min-width: 190px; }
+.slider-val { font-size: 13px; font-weight: 500; font-family: var(--mono); min-width: 80px; text-align: right; }
+input[type=range] { flex: 1; }
+
+/* ACCOUNT LIST */
+.account-item { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr auto; gap: 10px; align-items: center; padding: 9px 14px; border: 0.5px solid var(--border); border-radius: var(--r); font-size: 13px; margin-bottom: 6px; }
+.account-item.header { background: var(--bg3); font-size: 10px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.del-btn { font-size: 18px; line-height: 1; color: var(--text3); background: none; border: none; cursor: pointer; }
+.del-btn:hover { color: var(--warn); }
+
+/* BUCKET BAR */
+.bucket-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; margin-bottom: 12px; }
+.bucket-cell { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--r); padding: 10px 8px; text-align: center; }
+.bucket-label { font-size: 11px; font-weight: 500; color: var(--text2); margin-bottom: 3px; }
+.bucket-type { font-size: 9px; color: var(--text3); margin-bottom: 8px; min-height: 24px; line-height: 1.3; }
+.bucket-input { width: 100%; font-family: var(--mono); font-size: 11px; text-align: center; padding: 5px 4px; border: 0.5px solid var(--border2); border-radius: 4px; background: var(--bg2); color: var(--text); outline: none; }
+.bucket-input:focus { border-color: var(--accent); }
+
+/* BRACKET VIZ */
+.bv-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.bv-label { font-size: 11px; color: var(--text2); min-width: 40px; text-align: right; font-family: var(--mono); }
+.bv-bar-bg { flex: 1; height: 22px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.bv-limit { font-size: 10px; color: var(--text3); min-width: 56px; font-family: var(--mono); }
+.bv-headroom { font-size: 10px; color: var(--accent); font-family: var(--mono); min-width: 70px; text-align: right; }
+
+/* IRMAA THRESHOLD BAR */
+.threshold-bar-wrap { margin: 16px 0 8px; position: relative; }
+.threshold-bar-bg { height: 30px; border-radius: var(--r); overflow: hidden; display: flex; }
+.threshold-seg { height: 100%; display: flex; align-items: center; justify-content: center; }
+.magi-marker { position: absolute; top: -8px; }
+.magi-marker-line { width: 2px; height: 46px; background: var(--text); border-radius: 1px; }
+.magi-marker-label { font-size: 10px; font-weight: 500; color: var(--text); white-space: nowrap; transform: translateX(-50%); text-align: center; background: var(--bg2); padding: 1px 4px; border-radius: 3px; }
+
+/* TIMELINE */
+.timeline-item { display: flex; gap: 14px; padding-bottom: 18px; position: relative; }
+.timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: var(--border2); }
+.timeline-node { width: 24px; height: 24px; border-radius: 50%; background: var(--bg3); border: 1.5px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--text2); z-index: 1; }
+.timeline-node.done { background: var(--accent); border-color: var(--accent); color: white; }
+.timeline-label { font-size: 13px; font-weight: 500; color: var(--text); }
+.timeline-detail { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+
+/* PILLAR GRID */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pillar-card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--rl); padding: 16px 18px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.pillar-card:hover { border-color: var(--border2); background: var(--bg2); }
+.pillar-icon { width: 32px; height: 32px; border-radius: var(--r); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.pillar-card-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.pillar-card-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.pillar-status { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 11px; color: var(--text3); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); }
+.status-dot.partial { background: var(--gold); }
+
+/* AI CHAT */
+.ai-messages { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; max-height: 300px; overflow-y: auto; }
+.ai-msg { padding: 10px 14px; border-radius: var(--rl); font-size: 13px; line-height: 1.6; max-width: 88%; }
+.ai-msg.system { background: var(--bg3); color: var(--text); align-self: flex-start; }
+.ai-msg.user { background: rgba(61,139,110,0.1); color: var(--text); align-self: flex-end; border: 0.5px solid rgba(61,139,110,0.2); }
+.ai-msg.thinking { color: var(--text3); font-style: italic; background: transparent; padding: 4px 0; align-self: flex-start; }
+.ai-input-row { display: flex; gap: 8px; }
+.ai-input { flex: 1; font-family: var(--font); font-size: 13px; padding: 9px 13px; border: 0.5px solid var(--border2); border-radius: var(--r); background: var(--bg2); color: var(--text); outline: none; resize: none; }
+.ai-input:focus { border-color: var(--accent); }
+.ai-send { font-family: var(--font); font-size: 13px; padding: 9px 16px; background: var(--accent); color: white; border: none; border-radius: var(--r); cursor: pointer; font-weight: 500; }
+.ai-send:hover { background: var(--accent-light); }
+.ai-send:disabled { opacity: 0.5; cursor: not-allowed; }
+.q-chip { font-family: var(--font); font-size: 11px; padding: 5px 10px; border: 0.5px solid var(--border2); border-radius: 12px; background: var(--bg3); color: var(--text2); cursor: pointer; }
+.q-chip:hover { background: var(--accent-pale); color: #2a6b52; }
+
+/* SAVE BAR */
+.save-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--bg3); border-top: 0.5px solid var(--border); flex-shrink: 0; font-size: 12px; color: var(--text3); }
+.save-status { display: flex; align-items: center; gap: 6px; }
+.save-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); }
+
+/* TARGET PANEL */
+.target-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.target-card { border: 0.5px solid var(--border); border-radius: var(--r); padding: 12px 14px; background: var(--bg3); }
+.target-card.recommended { border-color: rgba(61,139,110,0.4); background: var(--accent-pale); }
+.target-card.caution { border-color: rgba(200,149,58,0.35); background: var(--gold-pale); }
+.target-card.warning { border-color: rgba(192,57,43,0.25); background: var(--warn-pale); }
+.tc-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+.tc-value { font-size: 17px; font-weight: 500; font-family: var(--mono); color: var(--text); }
+.tc-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+/* BASIS TABLE */
+.basis-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+.basis-card { border: 0.5px solid var(--border); border-radius: var(--r); padding: 12px 14px; background: var(--bg3); }
+.basis-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+.basis-value { font-size: 16px; font-weight: 500; font-family: var(--mono); }
+.basis-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+/* QCD */
+.qcd-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; border: 0.5px solid var(--border); border-radius: var(--r); margin-bottom: 6px; font-size: 13px; }
+
+/* IRMAA MAGI STACK */
+.magi-stack { display: flex; flex-direction: column; border: 0.5px solid var(--border); border-radius: var(--rl); overflow: hidden; margin-bottom: 14px; }
+.magi-row-item { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1.2fr; align-items: center; padding: 9px 14px; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+.magi-row-item:last-child { border-bottom: none; }
+.magi-row-item.magi-header { font-size: 10px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; background: var(--bg3); }
+.magi-row-item.magi-total { background: var(--bg3); font-weight: 500; border-top: 0.5px solid var(--border2); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* LOOKUP TABLE */
+.ref-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ref-table th { font-size: 10px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 10px; border-bottom: 0.5px solid var(--border); text-align: left; }
+.ref-table td { padding: 9px 10px; border-bottom: 0.5px solid var(--border); }
+.ref-table tr:last-child td { border-bottom: none; }
+
+/* STUB */
+.stub-notice { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--r); margin-bottom: 16px; font-size: 13px; color: var(--text2); }
+.stub-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+/* BRACKET LEGEND */
+.bracket-legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+.bl-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+.bl-swatch { width: 12px; height: 12px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-label">Advisor workspace</div>
+    <div class="logo-title">Retirement<br>Planning Hub</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Planning Pillars</div>
+    <div class="nav-item active" onclick="navigate('dashboard')"><div class="nav-dot"></div>Dashboard</div>
+    <div class="nav-item" onclick="navigate('income')"><div class="nav-dot"></div>Income Management</div>
+    <div class="nav-item" onclick="navigate('ltc')"><div class="nav-dot"></div>LTC Planning</div>
+    <div class="nav-item" onclick="navigate('estate')"><div class="nav-dot"></div>Estate Planning</div>
+    <div class="nav-item" onclick="navigate('tax')"><div class="nav-dot"></div>Tax Planning</div>
+    <div class="nav-item" onclick="navigate('risk')"><div class="nav-dot"></div>Risk Management</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Planning Tool</div>
+    <div class="nav-item" onclick="navigate('setup')"><div class="nav-dot"></div>Client Setup<span class="nav-badge">start</span></div>
+    <div class="nav-item" onclick="navigate('incomeplan')"><div class="nav-dot"></div>Income Plan</div>
+    <div class="nav-item" onclick="navigate('rmd')"><div class="nav-dot"></div>RMD Tracker</div>
+    <div class="nav-item" onclick="navigate('irmaa')"><div class="nav-dot"></div>IRMAA Planner</div>
+    <div class="nav-item" onclick="navigate('roth')"><div class="nav-dot"></div>Roth Conversion Ladder</div>
+    <div class="nav-item" onclick="navigate('ss')"><div class="nav-dot"></div>SS Optimizer</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Knowledge Base</div>
+    <div class="nav-item" onclick="navigate('medicare')"><div class="nav-dot"></div>Medicare &amp; IRMAA</div>
+    <div class="nav-item" onclick="navigate('aca')"><div class="nav-dot"></div>ACA Bridge</div>
+    <div class="nav-item" onclick="navigate('sor')"><div class="nav-dot"></div>Sequence of Returns</div>
+    <div class="nav-item" onclick="navigate('timeline')"><div class="nav-dot"></div>Pre-Retirement Timeline</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">AI Assistant</div>
+    <div class="nav-item" onclick="navigate('ai')"><div class="nav-dot"></div>Planning Q&amp;A</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="client-badge">
+      <div class="client-avatar" id="client-avatar">--</div>
+      <div>
+        <div class="client-name" id="sidebar-client-name">No client loaded</div>
+        <div class="client-sub" id="sidebar-client-sub">Client Setup to begin</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div class="breadcrumb">
+      <span id="bc-section">Planning Pillars</span>
+      <span style="color:var(--border2)">›</span>
+      <span class="current" id="bc-page">Dashboard</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn" onclick="navigate('setup')">+ New Client</button>
+      <button class="btn btn-primary" onclick="navigate('rmd')">Open Tools</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Planning Dashboard</div>
+        <div class="page-sub">Five-pillar retirement planning framework. Start with Client Setup to activate all planning tools.</div>
+      </div>
+      <div class="pillar-grid">
+        <div class="pillar-card" onclick="navigate('income')">
+          <div class="pillar-icon" style="background:var(--accent-pale)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="9" width="3" height="6" rx="1" fill="#3d8b6e"/><rect x="5" y="6" width="3" height="9" rx="1" fill="#3d8b6e" opacity=".6"/><rect x="9" y="3" width="3" height="12" rx="1" fill="#3d8b6e" opacity=".4"/><rect x="13" y="1" width="3" height="14" rx="1" fill="#3d8b6e" opacity=".25"/></svg></div>
+          <div class="pillar-card-title">Income Management</div>
+          <div class="pillar-card-desc">Bucket strategy, Social Security optimization, FIA ladder, distribution sequencing</div>
+          <div class="pillar-status"><div class="status-dot"></div>Checklist available</div>
+        </div>
+        <div class="pillar-card" onclick="navigate('ltc')">
+          <div class="pillar-icon" style="background:var(--blue-pale)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2C5.24 2 3 4.24 3 7c0 3.5 5 9 5 9s5-5.5 5-9c0-2.76-2.24-5-5-5z" fill="#3a5fa0" opacity=".7"/><rect x="6.5" y="5" width="3" height="1.5" rx=".5" fill="white"/><rect x="7.25" y="4" width="1.5" height="3.5" rx=".5" fill="white"/></svg></div>
+          <div class="pillar-card-title">LTC Planning</div>
+          <div class="pillar-card-desc">Standalone LTC, hybrid life/LTC products, self-insure analysis, Medicaid planning</div>
+          <div class="pillar-status"><div class="status-dot"></div>Checklist available</div>
+        </div>
+        <div class="pillar-card" onclick="navigate('estate')">
+          <div class="pillar-icon" style="background:var(--purple-pale)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 5v10h4V9h4v6h4V5L8 1z" fill="#7a52c0" opacity=".7"/></svg></div>
+          <div class="pillar-card-title">Estate Planning</div>
+          <div class="pillar-card-desc">Beneficiary coordination, account titling, stepped-up basis, Roth as legacy asset</div>
+          <div class="pillar-status"><div class="status-dot"></div>Checklist available</div>
+        </div>
+        <div class="pillar-card" onclick="navigate('tax')">
+          <div class="pillar-icon" style="background:var(--gold-pale)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#c8953a" stroke-width="1.5" fill="none"/><path d="M5 8h6M8 5v6" stroke="#c8953a" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="pillar-card-title">Tax Planning</div>
+          <div class="pillar-card-desc">Roth conversions, IRMAA management, RMDs, bracket stacking, QCDs, state taxes</div>
+          <div class="pillar-status"><div class="status-dot partial"></div>Tools: RMD, IRMAA, Roth Ladder</div>
+        </div>
+        <div class="pillar-card" onclick="navigate('risk')">
+          <div class="pillar-icon" style="background:var(--warn-pale)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 4.5H14l-3.75 2.75L11.75 13 8 10.25 4.25 13l1.5-4.75L2 5.5h4.5L8 1z" fill="#b04a38" opacity=".7"/></svg></div>
+          <div class="pillar-card-title">Risk Management</div>
+          <div class="pillar-card-desc">Protected vs. risk allocation, FIA mechanics, sequence of returns rationale</div>
+          <div class="pillar-status"><div class="status-dot"></div>Checklist available</div>
+        </div>
+        <div class="pillar-card" onclick="navigate('setup')" style="border:0.5px dashed rgba(61,139,110,0.5); background:var(--accent-pale);">
+          <div class="pillar-icon" style="background:rgba(61,139,110,0.15)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="#3d8b6e" stroke-width="1.5" fill="none"/><path d="M2 14c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#3d8b6e" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div>
+          <div class="pillar-card-title" style="color:#2a6b52">Client Setup</div>
+          <div class="pillar-card-desc" style="color:#3a7a60">Enter client details to activate all planning tools and populate projections.</div>
+          <div class="pillar-status" style="color:#3a7a60"><div class="status-dot partial"></div>Click to begin →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT SETUP -->
+    <div class="page" id="page-setup">
+      <div class="page-header">
+        <div class="pillar-tag tag-income">Client Setup</div>
+        <div class="page-title">Client Profile</div>
+        <div class="page-sub">Core data flows into the Income Plan, RMD Tracker, IRMAA Planner, and Roth Conversion Ladder.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Client identification</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Client 1 — First name</label><input class="form-input" type="text" id="c1-first" placeholder="Steve" oninput="updateClientBadge()"></div>
+          <div class="form-group"><label class="form-label">Client 1 — Last name</label><input class="form-input" type="text" id="c1-last" placeholder="Sample" oninput="updateClientBadge()"></div>
+          <div class="form-group"><label class="form-label">Client 1 — Date of birth</label><input class="form-input" type="date" id="c1-dob" oninput="updateClientBadge()"></div>
+          <div class="form-group"><label class="form-label">Client 2 — First name</label><input class="form-input" type="text" id="c2-first" placeholder="Sally" oninput="updateClientBadge()"></div>
+          <div class="form-group"><label class="form-label">Client 2 — Last name</label><input class="form-input" type="text" id="c2-last" placeholder="Sample"></div>
+          <div class="form-group"><label class="form-label">Client 2 — Date of birth</label><input class="form-input" type="date" id="c2-dob"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Retirement parameters</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Filing status</label><select class="form-input" id="filing-status"><option value="mfj">Married filing jointly</option><option value="single">Single</option></select></div>
+          <div class="form-group"><label class="form-label">Client 1 — Retirement date</label><input class="form-input" type="date" id="c1-retire"></div>
+          <div class="form-group"><label class="form-label">Client 2 — Retirement date</label><input class="form-input" type="date" id="c2-retire"></div>
+          <div class="form-group"><label class="form-label">Monthly income target ($)</label><input class="form-input" type="number" id="income-target" placeholder="8000"></div>
+          <div class="form-group"><label class="form-label">Inflation assumption (%)</label><input class="form-input" type="number" id="inflation" placeholder="3.0" step="0.1"></div>
+          <div class="form-group"><label class="form-label">State of residence</label><select class="form-input" id="state"><option value="">Select state</option><option value="FL">Florida (no income tax)</option><option value="TX">Texas (no income tax)</option><option value="WA">Washington (no income tax)</option><option value="NV">Nevada (no income tax)</option><option value="CA">California</option><option value="NY">New York</option><option value="OH">Ohio</option><option value="PA">Pennsylvania</option><option value="OTHER">Other</option></select></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Income sources</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Client 1 — SS benefit at FRA ($/mo)</label><input class="form-input" type="number" id="c1-ss" placeholder="2800"></div>
+          <div class="form-group"><label class="form-label">Client 2 — SS benefit at FRA ($/mo)</label><input class="form-input" type="number" id="c2-ss" placeholder="1600"></div>
+          <div class="form-group"><label class="form-label">Pension income ($/mo)</label><input class="form-input" type="number" id="pension" placeholder="0"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Asset summary</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Traditional IRA / 401(k) ($)</label><input class="form-input" type="number" id="trad-ira" placeholder="650000"></div>
+          <div class="form-group"><label class="form-label">Roth IRA ($)</label><input class="form-input" type="number" id="roth-ira" placeholder="120000"></div>
+          <div class="form-group"><label class="form-label">Taxable brokerage ($)</label><input class="form-input" type="number" id="taxable" placeholder="200000"></div>
+          <div class="form-group"><label class="form-label">Cash / money market ($)</label><input class="form-input" type="number" id="cash" placeholder="50000"></div>
+          <div class="form-group"><label class="form-label">Client 1 — Current age</label><input class="form-input" type="number" id="c1-age-input" placeholder="62"></div>
+          <div class="form-group"><label class="form-label">Client 2 — Current age</label><input class="form-input" type="number" id="c2-age-input" placeholder="60"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn btn-primary" onclick="saveClient()">Save client profile</button>
+        <button class="btn" onclick="navigate('incomeplan')">Continue to Income Plan →</button>
+      </div>
+    </div>
+
+    <!-- INCOME PLAN -->
+    <div class="page" id="page-incomeplan">
+      <div class="page-header">
+        <div class="pillar-tag tag-income">Planning Tool</div>
+        <div class="page-title">Income Plan — Bucket Allocation</div>
+        <div class="page-sub">Allocate assets across Buckets A–G. A = money market (monthly distributions). B–F = FIAs (5- or 10-year). G = equity growth.</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-card"><div class="metric-label">Total assets</div><div class="metric-value" id="ip-total">$—</div><div class="metric-sub">from client profile</div></div>
+        <div class="metric-card"><div class="metric-label">Monthly target</div><div class="metric-value" id="ip-monthly">$—</div><div class="metric-sub">income goal</div></div>
+        <div class="metric-card"><div class="metric-label">Protected %</div><div class="metric-value" id="ip-protected">—</div><div class="metric-sub">target 60%</div></div>
+        <div class="metric-card"><div class="metric-label">Risk (Bucket G) %</div><div class="metric-value" id="ip-risk">—</div><div class="metric-sub">target 40%</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Bucket allocation</div>
+        <div class="bucket-row">
+          <div class="bucket-cell" style="border-color:rgba(61,139,110,0.35)"><div class="bucket-label" style="color:var(--accent)">Bucket A</div><div class="bucket-type">Money market<br>Monthly dist.</div><input class="bucket-input" type="number" id="ba-val" placeholder="0" oninput="updateBuckets()"></div>
+          <div class="bucket-cell"><div class="bucket-label">Bucket B</div><div class="bucket-type">FIA — 5yr<br>annuity</div><input class="bucket-input" type="number" id="bb-val" placeholder="0" oninput="updateBuckets()"></div>
+          <div class="bucket-cell"><div class="bucket-label">Bucket C</div><div class="bucket-type">FIA — 5yr<br>annuity</div><input class="bucket-input" type="number" id="bc-val" placeholder="0" oninput="updateBuckets()"></div>
+          <div class="bucket-cell"><div class="bucket-label">Bucket D</div><div class="bucket-type">FIA — 10yr<br>annuity</div><input class="bucket-input" type="number" id="bd-val" placeholder="0" oninput="updateBuckets()"></div>
+          <div class="bucket-cell"><div class="bucket-label">Bucket E</div><div class="bucket-type">FIA — 10yr<br>annuity</div><input class="bucket-input" type="number" id="be-val" placeholder="0" oninput="updateBuckets()"></div>
+          <div class="bucket-cell"><div class="bucket-label">Bucket F</div><div class="bucket-type">FIA — 10yr<br>annuity</div><input class="bucket-input" type="number" id="bf-val" placeholder="0" oninput="updateBuckets()"></div>
+          <div class="bucket-cell" style="border-color:rgba(200,149,58,0.35)"><div class="bucket-label" style="color:var(--gold)">Bucket G</div><div class="bucket-type">Market<br>growth</div><input class="bucket-input" type="number" id="bg-val" placeholder="0" oninput="updateBuckets()"></div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px"><span>Protected (A–F)</span><span id="protected-pct">0%</span></div>
+          <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;display:flex">
+            <div id="protected-bar" style="height:100%;background:var(--accent);transition:width .3s;border-radius:4px 0 0 4px"></div>
+            <div id="risk-bar" style="height:100%;background:var(--gold);transition:width .3s;border-radius:0 4px 4px 0"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px"><span id="protected-amt">$0 protected</span><span id="risk-amt">$0 risk</span></div>
+        </div>
+      </div>
+      <div class="stub-notice"><div class="stub-dot"></div>Year-by-year projection and FIA maturity waterfall: use the companion Excel workbook for full multi-year income modeling. This tool handles tax planning — RMD Tracker, IRMAA Planner, and Roth Conversion Ladder are fully functional above.</div>
+    </div>
+
+    <!-- RMD TRACKER -->
+    <div class="page" id="page-rmd">
+      <div class="page-header">
+        <div class="pillar-tag tag-tax">Planning Tool</div>
+        <div class="page-title">RMD Tracker</div>
+        <div class="page-sub">Project required minimum distributions, model QCD offsets, and flag IRMAA exposure from forced withdrawals.</div>
+      </div>
+      <div class="section-tabs">
+        <button class="stab active" onclick="switchTool('rmd','accounts')">Account Setup</button>
+        <button class="stab" onclick="switchTool('rmd','projections')">RMD Projections</button>
+        <button class="stab" onclick="switchTool('rmd','qcd')">QCD Planner</button>
+        <button class="stab" onclick="switchTool('rmd','bracket')">Bracket Impact</button>
+      </div>
+      <div class="tab-panel active" id="rmd-accounts">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Total deferred assets</div><div class="metric-value" id="rmd-m-total">$0</div><div class="metric-sub">subject to RMDs</div></div>
+          <div class="metric-card"><div class="metric-label">RMD start year</div><div class="metric-value" id="rmd-m-year">—</div><div class="metric-sub">client 1 age <span id="rmd-m-age">—</span></div></div>
+          <div class="metric-card"><div class="metric-label">First year RMD (est.)</div><div class="metric-value" id="rmd-m-first">—</div><div class="metric-sub">before growth</div></div>
+          <div class="metric-card"><div class="metric-label">IRMAA exposure</div><div class="metric-value" id="rmd-m-irmaa" style="font-size:15px">—</div><div class="metric-sub" id="rmd-m-irmaa-sub">enter data above</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Client parameters</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Client 1 — current age</label><input class="form-input" type="number" id="rmd-c1age" value="62" oninput="rmdRefresh()"></div>
+            <div class="form-group"><label class="form-label">Filing status</label><select class="form-input" id="rmd-filing" onchange="rmdRefresh()"><option value="mfj">Married filing jointly</option><option value="single">Single</option></select></div>
+            <div class="form-group"><label class="form-label">RMD start age (SECURE 2.0)</label><select class="form-input" id="rmd-startage" onchange="rmdRefresh()"><option value="73">73 (born 1951–1959)</option><option value="75">75 (born 1960+)</option></select></div>
+            <div class="form-group"><label class="form-label">Other income (SS + pension, $/yr)</label><input class="form-input" type="number" id="rmd-otherincome" value="48000" oninput="rmdRefresh()"></div>
+            <div class="form-group"><label class="form-label">Portfolio growth rate (%)</label><input class="form-input" type="number" id="rmd-growth" value="5" step="0.5" oninput="rmdRefresh()"></div>
+            <div class="form-group"><label class="form-label">Annual QCD amount ($)</label><input class="form-input" type="number" id="rmd-qcd" value="0" oninput="rmdRefresh()"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Tax-deferred accounts</div>
+          <div id="rmd-acct-list">
+            <div class="account-item header"><span>Account name</span><span>Owner</span><span>Balance</span><span>Type</span><span></span></div>
+          </div>
+          <div class="form-grid" style="margin-top:12px">
+            <div class="form-group"><label class="form-label">Account name</label><input class="form-input" type="text" id="rmd-new-name" placeholder="Steve's IRA"></div>
+            <div class="form-group"><label class="form-label">Balance ($)</label><input class="form-input" type="number" id="rmd-new-bal" placeholder="500000"></div>
+            <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="rmd-new-type"><option value="tira">Traditional IRA</option><option value="401k">401(k)/403(b)</option><option value="sep">SEP IRA</option></select></div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:8px" onclick="rmdAddAccount()">Add account</button>
+        </div>
+        <button class="btn btn-primary" onclick="switchTool('rmd','projections');rmdBuildTable()">View projections →</button>
+      </div>
+      <div class="tab-panel" id="rmd-projections">
+        <div id="rmd-irmaa-banner" style="margin-bottom:14px"></div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table class="data-table" id="rmd-proj-table">
+          <thead><tr><th style="text-align:left;padding-left:16px">Year / Age</th><th>Balance</th><th>Factor</th><th>RMD</th><th>QCD</th><th>Taxable RMD</th><th>Other income</th><th>Total MAGI</th><th>IRMAA tier</th><th>Tax bracket</th></tr></thead>
+          <tbody id="rmd-proj-body"></tbody>
+        </table></div></div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--text2)">
+          <span>● Green = RMD begins</span><span>● Red = IRMAA triggered</span><span>● Teal = QCD offset</span>
+        </div>
+      </div>
+      <div class="tab-panel" id="rmd-qcd">
+        <div class="card">
+          <div class="card-title">QCD overview</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px">IRA owners age 70½+ can transfer up to <strong>$105,000/year (2024, indexed)</strong> directly to a qualified charity. Counts toward the RMD but excluded from taxable income — reducing MAGI, SS taxation, and IRMAA exposure.</div>
+          <div id="rmd-qcd-rows"></div>
+          <div style="font-size:12px;color:var(--text3);margin-top:8px">Tax savings estimated at 22% marginal rate. DAFs do not qualify. Must be a direct IRA-to-charity transfer.</div>
+        </div>
+        <div class="card" style="background:var(--accent-pale);border-color:rgba(61,139,110,0.2)">
+          <div class="card-title" style="color:#2a6b52">Key QCD rules</div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:13px;color:#3a6a52">
+            <div>— Direct transfer from IRA to charity only (no 60-day rollover)</div>
+            <div>— Satisfies RMD obligation dollar-for-dollar up to annual limit</div>
+            <div>— Cannot also claim charitable deduction for same amount</div>
+            <div>— Reduces AGI / MAGI — prevents SS cliff and IRMAA surcharges</div>
+            <div>— Not available from 401(k) — IRA only (rollover first if needed)</div>
+            <div>— Donor-advised funds do NOT qualify as QCD recipients</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="rmd-bracket">
+        <div class="card">
+          <div class="card-title">Bracket impact — conversion vs. RMD</div>
+          <div class="slider-row"><span class="slider-label">Roth conversion amount</span><input type="range" min="0" max="200000" step="1000" value="50000" id="rmd-conv-slider" oninput="rmdBracketViz()"><span class="slider-val" id="rmd-conv-val">$50,000</span></div>
+          <div class="slider-row"><span class="slider-label">Other income (SS + pension)</span><input type="range" min="0" max="150000" step="1000" value="48000" id="rmd-inc-slider" oninput="rmdBracketViz()"><span class="slider-val" id="rmd-inc-val">$48,000</span></div>
+        </div>
+        <div class="card" id="rmd-bracket-card">
+          <div class="card-title">2025 income stack — MFJ</div>
+          <div id="rmd-bracket-viz"></div>
+          <div id="rmd-bracket-summary" style="font-size:13px;color:var(--text2);margin-top:12px;line-height:1.7"></div>
+          <div id="rmd-irmaa-check" style="margin-top:12px;font-size:13px;color:#7a5a1a;padding:10px 14px;background:var(--gold-pale);border-radius:var(--r)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IRMAA PLANNER -->
+    <div class="page" id="page-irmaa">
+      <div class="page-header">
+        <div class="pillar-tag tag-tax">Planning Tool — Medicare</div>
+        <div class="page-title">IRMAA Planner</div>
+        <div class="page-sub">MAGI-based Medicare surcharge planning. IRMAA is triggered by income from two years prior — Roth conversions, RMDs, and cap gains all count.</div>
+      </div>
+      <div class="section-tabs">
+        <button class="stab active" onclick="switchTool('irmaa','magi')">MAGI Builder</button>
+        <button class="stab" onclick="switchTool('irmaa','lookback')">Two-Year Lookback</button>
+        <button class="stab" onclick="switchTool('irmaa','multiyear')">Multi-Year Planner</button>
+        <button class="stab" onclick="switchTool('irmaa','ref')">Tier Reference</button>
+      </div>
+      <div class="tab-panel active" id="irmaa-magi">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Total MAGI</div><div class="metric-value" id="im-magi">$0</div><div class="metric-sub">this planning year</div></div>
+          <div class="metric-card"><div class="metric-label">IRMAA tier</div><div class="metric-value" id="im-tier" style="font-size:16px">—</div><div class="metric-sub" id="im-tier-sub">enter income below</div></div>
+          <div class="metric-card"><div class="metric-label">Part B premium</div><div class="metric-value" id="im-partb">$185</div><div class="metric-sub">per person / month</div></div>
+          <div class="metric-card"><div class="metric-label">Annual surcharge</div><div class="metric-value" id="im-surcharge">$0</div><div class="metric-sub" id="im-surcharge-sub">both spouses, 12 mo</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Parameters</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Filing status</label><select class="form-input" id="im-filing" onchange="imCompute()"><option value="mfj">Married filing jointly</option><option value="single">Single</option></select></div>
+            <div class="form-group"><label class="form-label">Planning year</label><select class="form-input" id="im-year" onchange="imCompute()"><option value="2025">2025 (affects 2027 premiums)</option><option value="2026">2026 (affects 2028 premiums)</option></select></div>
+            <div class="form-group"><label class="form-label">Medicare enrollees</label><select class="form-input" id="im-enrollees" onchange="imCompute()"><option value="2">2 (both spouses)</option><option value="1">1 enrollee</option></select></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">MAGI component builder</div>
+          <div class="magi-stack">
+            <div class="magi-row-item magi-header"><span>Income source</span><span>Annual amount</span><span>MAGI inclusion</span><span>Running total</span></div>
+            <div class="magi-row-item"><span>Wages / self-employment</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="im-wages" value="0" oninput="imCompute()"></span><span style="font-size:11px;color:var(--accent)">100% included</span><span style="font-family:var(--mono)" id="im-rt-wages">$0</span></div>
+            <div class="magi-row-item"><span>Social Security benefits</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="im-ss" value="36000" oninput="imCompute()"></span><span style="font-size:11px;color:var(--gold)">Up to 85% included</span><span style="font-family:var(--mono)" id="im-rt-ss">$0</span></div>
+            <div class="magi-row-item"><span>Pension / annuity income</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="im-pension" value="0" oninput="imCompute()"></span><span style="font-size:11px;color:var(--accent)">100% included</span><span style="font-family:var(--mono)" id="im-rt-pension">$0</span></div>
+            <div class="magi-row-item"><span>RMD / IRA withdrawals</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="im-rmd" value="0" oninput="imCompute()"></span><span style="font-size:11px;color:var(--accent)">100% included</span><span style="font-family:var(--mono)" id="im-rt-rmd">$0</span></div>
+            <div class="magi-row-item"><span>Roth conversion amount</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="im-roth" value="0" oninput="imCompute()"></span><span style="font-size:11px;color:var(--warn)">100% included</span><span style="font-family:var(--mono)" id="im-rt-roth">$0</span></div>
+            <div class="magi-row-item"><span>Capital gains (realized)</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="im-capgains" value="0" oninput="imCompute()"></span><span style="font-size:11px;color:var(--accent)">100% included</span><span style="font-family:var(--mono)" id="im-rt-capgains">$0</span></div>
+            <div class="magi-row-item"><span>Tax-exempt interest (muni)</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="im-muni" value="0" oninput="imCompute()"></span><span style="font-size:11px;color:var(--warn)">Added back to MAGI</span><span style="font-family:var(--mono)" id="im-rt-muni">$0</span></div>
+            <div class="magi-row-item magi-total"><span>Total MAGI</span><span></span><span></span><span style="font-family:var(--mono);font-weight:500" id="im-rt-total">$0</span></div>
+          </div>
+          <div id="im-threshold-viz"></div>
+          <div id="im-notice"></div>
+          <div id="im-headroom" style="margin-top:12px;padding:12px 16px;background:var(--blue-pale);border-radius:var(--r);font-size:13px;color:#1a3a6a"></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="irmaa-lookback">
+        <div class="notice notice-blue"><strong>Two-year lookback:</strong> Medicare uses your MAGI from two years prior to set Part B and D premiums. A Roth conversion in 2025 affects 2027 premiums — not 2025. This is the central IRMAA planning challenge.</div>
+        <div class="card">
+          <div class="card-title">Lookback scenario</div>
+          <div class="form-grid form-grid-2">
+            <div class="form-group"><label class="form-label">Client current age</label><input class="form-input" type="number" id="lb-age" value="63" oninput="lbBuild()"></div>
+            <div class="form-group"><label class="form-label">Medicare enrollment age</label><input class="form-input" type="number" id="lb-enroll" value="65" oninput="lbBuild()"></div>
+            <div class="form-group"><label class="form-label">Base annual MAGI (SS + pension)</label><input class="form-input" type="number" id="lb-base" value="72000" oninput="lbBuild()"></div>
+            <div class="form-group"><label class="form-label">Roth conversion in lookback year</label><input class="form-input" type="number" id="lb-conv" value="80000" oninput="lbBuild()"></div>
+          </div>
+        </div>
+        <div id="lb-timeline"></div>
+        <div id="lb-notice"></div>
+      </div>
+      <div class="tab-panel" id="irmaa-multiyear">
+        <div class="card">
+          <div class="card-title">Multi-year IRMAA projection</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Current age</label><input class="form-input" type="number" id="my-age" value="63" oninput="myBuild()"></div>
+            <div class="form-group"><label class="form-label">Filing status</label><select class="form-input" id="my-filing" onchange="myBuild()"><option value="mfj">Married filing jointly</option><option value="single">Single</option></select></div>
+            <div class="form-group"><label class="form-label">RMD start age</label><select class="form-input" id="my-rmd" onchange="myBuild()"><option value="73">73</option><option value="75">75</option></select></div>
+            <div class="form-group"><label class="form-label">Base income / yr ($)</label><input class="form-input" type="number" id="my-base" value="48000" oninput="myBuild()"></div>
+            <div class="form-group"><label class="form-label">IRA balance today ($)</label><input class="form-input" type="number" id="my-ira" value="750000" oninput="myBuild()"></div>
+            <div class="form-group"><label class="form-label">Annual Roth conversion ($)</label><input class="form-input" type="number" id="my-conv" value="60000" oninput="myBuild()"></div>
+            <div class="form-group"><label class="form-label">Conversion years</label><input class="form-input" type="number" id="my-convyrs" value="8" oninput="myBuild()"></div>
+            <div class="form-group"><label class="form-label">IRA growth rate (%)</label><input class="form-input" type="number" id="my-growth" value="5" step="0.5" oninput="myBuild()"></div>
+            <div class="form-group"><label class="form-label">Income growth (%)</label><input class="form-input" type="number" id="my-incgrowth" value="2" step="0.5" oninput="myBuild()"></div>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table class="data-table" id="my-table">
+          <thead><tr><th style="text-align:left;padding-left:16px">Year / Age</th><th>IRA balance</th><th>Conversion</th><th>RMD</th><th>Base income</th><th>Total MAGI</th><th>IRMAA yr+2</th><th>Tier</th><th>Annual cost</th></tr></thead>
+          <tbody id="my-body"></tbody>
+        </table></div></div>
+        <div id="my-summary" style="margin-top:14px"></div>
+      </div>
+      <div class="tab-panel" id="irmaa-ref">
+        <div class="card"><div class="card-title">2025 MFJ thresholds</div><div id="irmaa-ref-mfj"></div></div>
+        <div class="card"><div class="card-title">2025 Single thresholds</div><div id="irmaa-ref-single"></div></div>
+        <div class="card" style="background:var(--gold-pale);border-color:rgba(200,149,58,0.2)">
+          <div class="card-title" style="color:#7a5a1a">Key IRMAA rules</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:#7a5a1a;line-height:1.6">
+            <div>— IRMAA is per person — a married couple in Tier 1 each pay the surcharge</div>
+            <div>— Roth conversions count 100% toward MAGI</div>
+            <div>— Tax-exempt muni interest is added back to MAGI for IRMAA</div>
+            <div>— QCDs reduce AGI and MAGI — effective for clients 70½+ with charitable intent</div>
+            <div>— Roth IRA distributions are NOT included in MAGI</div>
+            <div>— One dollar over the threshold triggers the full tier surcharge (cliff effect)</div>
+            <div>— Part D surcharges are additional (~$13–$84/mo per person by tier)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROTH CONVERSION LADDER -->
+    <div class="page" id="page-roth">
+      <div class="page-header">
+        <div class="pillar-tag tag-roth">Planning Tool</div>
+        <div class="page-title">Roth Conversion Ladder</div>
+        <div class="page-sub">Multi-year, bracket-conscious conversion sequencing. Reduces future RMDs, manages IRMAA exposure, and builds tax-free legacy assets.</div>
+      </div>
+      <div class="section-tabs">
+        <button class="stab active" onclick="switchTool('roth','setup')">Client Setup</button>
+        <button class="stab" onclick="switchTool('roth','bracketopt')">Bracket Optimizer</button>
+        <button class="stab" onclick="switchTool('roth','ladder')">Conversion Ladder</button>
+        <button class="stab" onclick="switchTool('roth','basis')">Basis Tracker</button>
+        <button class="stab" onclick="switchTool('roth','guide')">Strategy Guide</button>
+      </div>
+      <div class="tab-panel active" id="roth-setup">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Conversion window</div><div class="metric-value" id="rs-window">— yrs</div><div class="metric-sub" id="rs-window-sub">pre-RMD years</div></div>
+          <div class="metric-card"><div class="metric-label">Annual headroom</div><div class="metric-value" id="rs-headroom">$—</div><div class="metric-sub" id="rs-headroom-sub">at target bracket</div></div>
+          <div class="metric-card"><div class="metric-label">Total capacity</div><div class="metric-value" id="rs-capacity">$—</div><div class="metric-sub">over window</div></div>
+          <div class="metric-card"><div class="metric-label">IRMAA status</div><div class="metric-value" id="rs-irmaa" style="font-size:15px">—</div><div class="metric-sub" id="rs-irmaa-sub">at target conversion</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Parameters</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Current age</label><input class="form-input" type="number" id="rc-age" value="63" oninput="rcRefresh()"></div>
+            <div class="form-group"><label class="form-label">Filing status</label><select class="form-input" id="rc-filing" onchange="rcRefresh()"><option value="mfj">Married filing jointly</option><option value="single">Single</option></select></div>
+            <div class="form-group"><label class="form-label">RMD start age</label><select class="form-input" id="rc-rmdage" onchange="rcRefresh()"><option value="73">73</option><option value="75">75</option></select></div>
+            <div class="form-group"><label class="form-label">Traditional IRA / 401(k) balance ($)</label><input class="form-input" type="number" id="rc-ira" value="750000" oninput="rcRefresh()"></div>
+            <div class="form-group"><label class="form-label">Existing Roth IRA balance ($)</label><input class="form-input" type="number" id="rc-roth" value="85000" oninput="rcRefresh()"></div>
+            <div class="form-group"><label class="form-label">Roth IRA basis (contributions)</label><input class="form-input" type="number" id="rc-basis" value="40000" oninput="rcRefresh()"></div>
+            <div class="form-group"><label class="form-label">Base income / yr (SS + pension)</label><input class="form-input" type="number" id="rc-base" value="52000" oninput="rcRefresh()"></div>
+            <div class="form-group"><label class="form-label">IRA growth rate (%)</label><input class="form-input" type="number" id="rc-growth" value="5" step="0.5" oninput="rcRefresh()"></div>
+            <div class="form-group"><label class="form-label">Roth growth rate (%)</label><input class="form-input" type="number" id="rc-rothgrowth" value="6" step="0.5" oninput="rcRefresh()"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Conversion target</div>
+          <div class="form-grid form-grid-2">
+            <div class="form-group"><label class="form-label">Convert up to top of this bracket</label><select class="form-input" id="rc-targetbracket" onchange="rcRefresh()"><option value="12">12% bracket</option><option value="22" selected>22% bracket</option><option value="24">24% bracket</option></select></div>
+            <div class="form-group"><label class="form-label">IRMAA constraint</label><select class="form-input" id="rc-irmaaconstraint" onchange="rcRefresh()"><option value="0">Stay below Tier 1</option><option value="1">Allow Tier 1 — avoid Tier 2</option><option value="99">No constraint</option></select></div>
+          </div>
+          <div id="rc-setup-notice" style="margin-top:12px"></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="roth-bracketopt">
+        <div class="card">
+          <div class="card-title">Live bracket fill</div>
+          <div class="slider-row"><span class="slider-label">Roth conversion this year</span><input type="range" min="0" max="300000" step="1000" value="60000" id="rc-conv-slider" oninput="rcBracket()"><span class="slider-val" id="rc-conv-val">$60,000</span></div>
+          <div class="slider-row"><span class="slider-label">Other income (SS + pension)</span><input type="range" min="0" max="200000" step="1000" value="52000" id="rc-base-slider" oninput="rcBracket()"><span class="slider-val" id="rc-base-val">$52,000</span></div>
+        </div>
+        <div class="card">
+          <div class="bracket-legend">
+            <div class="bl-item"><div class="bl-swatch" style="background:#3a7a8a"></div>Base income</div>
+            <div class="bl-item"><div class="bl-swatch" style="background:#5b4fa0"></div>Roth conversion</div>
+            <div class="bl-item"><div class="bl-swatch" style="background:var(--bg3);border:0.5px solid var(--border2)"></div>Unused space</div>
+          </div>
+          <div id="rc-bracket-viz"></div>
+          <div class="target-panel" id="rc-summary-cards" style="margin-top:16px"></div>
+          <div id="rc-bracket-notice"></div>
+        </div>
+        <div class="card" style="background:var(--purple-pale);border-color:rgba(107,63,160,0.15)">
+          <div class="card-title" style="color:var(--purple)">IRMAA check — this conversion</div>
+          <div id="rc-irmaa-check" style="font-size:13px;color:#4a2a7a;line-height:1.7"></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="roth-ladder">
+        <div class="card">
+          <div class="card-title">Ladder parameters</div>
+          <div class="form-grid form-grid-4">
+            <div class="form-group"><label class="form-label">Annual conversion ($)</label><input class="form-input" type="number" id="rl-conv" value="60000" oninput="rcLadder()"></div>
+            <div class="form-group"><label class="form-label">Strategy</label><select class="form-input" id="rl-strategy" onchange="rcLadder()"><option value="fixed">Fixed amount</option><option value="bracket">Fill to bracket top</option><option value="irmaa">Fill to IRMAA ceiling</option></select></div>
+            <div class="form-group"><label class="form-label">Income growth (%)</label><input class="form-input" type="number" id="rl-incgrowth" value="2" step="0.5" oninput="rcLadder()"></div>
+            <div class="form-group"><label class="form-label">Show years</label><select class="form-input" id="rl-years" onchange="rcLadder()"><option value="15">15</option><option value="20" selected>20</option><option value="25">25</option></select></div>
+          </div>
+        </div>
+        <div class="metric-row" id="rl-metrics"></div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table class="data-table" id="rl-table">
+          <thead><tr><th style="text-align:left;padding-left:16px">Year / Age</th><th>IRA balance</th><th>Roth balance</th><th>Base income</th><th>Conversion</th><th>Total MAGI</th><th>Rate</th><th>IRMAA (+2yr)</th><th>RMD</th><th>Tax cost</th></tr></thead>
+          <tbody id="rl-body"></tbody>
+        </table></div></div>
+        <div id="rl-summary" style="margin-top:14px"></div>
+      </div>
+      <div class="tab-panel" id="roth-basis">
+        <div class="notice notice-blue"><strong>Roth ordering rules:</strong> 1) Contributions (always tax/penalty free) → 2) Conversions in order of year (penalty-free after 5 yrs or age 59½) → 3) Earnings (tax/penalty free only if account 5+ yrs old AND age 59½+)</div>
+        <div class="basis-grid" id="rc-basis-cards"></div>
+        <div class="card"><div class="card-title">Basis ledger</div><div style="overflow-x:auto"><table class="data-table" id="rc-basis-table">
+          <thead><tr><th style="text-align:left;padding-left:16px">Year</th><th style="text-align:left">Age</th><th style="text-align:left">Type</th><th>Amount</th><th>Cumulative basis</th><th>Roth balance (est.)</th><th style="text-align:left">5-yr clock</th><th style="text-align:left">Notes</th></tr></thead>
+          <tbody id="rc-basis-body"></tbody>
+        </table></div></div>
+      </div>
+      <div class="tab-panel" id="roth-guide">
+        <div class="card">
+          <div class="card-title">When to prioritize conversions</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="padding:12px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2)">
+              <div style="font-size:12px;font-weight:500;color:#2a6b52;margin-bottom:8px">Strong case for converting</div>
+              <div style="font-size:12px;color:#3a7a60;line-height:1.7">— Currently in lower bracket than future RMD years<br>— Large IRA relative to income needs<br>— Pre-RMD window open (especially age 60–72)<br>— Low income year (partial retirement, no SS yet)<br>— IRMAA threshold not at risk<br>— Want to leave tax-free assets to heirs<br>— State with no income tax</div>
+            </div>
+            <div style="padding:12px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.15)">
+              <div style="font-size:12px;font-weight:500;color:#8a2a1a;margin-bottom:8px">Caution or avoid</div>
+              <div style="font-size:12px;color:#7a3a2a;line-height:1.7">— Already in 24%+ bracket from other income<br>— Converting pushes into next IRMAA tier<br>— Paying tax from IRA funds (reduces benefit)<br>— Need the money within 5 years<br>— High state income tax on conversions<br>— ACA subsidy cliff at risk<br>— Short time horizon for breakeven</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">The tax torpedo — and how conversions prevent it</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:12px">The "tax torpedo" occurs when RMDs begin at 73–75 and combine with Social Security income, pushing a retiree into a significantly higher bracket. SS becomes 85% taxable, IRMAA surcharges activate, and the bracket impact is worse than if conversions had been done earlier at lower rates.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <div style="padding:10px 12px;background:var(--bg3);border-radius:var(--r);text-align:center"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Without conversions</div><div style="font-size:13px;font-weight:500;color:var(--warn)">RMDs + SS = 22–24%</div><div style="font-size:11px;color:var(--text2);margin-top:3px">Forced, unavoidable</div></div>
+            <div style="padding:10px 12px;background:var(--gold-pale);border-radius:var(--r);text-align:center;border:0.5px solid rgba(200,149,58,0.2)"><div style="font-size:11px;color:#7a5a1a;margin-bottom:4px">Conversion window</div><div style="font-size:13px;font-weight:500;color:var(--gold)">Fill 12–22% bracket</div><div style="font-size:11px;color:#8a6a2a;margin-top:3px">Controlled, planned</div></div>
+            <div style="padding:10px 12px;background:var(--accent-pale);border-radius:var(--r);text-align:center;border:0.5px solid rgba(61,139,110,0.2)"><div style="font-size:11px;color:#2a6b52;margin-bottom:4px">After conversion ladder</div><div style="font-size:13px;font-weight:500;color:var(--accent)">Smaller RMDs = 12%</div><div style="font-size:11px;color:#3a7a60;margin-top:3px">Lower IRMAA too</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Integration with your bucket model</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.8">Tax to fund conversions should come from <strong>taxable accounts or Bucket A (money market)</strong> — not from the IRA itself. Conversions build the Roth IRA as a parallel long-growth position alongside Bucket G, providing tax-free income optionality after age 59½ and a superior legacy asset (no RMDs, tax-free to heirs).</div>
+        </div>
+      </div>
+    </div>
+
+        <!-- SS OPTIMIZER -->
+    <div class="page" id="page-ss">
+      <div class="page-header">
+        <div class="pillar-tag tag-income">Planning Tool</div>
+        <div class="page-title">Social Security Optimizer</div>
+        <div class="page-sub">Claiming comparison, break-even estimates, spousal coordination, and survivor-focused decision support.</div>
+      </div>
+
+      <div class="section-tabs">
+        <button class="stab active" onclick="switchTool('ss','setup')">Client Setup</button>
+        <button class="stab" onclick="switchTool('ss','scenarios')">Claiming Scenarios</button>
+        <button class="stab" onclick="switchTool('ss','breakeven')">Break-Even</button>
+        <button class="stab" onclick="switchTool('ss','guide')">Planner Guide</button>
+      </div>
+
+      <div class="tab-panel active" id="ss-setup">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Client 1 FRA benefit</div><div class="metric-value" id="ssm-c1fra">$—</div><div class="metric-sub">monthly at FRA</div></div>
+          <div class="metric-card"><div class="metric-label">Client 2 FRA benefit</div><div class="metric-value" id="ssm-c2fra">$—</div><div class="metric-sub">monthly at FRA</div></div>
+          <div class="metric-card"><div class="metric-label">Recommended lead strategy</div><div class="metric-value" id="ssm-rec" style="font-size:15px">—</div><div class="metric-sub" id="ssm-rec-sub">enter client inputs</div></div>
+          <div class="metric-card"><div class="metric-label">Survivor anchor</div><div class="metric-value" id="ssm-survivor" style="font-size:15px">—</div><div class="metric-sub" id="ssm-survivor-sub">higher benefit generally matters most</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Client and planning inputs</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Client 1 name</label><input class="form-input" type="text" id="ss-name1" placeholder="Client 1" oninput="ssRefresh()"></div>
+            <div class="form-group"><label class="form-label">Client 1 current age</label><input class="form-input" type="number" id="ss-age1" value="62" oninput="ssRefresh()"></div>
+            <div class="form-group"><label class="form-label">Client 1 FRA monthly benefit ($)</label><input class="form-input" type="number" id="ss-fra1" value="2800" oninput="ssRefresh()"></div>
+
+            <div class="form-group"><label class="form-label">Client 2 name</label><input class="form-input" type="text" id="ss-name2" placeholder="Client 2" oninput="ssRefresh()"></div>
+            <div class="form-group"><label class="form-label">Client 2 current age</label><input class="form-input" type="number" id="ss-age2" value="60" oninput="ssRefresh()"></div>
+            <div class="form-group"><label class="form-label">Client 2 FRA monthly benefit ($)</label><input class="form-input" type="number" id="ss-fra2" value="1600" oninput="ssRefresh()"></div>
+
+            <div class="form-group"><label class="form-label">FRA age</label><select class="form-input" id="ss-fra-age" onchange="ssRefresh()"><option value="67" selected>67</option><option value="66">66</option></select></div>
+            <div class="form-group"><label class="form-label">Joint life expectancy</label><input class="form-input" type="number" id="ss-lifeexp" value="90" oninput="ssRefresh()"></div>
+            <div class="form-group"><label class="form-label">Planning focus</label><select class="form-input" id="ss-focus" onchange="ssRefresh()"><option value="balanced" selected>Balanced</option><option value="cashflow">Max current cash flow</option><option value="longevity">Longevity / survivor focus</option><option value="tax">Preserve Roth conversion window</option></select></div>
+          </div>
+        </div>
+
+        <div id="ss-setup-notice"></div>
+      </div>
+
+      <div class="tab-panel" id="ss-scenarios">
+        <div class="card">
+          <div class="card-title">Claiming comparison</div>
+          <div style="overflow-x:auto">
+            <table class="data-table" id="ss-scenario-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding-left:16px">Scenario</th>
+                  <th>Client 1 / mo</th>
+                  <th>Client 2 / mo</th>
+                  <th>Household / yr</th>
+                  <th>Cumulative @ 80</th>
+                  <th>Cumulative @ 90</th>
+                  <th>Survivor / mo</th>
+                </tr>
+              </thead>
+              <tbody id="ss-scenario-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Recommended interpretation</div>
+          <div id="ss-scenario-summary" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="ss-breakeven">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Client 1 break-even</div><div class="metric-value" id="ss-be1">—</div><div class="metric-sub">62 vs FRA / FRA vs 70</div></div>
+          <div class="metric-card"><div class="metric-label">Client 2 break-even</div><div class="metric-value" id="ss-be2">—</div><div class="metric-sub">62 vs FRA / FRA vs 70</div></div>
+          <div class="metric-card"><div class="metric-label">Higher-earner delay value</div><div class="metric-value" id="ss-hev" style="font-size:15px">—</div><div class="metric-sub">survivor leverage</div></div>
+          <div class="metric-card"><div class="metric-label">Pre-SS tax window</div><div class="metric-value" id="ss-tax-window" style="font-size:15px">—</div><div class="metric-sub">Roth opportunity signal</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Break-even summary</div>
+          <div id="ss-breakeven-summary" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Why higher-earner delay often matters most</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.8">
+            Survivor income is based on the higher benefit. When the higher earner delays, the household is not only buying more late-life income, but also increasing the survivor benefit floor for the remaining spouse. In many married cases, that is the real optimization target.
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="ss-guide">
+        <div class="card">
+          <div class="card-title">When to delay</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="padding:12px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2)">
+              <div style="font-size:12px;font-weight:500;color:#2a6b52;margin-bottom:8px">Strong case for delaying</div>
+              <div style="font-size:12px;color:#3a7a60;line-height:1.7">
+                — Higher earner is healthy<br>
+                — Household can fund early retirement from portfolio<br>
+                — Need stronger survivor income floor<br>
+                — Want to preserve pre-SS Roth conversion years<br>
+                — Concerned about longevity or late-life fixed expenses
+              </div>
+            </div>
+            <div style="padding:12px 14px;background:var(--gold-pale);border-radius:var(--r);border:0.5px solid rgba(200,149,58,0.2)">
+              <div style="font-size:12px;font-weight:500;color:#7a5a1a;margin-bottom:8px">Reasonable case for earlier claim</div>
+              <div style="font-size:12px;color:#8a6a2a;line-height:1.7">
+                — Health / longevity concerns<br>
+                — Need income now to reduce portfolio strain<br>
+                — Single client with shorter horizon<br>
+                — Lower earner benefit is modest<br>
+                — Household prioritizes immediate cash flow over survivor maximization
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Integration with the rest of the plan</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <div style="padding:10px 12px;background:var(--bg3);border-radius:var(--r)">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Income plan</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Early SS supports current cash flow</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">Less pressure on Bucket A today</div>
+            </div>
+            <div style="padding:10px 12px;background:var(--purple-pale);border-radius:var(--r);border:0.5px solid rgba(107,63,160,0.15)">
+              <div style="font-size:11px;color:#4a2a7a;margin-bottom:4px">Tax planning</div>
+              <div style="font-size:13px;font-weight:500;color:var(--purple)">Delaying can preserve Roth window</div>
+              <div style="font-size:11px;color:#5a3a8a;margin-top:3px">Lower income before benefits begin</div>
+            </div>
+            <div style="padding:10px 12px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.15)">
+              <div style="font-size:11px;color:#8a2a1a;margin-bottom:4px">Survivor planning</div>
+              <div style="font-size:13px;font-weight:500;color:var(--warn)">Higher earner usually matters most</div>
+              <div style="font-size:11px;color:#7a3a2a;margin-top:3px">Bigger survivor floor later</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Planner notes</div>
+          <div id="ss-guide-notes" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PILLAR CHECKLISTS -->
+    <div class="page" id="page-income">
+      <div class="page-header"><div class="pillar-tag tag-income">Income Management</div><div class="page-title">Income Management</div><div class="page-sub">Distribution strategy, Social Security timing, bucket mechanics, and sequence of returns protection.</div></div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Identify all income sources (SS, pension, rental, wages)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Model Social Security claiming scenarios (62 / FRA / 70)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Determine monthly income gap (target minus guaranteed sources)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Build Bucket A (money market) with 2–3 years of distribution capacity</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Allocate FIA positions (Buckets B–F) with staggered maturity dates</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm 60/40 protected-to-risk ratio or document deviation rationale</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm pension lump sum vs. annuitization decision (if applicable)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Model ACA bridge period if retiring before age 65</span></div>
+      </div>
+    </div>
+    <div class="page" id="page-ltc">
+      <div class="page-header"><div class="pillar-tag tag-ltc">LTC Planning</div><div class="page-title">Long-Term Care Planning</div><div class="page-sub">Product evaluation, self-insure analysis, and income plan integration for LTC costs.</div></div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Assess family health history and LTC risk profile</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Research regional LTC cost benchmarks (home care vs. facility)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Evaluate standalone LTC insurance vs. hybrid life/LTC products</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Model self-insure scenario against portfolio (income plan impact)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Review Medicaid spend-down thresholds for state of residence</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Document LTC decision and rationale in client file</span></div>
+      </div>
+    </div>
+    <div class="page" id="page-estate">
+      <div class="page-header"><div class="pillar-tag tag-estate">Estate Planning</div><div class="page-title">Estate Planning</div><div class="page-sub">Beneficiary coordination, account titling, stepped-up basis, and legacy asset strategy.</div></div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Review and update all beneficiary designations (primary + contingent)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Audit account titling (TOD, JTWROS, individual, trust-owned)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Review taxable account cost basis — stepped-up basis opportunity</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Position Roth IRA as legacy asset (no RMDs, tax-free to heirs)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm will, trust, POA, and healthcare directive are current</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Coordinate with estate attorney if taxable estate approaches $13.6M</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Review charitable giving strategy (DAF, QCDs, direct gifting)</span></div>
+      </div>
+    </div>
+    <div class="page" id="page-tax">
+      <div class="page-header"><div class="pillar-tag tag-tax">Tax Planning</div><div class="page-title">Tax Planning</div><div class="page-sub">Bracket-conscious strategy across all five pillars.</div></div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Map current and projected future tax brackets by year</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Identify pre-RMD / pre-SS years for Roth conversion window</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Model multi-year Roth conversion ladder (bracket fill approach)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Project IRMAA exposure at Medicare eligibility (2-year lookback)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Evaluate SS taxation threshold management ($32k / $44k combined)</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Project RMD impact starting at age 73 — quantify bracket push</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm state tax treatment of SS, pensions, and retirement income</span></div>
+      </div>
+    </div>
+    <div class="page" id="page-risk">
+      <div class="page-header"><div class="pillar-tag tag-risk">Risk Management</div><div class="page-title">Risk Management</div><div class="page-sub">Portfolio risk posture, FIA mechanics, and sequence of returns rationale.</div></div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm protected-to-risk allocation is appropriate for income needs</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Document why the bucket model mitigates sequence of returns risk</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Review FIA cap rates, participation rates, and floor provisions</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Stress test Bucket G with -30% year-1 scenario — income still intact?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Review insurance company ratings for FIA carriers</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm Bucket G is sized for long-term growth, not near-term income</span></div>
+      </div>
+    </div>
+
+    <!-- KNOWLEDGE BASE -->
+    <div class="page" id="page-medicare">
+      <div class="page-header"><div class="pillar-tag tag-tax">Knowledge Base</div><div class="page-title">Medicare &amp; IRMAA</div><div class="page-sub">Use the IRMAA Planner tool for full interactive modeling. Key reference below.</div></div>
+      <div class="stub-notice"><div class="stub-dot"></div>Full module coming — enrollment windows, Part B/D/C options, SEP rules, IRMAA appeals (SSA-44).</div>
+      <div class="card" style="background:var(--gold-pale);border-color:rgba(200,149,58,0.2)"><div class="card-title" style="color:#7a5a1a">2025 IRMAA quick reference — MFJ</div><table class="ref-table"><thead><tr><th>Tier</th><th>MAGI range</th><th>Part B /mo</th><th>Annual surcharge (both)</th></tr></thead><tbody><tr><td>No surcharge</td><td>≤ $212,000</td><td>$185.00</td><td style="color:var(--accent)">Base rate</td></tr><tr><td>Tier 1</td><td>$212,001–$266,000</td><td>$259.00</td><td style="color:var(--gold)">+$1,776/yr</td></tr><tr><td>Tier 2</td><td>$266,001–$334,000</td><td>$370.00</td><td style="color:var(--warn)">+$4,440/yr</td></tr><tr><td>Tier 3</td><td>$334,001–$400,000</td><td>$481.00</td><td style="color:var(--warn)">+$7,104/yr</td></tr><tr><td>Tier 4</td><td>$400,001–$750,000</td><td>$554.00</td><td style="color:var(--warn)">+$8,856/yr</td></tr><tr><td>Tier 5</td><td>> $750,000</td><td>$591.00</td><td style="color:var(--warn)">+$9,744/yr</td></tr></tbody></table></div>
+    </div>
+        <div class="page" id="page-aca">
+      <div class="page-header">
+        <div class="pillar-tag tag-income">Knowledge Base</div>
+        <div class="page-title">ACA Health Insurance Bridge</div>
+        <div class="page-sub">Pre-65 health coverage planning, MAGI discipline, and subsidy-aware retirement income strategy.</div>
+      </div>
+
+      <div class="section-tabs">
+        <button class="stab active" onclick="switchTool('aca','overview')">Overview</button>
+        <button class="stab" onclick="switchTool('aca','planner')">MAGI Planner</button>
+        <button class="stab" onclick="switchTool('aca','guide')">Planner Guide</button>
+      </div>
+
+      <div class="tab-panel active" id="aca-overview">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Client age</div><div class="metric-value" id="aca-m-age">—</div><div class="metric-sub">pre-65 bridge status</div></div>
+          <div class="metric-card"><div class="metric-label">Years to Medicare</div><div class="metric-value" id="aca-m-years">—</div><div class="metric-sub">until age 65</div></div>
+          <div class="metric-card"><div class="metric-label">Projected MAGI</div><div class="metric-value" id="aca-m-magi">$—</div><div class="metric-sub">ACA planning year</div></div>
+          <div class="metric-card"><div class="metric-label">Planning posture</div><div class="metric-value" id="aca-m-posture" style="font-size:15px">—</div><div class="metric-sub" id="aca-m-posture-sub">enter data below</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">ACA bridge context</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.8">
+            For clients retiring before age 65, the ACA bridge years can create both opportunity and risk. Lower MAGI can preserve premium subsidies, but Roth conversions, capital gains, RMDs, and Social Security can increase income and reduce or eliminate subsidy value. The planner’s job is to coordinate health coverage cost with tax strategy, not treat them separately.
+          </div>
+        </div>
+
+        <div id="aca-overview-notice"></div>
+      </div>
+
+      <div class="tab-panel" id="aca-planner">
+        <div class="card">
+          <div class="card-title">Client and income inputs</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Primary client age</label><input class="form-input" type="number" id="aca-age" value="62" oninput="acaRefresh()"></div>
+            <div class="form-group"><label class="form-label">Household size</label><select class="form-input" id="aca-household" onchange="acaRefresh()"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option></select></div>
+            <div class="form-group"><label class="form-label">Planning year</label><select class="form-input" id="aca-year" onchange="acaRefresh()"><option value="2026" selected>2026</option><option value="2025">2025</option></select></div>
+
+            <div class="form-group"><label class="form-label">Wages / self-employment ($)</label><input class="form-input" type="number" id="aca-wages" value="0" oninput="acaRefresh()"></div>
+            <div class="form-group"><label class="form-label">Taxable IRA withdrawals / pension ($)</label><input class="form-input" type="number" id="aca-ordinary" value="0" oninput="acaRefresh()"></div>
+            <div class="form-group"><label class="form-label">Roth conversion amount ($)</label><input class="form-input" type="number" id="aca-roth" value="0" oninput="acaRefresh()"></div>
+
+            <div class="form-group"><label class="form-label">Capital gains ($)</label><input class="form-input" type="number" id="aca-gains" value="0" oninput="acaRefresh()"></div>
+            <div class="form-group"><label class="form-label">Tax-exempt interest ($)</label><input class="form-input" type="number" id="aca-muni" value="0" oninput="acaRefresh()"></div>
+            <div class="form-group"><label class="form-label">Social Security received ($)</label><input class="form-input" type="number" id="aca-ss" value="0" oninput="acaRefresh()"></div>
+          </div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Estimated ACA MAGI</div><div class="metric-value" id="aca-magival">$0</div><div class="metric-sub">subsidy planning income</div></div>
+          <div class="metric-card"><div class="metric-label">FPL estimate</div><div class="metric-value" id="aca-fplpct">—</div><div class="metric-sub">household benchmark</div></div>
+          <div class="metric-card"><div class="metric-label">Subsidy posture</div><div class="metric-value" id="aca-subsidy" style="font-size:15px">—</div><div class="metric-sub" id="aca-subsidy-sub">directional only</div></div>
+          <div class="metric-card"><div class="metric-label">Roth pressure</div><div class="metric-value" id="aca-rothpressure" style="font-size:15px">—</div><div class="metric-sub">ACA vs conversion tension</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">MAGI stack</div>
+          <div class="magi-stack">
+            <div class="magi-row-item magi-header"><span>Income source</span><span>Annual amount</span><span>ACA MAGI treatment</span><span>Running total</span></div>
+            <div class="magi-row-item"><span>Wages / self-employment</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="aca-wages-inline" value="0" oninput="acaSync('wages')"></span><span style="font-size:11px;color:var(--accent)">Included</span><span style="font-family:var(--mono)" id="aca-rt-wages">$0</span></div>
+            <div class="magi-row-item"><span>IRA withdrawals / pension</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="aca-ordinary-inline" value="0" oninput="acaSync('ordinary')"></span><span style="font-size:11px;color:var(--accent)">Included</span><span style="font-family:var(--mono)" id="aca-rt-ordinary">$0</span></div>
+            <div class="magi-row-item"><span>Roth conversion</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="aca-roth-inline" value="0" oninput="acaSync('roth')"></span><span style="font-size:11px;color:var(--warn)">Included</span><span style="font-family:var(--mono)" id="aca-rt-roth">$0</span></div>
+            <div class="magi-row-item"><span>Capital gains</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="aca-gains-inline" value="0" oninput="acaSync('gains')"></span><span style="font-size:11px;color:var(--accent)">Included</span><span style="font-family:var(--mono)" id="aca-rt-gains">$0</span></div>
+            <div class="magi-row-item"><span>Tax-exempt interest</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="aca-muni-inline" value="0" oninput="acaSync('muni')"></span><span style="font-size:11px;color:var(--warn)">Added back</span><span style="font-family:var(--mono)" id="aca-rt-muni">$0</span></div>
+            <div class="magi-row-item"><span>Social Security</span><span><input class="form-input" style="width:120px;padding:5px 8px" type="number" id="aca-ss-inline" value="0" oninput="acaSync('ss')"></span><span style="font-size:11px;color:var(--gold)">Included for ACA MAGI</span><span style="font-family:var(--mono)" id="aca-rt-ss">$0</span></div>
+            <div class="magi-row-item magi-total"><span>Total ACA MAGI</span><span></span><span></span><span style="font-family:var(--mono);font-weight:500" id="aca-rt-total">$0</span></div>
+          </div>
+          <div id="aca-threshold-viz"></div>
+          <div id="aca-planner-notice" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="aca-guide">
+        <div class="card">
+          <div class="card-title">Planner decision guide</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="padding:12px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2)">
+              <div style="font-size:12px;font-weight:500;color:#2a6b52;margin-bottom:8px">When ACA discipline matters most</div>
+              <div style="font-size:12px;color:#3a7a60;line-height:1.7">
+                — Client retires before 65<br>
+                — Household income is flexible<br>
+                — Large taxable account can fund spending<br>
+                — Roth conversions are optional, not urgent<br>
+                — Premium subsidies materially affect cash-flow plan
+              </div>
+            </div>
+            <div style="padding:12px 14px;background:var(--gold-pale);border-radius:var(--r);border:0.5px solid rgba(200,149,58,0.2)">
+              <div style="font-size:12px;font-weight:500;color:#7a5a1a;margin-bottom:8px">When subsidy preservation may matter less</div>
+              <div style="font-size:12px;color:#8a6a2a;line-height:1.7">
+                — Client is near Medicare already<br>
+                — Roth window is unusually valuable<br>
+                — Large IRA balance makes future RMD risk severe<br>
+                — Client can absorb higher premiums<br>
+                — Tax strategy has greater long-term payoff than short-term subsidy savings
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">How ACA interacts with your planning system</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <div style="padding:10px 12px;background:var(--bg3);border-radius:var(--r)">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Income planning</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text)">Portfolio withdrawals may be better than extra taxable income</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px">Depends on account source</div>
+            </div>
+            <div style="padding:10px 12px;background:var(--purple-pale);border-radius:var(--r);border:0.5px solid rgba(107,63,160,0.15)">
+              <div style="font-size:11px;color:#4a2a7a;margin-bottom:4px">Roth planning</div>
+              <div style="font-size:13px;font-weight:500;color:var(--purple)">Conversions can destroy subsidy value</div>
+              <div style="font-size:11px;color:#5a3a8a;margin-top:3px">But may still be worth it</div>
+            </div>
+            <div style="padding:10px 12px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.15)">
+              <div style="font-size:11px;color:#8a2a1a;margin-bottom:4px">Planning risk</div>
+              <div style="font-size:13px;font-weight:500;color:var(--warn)">A low-income strategy can backfire later</div>
+              <div style="font-size:11px;color:#7a3a2a;margin-top:3px">Future RMDs and SS may rise</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Planner notes</div>
+          <div id="aca-guide-notes" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-sor">
+      <div class="page-header"><div class="pillar-tag tag-risk">Knowledge Base</div><div class="page-title">Sequence of Returns Risk</div><div class="page-sub">Why early-retirement market declines are uniquely damaging — and how your bucket model addresses this.</div></div>
+      <div class="stub-notice"><div class="stub-dot"></div>Full module coming — interactive SOR simulator comparing traditional withdrawal vs. bucket approach.</div>
+      <div class="card"><div class="card-title">Why sequence matters</div><div style="font-size:13px;color:var(--text2);line-height:1.8">A retiree withdrawing from a portfolio that drops 30% in year 1 loses far more than just 30% — they lock in losses by selling at the bottom to fund living expenses, permanently reducing the base from which future returns compound. Two retirees with identical 20-year average returns can have dramatically different outcomes if one experiences losses early and the other late.<br><br>Your bucket model solves this directly: Bucket A (money market) funds distributions for 2–3 years. Bucket G never needs to be touched during a downturn. FIA positions (Buckets B–F) are principal-protected and not subject to market volatility. The result: clients never sell equities at a loss to fund income.</div></div>
+    </div>
+    <div class="page" id="page-timeline">
+      <div class="page-header"><div class="pillar-tag tag-income">Knowledge Base</div><div class="page-title">Pre-Retirement Timeline</div><div class="page-sub">Key action items from 5 years out through the first year of retirement.</div></div>
+      <div class="timeline-item"><div class="timeline-node">5y</div><div><div class="timeline-label">5 years out</div><div class="timeline-detail">Begin income gap analysis. Assess LTC insurability. Model SS claiming scenarios. Start Roth conversion window if in lower bracket. Review beneficiary designations.</div></div></div>
+      <div class="timeline-item"><div class="timeline-node">3y</div><div><div class="timeline-label">3 years out</div><div class="timeline-detail">Finalize bucket allocation. Place FIA positions with staggered maturities. Confirm LTC decision. Update estate documents. Model ACA bridge if retiring before 65.</div></div></div>
+      <div class="timeline-item"><div class="timeline-node">2y</div><div><div class="timeline-label">2 years out</div><div class="timeline-detail">IRMAA 2-year lookback window opens. Confirm Medicare enrollment plan. Finalize SS claiming strategy. Continue Roth conversions if bracket allows.</div></div></div>
+      <div class="timeline-item"><div class="timeline-node">1y</div><div><div class="timeline-label">1 year out</div><div class="timeline-detail">Fund Bucket A to target level. Complete remaining Roth conversions. Confirm pension election. Review all account titling and TOD designations.</div></div></div>
+      <div class="timeline-item"><div class="timeline-node done">R</div><div><div class="timeline-label">Retirement date</div><div class="timeline-detail">Activate monthly distribution from Bucket A. Enroll in Medicare Parts A &amp; B. Begin SS if claiming at retirement. Confirm all income sources are flowing.</div></div></div>
+      <div class="timeline-item"><div class="timeline-node">+1y</div><div><div class="timeline-label">First year review</div><div class="timeline-detail">Verify income plan is on track. Review Bucket G performance. Assess Roth conversion opportunity for next tax year. Update all plan projections.</div></div></div>
+    </div>
+
+    <!-- AI Q&A -->
+    <div class="page" id="page-ai">
+      <div class="page-header"><div class="page-title">Planning AI Assistant</div><div class="page-sub">Grounded Q&amp;A on your planning methodology, tax rules, and retirement planning concepts. Advisor use only.</div></div>
+      <div style="font-size:11px;color:var(--text3);padding:8px 12px;background:var(--bg3);border-left:2px solid var(--border2);margin-bottom:14px;line-height:1.5">This assistant is designed for advisor use only. Responses reflect general planning concepts and your firm's methodology — not client-specific advice. Always verify tax figures against current IRS guidance.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+        <button class="q-chip" onclick="aiAsk('What are the 2025 IRMAA thresholds for MFJ?')">2025 IRMAA thresholds</button>
+        <button class="q-chip" onclick="aiAsk('How does the SS taxation cliff work?')">SS taxation cliff</button>
+        <button class="q-chip" onclick="aiAsk('What is the optimal Roth conversion window?')">Roth conversion window</button>
+        <button class="q-chip" onclick="aiAsk('How does the FIA bucket ladder protect against sequence of returns risk?')">FIA + SOR risk</button>
+        <button class="q-chip" onclick="aiAsk('What are SECURE 2.0 RMD age rules?')">SECURE 2.0 RMD ages</button>
+        <button class="q-chip" onclick="aiAsk('What is the tax torpedo and how do Roth conversions prevent it?')">Tax torpedo</button>
+      </div>
+      <div class="ai-messages" id="ai-msgs">
+        <div class="ai-msg system">Hello. I'm grounded in domestic retirement planning — your bucket strategy, Roth/tax planning, Social Security, Medicare/IRMAA, and RMDs. What would you like to work through?</div>
+      </div>
+      <div class="ai-input-row">
+        <textarea class="ai-input" id="ai-input" rows="2" placeholder="Ask a planning question..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend()}"></textarea>
+        <button class="ai-send" id="ai-send-btn" onclick="aiSend()">Send</button>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+
+  <div class="save-bar">
+    <div class="save-status"><div class="save-dot" id="save-dot"></div><span id="save-status-txt">No client loaded — complete Client Setup to begin</span></div>
+    <span id="save-time"></span>
+  </div>
+</div><!-- end main -->
+
+<script>
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const BRACKETS_MFJ=[{t:23200,r:10},{t:94300,r:12},{t:201050,r:22},{t:383900,r:24},{t:487450,r:32},{t:731200,r:35},{t:Infinity,r:37}];
+const BRACKETS_SINGLE=[{t:11600,r:10},{t:47150,r:12},{t:100525,r:22},{t:191950,r:24},{t:243725,r:32},{t:365600,r:35},{t:Infinity,r:37}];
+const STDDEDMFJ=30000,STDDEDSINGLE=15000;
+const IRMAA_MFJ=[{mx:212000,t:0,pb:185,l:'Clear'},{mx:266000,t:1,pb:259,l:'Tier 1'},{mx:334000,t:2,pb:370,l:'Tier 2'},{mx:400000,t:3,pb:481,l:'Tier 3'},{mx:750000,t:4,pb:554,l:'Tier 4'},{mx:Infinity,t:5,pb:591,l:'Tier 5'}];
+const IRMAA_SINGLE=[{mx:106000,t:0,pb:185,l:'Clear'},{mx:133000,t:1,pb:259,l:'Tier 1'},{mx:167000,t:2,pb:370,l:'Tier 2'},{mx:200000,t:3,pb:481,l:'Tier 3'},{mx:500000,t:4,pb:554,l:'Tier 4'},{mx:Infinity,t:5,pb:591,l:'Tier 5'}];
+const RMD_F={72:27.4,73:26.5,74:25.5,75:24.6,76:23.7,77:22.9,78:22.0,79:21.1,80:20.2,81:19.4,82:18.5,83:17.7,84:16.8,85:16.0,86:15.2,87:14.4,88:13.7,89:12.9,90:12.2,91:11.5,92:10.8,93:10.1,94:9.5,95:8.9};
+const TC=['#2a6b52','#3a7a8a','#5b4fa0','#c8953a','#c05030','#c0392b','#8b1a1a'];
+
+function fmt(v){return '$'+Math.round(v).toLocaleString();}
+function fmtK(v){if(v>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(v>=1000)return '$'+(v/1000).toFixed(0)+'k';return '$'+Math.round(v);}
+function getTier(m,f){const T=f==='mfj'?IRMAA_MFJ:IRMAA_SINGLE;return T.find(t=>m<=t.mx)||T[T.length-1];}
+function getBracket(ti,f){const B=f==='mfj'?BRACKETS_MFJ:BRACKETS_SINGLE;return B.find(b=>ti<=b.t)||B[B.length-1];}
+function getBracketTop(rate,f){return(f==='mfj'?BRACKETS_MFJ:BRACKETS_SINGLE).find(b=>b.r===rate)?.t||94300;}
+function getIrmaaMax(tier,f){if(tier>=99)return Infinity;const T=f==='mfj'?IRMAA_MFJ:IRMAA_SINGLE;return T[tier]?.mx||T[0].mx;}
+function stdDed(f){return f==='mfj'?STDDEDMFJ:STDDEDSINGLE;}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+const pageMap={dashboard:['Planning Pillars','Dashboard'],income:['Planning Pillars','Income Management'],ltc:['Planning Pillars','LTC Planning'],estate:['Planning Pillars','Estate Planning'],tax:['Planning Pillars','Tax Planning'],risk:['Planning Pillars','Risk Management'],setup:['Planning Tool','Client Setup'],incomeplan:['Planning Tool','Income Plan'],rmd:['Planning Tool','RMD Tracker'],irmaa:['Planning Tool','IRMAA Planner'],roth:['Planning Tool','Roth Conversion Ladder'],ss:['Planning Tool','SS Optimizer'],medicare:['Knowledge Base','Medicare & IRMAA'],aca:['Knowledge Base','ACA Bridge'],sor:['Knowledge Base','Sequence of Returns'],timeline:['Knowledge Base','Pre-Retirement Timeline'],ai:['AI Assistant','Planning Q&A']};
+function navigate(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active');});
+  const info=pageMap[id]||['',''];
+  document.getElementById('bc-section').textContent=info[0];
+  document.getElementById('bc-page').textContent=info[1];
+  if(id==='rmd')rmdRefresh();
+  if(id==='irmaa'){imCompute();buildIrmaaRef();}
+  if(id==='roth'){rcRefresh();rcBracket();rcLadder();rcBasis();}
+     if(id==='ss'){ssRefresh();}
+     if(id==='aca'){acaRefresh();}
+}
+function switchTool(tool,tab){
+  const prefix=tool+'-';
+  document.querySelectorAll(`#page-${tool} .tab-panel`).forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll(`#page-${tool} .stab`).forEach(b=>b.classList.remove('active'));
+  const tp=document.getElementById(prefix+tab);
+  if(tp)tp.classList.add('active');
+  const event=window.event;
+  if(event&&event.target)event.target.classList.add('active');
+  if(tool==='rmd'&&tab==='projections')rmdBuildTable();
+  if(tool==='rmd'&&tab==='qcd')rmdQcd();
+  if(tool==='rmd'&&tab==='bracket')rmdBracketViz();
+  if(tool==='irmaa'&&tab==='lookback')lbBuild();
+  if(tool==='irmaa'&&tab==='multiyear')myBuild();
+  if(tool==='irmaa'&&tab==='ref')buildIrmaaRef();
+  if(tool==='roth'&&tab==='bracketopt')rcBracket();
+  if(tool==='roth'&&tab==='ladder')rcLadder();
+  if(tool==='roth'&&tab==='basis')rcBasis();
+  if(tool==='ss'){ssRefresh();}
+     if(tool==='aca'){acaRefresh();}
+}
+function toggleCheck(el){el.classList.toggle('checked');}
+
+// ─── CLIENT SETUP ─────────────────────────────────────────────────────────────
+let clientData={};
+function updateClientBadge(){
+  const f1=document.getElementById('c1-first').value;
+  const f2=document.getElementById('c2-first').value;
+  const l1=document.getElementById('c1-last').value;
+  if(f1||f2){
+    const name=f2?(f1+' & '+f2+' '+l1):(f1+' '+l1);
+    document.getElementById('sidebar-client-name').textContent=name.trim()||'Unnamed client';
+    const initials=(f1?f1[0]:'')+(f2?f2[0]:(l1?l1[0]:''));
+    document.getElementById('client-avatar').textContent=initials.toUpperCase()||'--';
+  }
+}
+function saveClient(){
+  clientData={
+    c1First:document.getElementById('c1-first').value,
+    c1Last:document.getElementById('c1-last').value,
+    c2First:document.getElementById('c2-first').value,
+    incomeTarget:parseFloat(document.getElementById('income-target').value)||0,
+    c1Ss:parseFloat(document.getElementById('c1-ss').value)||0,
+    c2Ss:parseFloat(document.getElementById('c2-ss').value)||0,
+    tradIra:parseFloat(document.getElementById('trad-ira').value)||0,
+    rothIra:parseFloat(document.getElementById('roth-ira').value)||0,
+    taxable:parseFloat(document.getElementById('taxable').value)||0,
+    cash:parseFloat(document.getElementById('cash').value)||0,
+  };
+  clientData.totalAssets=clientData.tradIra+clientData.rothIra+clientData.taxable+clientData.cash;
+  const name=(clientData.c1First+(clientData.c2First?' & '+clientData.c2First:'')+' '+clientData.c1Last).trim();
+  document.getElementById('save-dot').style.background='var(--accent)';
+  document.getElementById('save-status-txt').textContent=name+' — profile saved';
+  document.getElementById('save-time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('ip-total').textContent=fmt(clientData.totalAssets);
+  document.getElementById('ip-monthly').textContent=clientData.incomeTarget?fmt(clientData.incomeTarget):'$—';
+  if(clientData.c1Ss)document.getElementById('ss-c1').textContent=fmt(clientData.c1Ss);
+  if(clientData.c2Ss)document.getElementById('ss-c2').textContent=fmt(clientData.c2Ss);
+     if(document.getElementById('ss-fra1'))document.getElementById('ss-fra1').value=clientData.c1Ss||'';
+     if(document.getElementById('ss-fra2'))document.getElementById('ss-fra2').value=clientData.c2Ss||'';
+     if(document.getElementById('ss-name1'))document.getElementById('ss-name1').value=clientData.c1First||'';
+     if(document.getElementById('ss-name2'))document.getElementById('ss-name2').value=clientData.c2First||'';
+     ssRefresh();
+  try{localStorage.setItem('rph-client',JSON.stringify(clientData));}catch(e){}
+}
+
+// ─── BUCKET VIZ ───────────────────────────────────────────────────────────────
+function updateBuckets(){
+  const v=['ba','bb','bc','bd','be','bf','bg'].map(b=>parseFloat(document.getElementById(b+'-val').value)||0);
+  const prot=v[0]+v[1]+v[2]+v[3]+v[4]+v[5],risk=v[6],total=prot+risk;
+  if(total===0)return;
+  const pp=Math.round(prot/total*100),rp=100-pp;
+  document.getElementById('protected-bar').style.width=pp+'%';
+  document.getElementById('risk-bar').style.width=rp+'%';
+  document.getElementById('protected-pct').textContent=pp+'% protected';
+  document.getElementById('ip-protected').textContent=pp+'%';
+  document.getElementById('ip-risk').textContent=rp+'%';
+  document.getElementById('protected-amt').textContent=fmt(prot)+' protected';
+  document.getElementById('risk-amt').textContent=fmt(risk)+' risk (G)';
+}
+
+// ─── RMD TRACKER ──────────────────────────────────────────────────────────────
+let rmdAccounts=[];
+function rmdAddAccount(){
+  const n=document.getElementById('rmd-new-name').value.trim();
+  const b=parseFloat(document.getElementById('rmd-new-bal').value);
+  const t=document.getElementById('rmd-new-type').value;
+  if(!n||!b)return;
+  rmdAccounts.push({name:n,balance:b,type:t});
+  document.getElementById('rmd-new-name').value='';
+  document.getElementById('rmd-new-bal').value='';
+  rmdRenderAccounts();rmdRefresh();
+}
+function rmdRenderAccounts(){
+  const list=document.getElementById('rmd-acct-list');
+  const hdr=list.querySelector('.header');
+  list.innerHTML='';list.appendChild(hdr);
+  const tl={tira:'Trad. IRA','401k':'401(k)/403(b)',sep:'SEP IRA'};
+  rmdAccounts.forEach((a,i)=>{
+    const row=document.createElement('div');row.className='account-item';
+    row.innerHTML=`<span><strong>${a.name}</strong></span><span>Client 1</span><span style="font-family:var(--mono)">${fmt(a.balance)}</span><span>${tl[a.type]||a.type}</span><button class="del-btn" onclick="rmdAccounts.splice(${i},1);rmdRenderAccounts();rmdRefresh()">×</button>`;
+    list.appendChild(row);
+  });
+}
+function rmdRefresh(){
+  const age=parseInt(document.getElementById('rmd-c1age').value)||62;
+  const rmdAge=parseInt(document.getElementById('rmd-startage').value)||73;
+  const filing=document.getElementById('rmd-filing').value;
+  const growth=(parseFloat(document.getElementById('rmd-growth').value)||5)/100;
+  const other=parseFloat(document.getElementById('rmd-otherincome').value)||0;
+  const total=rmdAccounts.reduce((s,a)=>s+a.balance,0);
+  const yrs=Math.max(0,rmdAge-age);
+  const rmdYear=new Date().getFullYear()+yrs;
+  const proj=total*Math.pow(1+growth,yrs);
+  const firstRmd=proj/(RMD_F[rmdAge]||26.5);
+  const tier=getTier(other+firstRmd,filing);
+  document.getElementById('rmd-m-total').textContent=fmt(total);
+  document.getElementById('rmd-m-year').textContent=total>0?rmdYear:'—';
+  document.getElementById('rmd-m-age').textContent=total>0?rmdAge:'—';
+  document.getElementById('rmd-m-first').textContent=total>0?fmt(firstRmd):'—';
+  const fl=document.getElementById('rmd-m-irmaa'),fs=document.getElementById('rmd-m-irmaa-sub');
+  if(total===0){fl.textContent='—';fs.textContent='enter accounts';}
+  else if(tier.t===0){fl.textContent='Clear';fl.style.color='var(--accent)';fs.textContent='Below Tier 1 at RMD start';}
+  else{fl.textContent='Tier '+tier.t;fl.style.color=tier.t===1?'var(--gold)':'var(--warn)';fs.textContent='IRMAA at RMD start';}
+}
+function rmdBuildTable(){
+  const age=parseInt(document.getElementById('rmd-c1age').value)||62;
+  const rmdAge=parseInt(document.getElementById('rmd-startage').value)||73;
+  const filing=document.getElementById('rmd-filing').value;
+  const growth=(parseFloat(document.getElementById('rmd-growth').value)||5)/100;
+  const other=parseFloat(document.getElementById('rmd-otherincome').value)||0;
+  const qcd=parseFloat(document.getElementById('rmd-qcd').value)||0;
+  const total=rmdAccounts.reduce((s,a)=>s+a.balance,0);
+  const body=document.getElementById('rmd-proj-body');body.innerHTML='';
+  if(total===0){body.innerHTML='<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text3)">Add accounts in Account Setup tab first.</td></tr>';return;}
+  let bal=total,warn=false;const yr0=new Date().getFullYear();
+  const sd=stdDed(filing);
+  for(let i=0;i<=28;i++){
+    const a=age+i,yr=yr0+i,isR=a>=rmdAge,f=RMD_F[a],rmd=isR&&f?bal/f:0;
+    const q=isR&&a>=70?Math.min(qcd,rmd,105000):0,tr=rmd-q,magi=other+tr;
+    const ti=Math.max(0,magi-sd),br=getBracket(ti,filing),tier=getTier(magi,filing);
+    if(tier.t>0&&isR)warn=true;
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>${yr}<span style="font-size:11px;color:var(--text3)"> / Age ${a}</span>${a===rmdAge?'<span class="tag tag-green">RMD start</span>':''}${a===70?'<span class="tag tag-gold">QCD ok</span>':''}</td><td>${fmt(bal)}</td><td style="color:var(--text3)">${f?f.toFixed(1):'—'}</td><td>${rmd>0?fmt(rmd):'—'}</td><td style="color:var(--accent)">${q>0?fmt(q):'—'}</td><td>${tr>0?fmt(tr):'—'}</td><td style="color:var(--text2)">${fmt(other)}</td><td>${isR?fmt(magi):'—'}</td><td style="color:${tier.t===0?'var(--accent)':tier.t===1?'var(--gold)':'var(--warn)'}">${isR?tier.l:'—'}</td><td>${isR?br.r+'%':'—'}</td>`;
+    body.appendChild(row);
+    bal=Math.max(0,(bal-rmd)*(1+growth));
+  }
+  const banner=document.getElementById('rmd-irmaa-banner');
+  if(warn)banner.innerHTML=`<div class="notice notice-warn"><strong>IRMAA surcharge detected</strong> — RMDs push MAGI above the ${filing==='mfj'?'$212,000':'$106,000'} threshold. Consider Roth conversions now to reduce future deferred balance. Use the IRMAA Planner and Roth Conversion Ladder for detailed modeling.</div>`;
+  else banner.innerHTML=`<div class="notice notice-ok"><strong>No IRMAA surcharge projected</strong> — RMDs keep MAGI below Tier 1 throughout the projection. Monitor if Roth conversions increase MAGI in the lookback window.</div>`;
+}
+function rmdQcd(){
+  const age=parseInt(document.getElementById('rmd-c1age').value)||62;
+  const rmdAge=parseInt(document.getElementById('rmd-startage').value)||73;
+  const growth=(parseFloat(document.getElementById('rmd-growth').value)||5)/100;
+  const qcd=parseFloat(document.getElementById('rmd-qcd').value)||0;
+  const total=rmdAccounts.reduce((s,a)=>s+a.balance,0);
+  const container=document.getElementById('rmd-qcd-rows');container.innerHTML='';
+  if(total===0||qcd===0){container.innerHTML='<div style="font-size:13px;color:var(--text3);padding:12px 0">Enter accounts and a planned QCD amount in Account Setup to see year-by-year impact.</div>';return;}
+  let bal=total;const yr0=new Date().getFullYear();let shown=0;
+  for(let i=0;i<=30&&shown<12;i++){
+    const a=age+i,yr=yr0+i,isR=a>=rmdAge,f=RMD_F[a],rmd=isR&&f?bal/f:0;
+    const q=a>=70?Math.min(qcd,rmd,105000):0;
+    if(q>0){
+      const row=document.createElement('div');row.className='qcd-row';
+      row.innerHTML=`<span style="font-weight:500">${yr} / Age ${a}</span><span style="font-family:var(--mono);color:var(--text2)">RMD: ${fmt(rmd)}</span><span style="font-family:var(--mono)">QCD: ${fmt(q)}</span><span style="font-family:var(--mono);color:var(--accent);font-weight:500">~${fmt(q*.22)} saved</span>`;
+      container.appendChild(row);shown++;
+    }
+    bal=Math.max(0,(bal-rmd)*(1+growth));
+  }
+}
+function rmdBracketViz(){
+  const conv=parseInt(document.getElementById('rmd-conv-slider').value)||0;
+  const inc=parseInt(document.getElementById('rmd-inc-slider').value)||0;
+  document.getElementById('rmd-conv-val').textContent=fmt(conv);
+  document.getElementById('rmd-inc-val').textContent=fmt(inc);
+  const total=conv+inc,sd=STDDEDMFJ,ti=Math.max(0,total-sd);
+  const viz=document.getElementById('rmd-bracket-viz');viz.innerHTML='';
+  const max=Math.max(total*1.3,130000);let prev=0;
+  BRACKETS_MFJ.forEach((b,idx)=>{
+    const top=b.t===Infinity?max:b.t+sd;if(prev>=max)return;
+    const w=Math.min(top,max)-prev,p=w/max*100;
+    const bi=Math.max(0,Math.min(inc,top)-prev),bc=Math.max(0,Math.min(total,top)-Math.max(inc,prev));
+    const bw=bi/w*100,cw=bc/w*100;
+    const row=document.createElement('div');row.className='bv-row';
+    row.innerHTML=`<span class="bv-label">${b.r}%</span><div class="bv-bar-bg"><div style="height:100%;display:flex;border-radius:3px;overflow:hidden;width:${p}%">${bw>0?`<div style="width:${bw}%;background:#3a7a8a;height:100%"></div>`:''} ${cw>0?`<div style="width:${cw}%;background:#5b4fa0;height:100%"></div>`:''}</div></div><span class="bv-limit">${b.t===Infinity?'—':fmtK(b.t+sd)}</span>`;
+    viz.appendChild(row);prev=top;
+  });
+  const br=getBracket(ti,'mfj'),tier=getTier(total,'mfj');
+  document.getElementById('rmd-bracket-summary').textContent=`Total income: ${fmt(total)} — taxable after std deduction: ${fmt(ti)} — marginal bracket: ${br.r}%`;
+  const ic=document.getElementById('rmd-irmaa-check');
+  if(tier.t===0)ic.textContent=`MAGI of ${fmt(total)} is ${fmt(212000-total)} below IRMAA Tier 1. No surcharge two years forward.`;
+  else ic.textContent=`MAGI of ${fmt(total)} triggers IRMAA ${tier.l} — Part B ${fmt(tier.pb)}/mo per person. Consider limiting conversion to stay below ${fmt(tier.t===1?212000:266000)}.`;
+}
+
+// ─── IRMAA PLANNER ────────────────────────────────────────────────────────────
+function imCompute(){
+  const f=document.getElementById('im-filing').value;
+  const en=parseInt(document.getElementById('im-enrollees').value)||2;
+  const w=parseFloat(document.getElementById('im-wages').value)||0;
+  const ss=parseFloat(document.getElementById('im-ss').value)||0;
+  const p=parseFloat(document.getElementById('im-pension').value)||0;
+  const r=parseFloat(document.getElementById('im-rmd').value)||0;
+  const ro=parseFloat(document.getElementById('im-roth').value)||0;
+  const cg=parseFloat(document.getElementById('im-capgains').value)||0;
+  const mn=parseFloat(document.getElementById('im-muni').value)||0;
+  const prov=w+p+r+ro+cg+mn+ss*.5,ssth=f==='mfj'?44000:34000;
+  const ssInc=prov>ssth?ss*.85:(prov>(f==='mfj'?32000:25000)?ss*.5:0);
+  const magi=w+ssInc+p+r+ro+cg+mn;
+  let run=0;
+  [{id:'wages',v:w},{id:'ss',v:ssInc},{id:'pension',v:p},{id:'rmd',v:r},{id:'roth',v:ro},{id:'capgains',v:cg},{id:'muni',v:mn}].forEach(item=>{run+=item.v;const el=document.getElementById('im-rt-'+item.id);if(el){el.textContent=fmt(run);el.style.fontWeight=item.v>0?'500':'400';}});
+  document.getElementById('im-rt-total').textContent=fmt(magi);
+  document.getElementById('im-magi').textContent=fmt(magi);
+  const tier=getTier(magi,f);
+  const tel=document.getElementById('im-tier');
+  tel.textContent=tier.t===0?'Clear':'Tier '+tier.t;
+  tel.style.color=tier.t===0?'var(--accent)':tier.t===1?'var(--gold)':'var(--warn)';
+  document.getElementById('im-tier-sub').textContent=tier.l;
+  document.getElementById('im-partb').textContent=fmt(tier.pb);
+  document.getElementById('im-surcharge').textContent=fmt((tier.pb-185)*12*en);
+  buildImThreshold(magi,f);
+  const T=f==='mfj'?IRMAA_MFJ:IRMAA_SINGLE,nt=T.find(t=>t.mx>magi);
+  const notice=document.getElementById('im-notice');
+  if(tier.t===0)notice.innerHTML=`<div class="notice notice-ok" style="margin-top:14px">No IRMAA surcharge — MAGI of ${fmt(magi)} is ${fmt(tier.mx-magi)} below Tier 1 threshold of ${fmt(tier.mx+1)}.</div>`;
+  else notice.innerHTML=`<div class="notice notice-warn" style="margin-top:14px"><strong>IRMAA ${tier.l} triggered</strong> — MAGI of ${fmt(magi)} triggers a Part B surcharge of ${fmt((tier.pb-185)*12*en)}/year (${en===2?'both spouses':'1 enrollee'}).</div>`;
+  const hd=document.getElementById('im-headroom');
+  if(nt){const hr=nt.mx===Infinity?0:nt.mn-magi-1||nt.mx-magi;hd.textContent=`${fmt(Math.max(0,nt.mx===Infinity?(magi>0?50000:0):nt.mx-magi))} of additional MAGI before triggering Tier ${nt.t}. Crossing would cost ~${fmt((nt.pb-tier.pb)*12*en)}/year additional.`;}
+  else hd.textContent='At highest IRMAA tier. Focus on QCDs and reducing future IRA balance via conversions.';
+}
+function buildImThreshold(magi,filing){
+  const T=f==='mfj'?IRMAA_MFJ:IRMAA_SINGLE,f=filing;
+  const max=f==='mfj'?800000:550000,colors=['#3d8b6e','#c8953a','#e8883a','#c0392b','#8b1a1a','#5a0a0a'];
+  const segs=T.map((t,i)=>{
+    const top=Math.min(t.mx===Infinity?max:t.mx,max),bot=i>0?T[i-1].mx:0;
+    const w=Math.max(0,(top-bot)/max*100);
+    return w>0?`<div class="threshold-seg" style="width:${w}%;background:${colors[i]}22;border-right:1px solid ${colors[i]}44"><span style="font-size:9px;color:${colors[i]};font-weight:500">${t.t===0?'Clear':'T'+t.t}</span></div>`:'';
+  }).join('');
+  const mp=Math.min(magi/max*100,100);
+  document.getElementById('im-threshold-viz').innerHTML=`<div class="threshold-bar-wrap"><div class="magi-marker" style="left:${mp}%"><div class="magi-marker-label">${fmtK(magi)}</div><div class="magi-marker-line"></div></div><div class="threshold-bar-bg">${segs}</div></div>`;
+}
+function lbBuild(){
+  const age=parseInt(document.getElementById('lb-age').value)||63;
+  const enroll=parseInt(document.getElementById('lb-enroll').value)||65;
+  const base=parseFloat(document.getElementById('lb-base').value)||0;
+  const conv=parseFloat(document.getElementById('lb-conv').value)||0;
+  const f='mfj';const yr0=new Date().getFullYear();
+  const yrsToEnroll=Math.max(0,enroll-age),enrollYr=yr0+yrsToEnroll,lbYr=enrollYr-2;
+  const magiW=base+conv,magiWo=base;
+  const tWith=getTier(magiW,f),tWithout=getTier(magiWo,f);
+  const years=[];for(let y=yr0;y<=enrollYr+1;y++){const a=age+(y-yr0);years.push({y,a,isLb:y===lbYr,isEnroll:y===enrollYr,magi:y===lbYr?magiW:base});}
+  const tl=document.getElementById('lb-timeline');
+  let html='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">';
+  years.forEach((yr,i)=>{
+    let cls=yr.isLb?'background:var(--gold-pale);border-color:rgba(200,149,58,0.4)':yr.isEnroll?'background:var(--warn-pale);border-color:rgba(192,57,43,0.3)':'background:var(--bg3)';
+    html+=`<div style="min-width:90px;flex:1;padding:12px 10px;border:0.5px solid var(--border);border-radius:var(--r);text-align:center;${cls}"><div style="font-size:10px;color:var(--text3);margin-bottom:4px">${yr.y}</div><div style="font-size:14px;font-weight:500;font-family:var(--mono)">Age ${yr.a}</div><div style="font-size:10px;color:var(--text2);margin-top:3px">${yr.isLb?'Lookback<br>'+fmtK(yr.magi):yr.isEnroll?'Medicare<br>starts':''}</div></div>`;
+    if(i<years.length-1)html+=`<div style="padding-top:28px;color:var(--text3);font-size:16px">›</div>`;
+  });
+  html+='</div>';tl.innerHTML=html;
+  const nd=document.getElementById('lb-notice');
+  if(tWith.t>tWithout.t)nd.innerHTML=`<div class="notice notice-warn"><strong>Conversion in ${lbYr} triggers IRMAA ${tWith.l} at Medicare enrollment (${enrollYr}).</strong> Without conversion: ${tWithout.l}. With ${fmt(conv)} conversion: ${tWith.l}. Additional annual cost: <strong>${fmt((tWith.pb-tWithout.pb)*12*2)}</strong> (both spouses). Consider splitting across two years or delaying past the lookback window.</div>`;
+  else nd.innerHTML=`<div class="notice notice-ok"><strong>Safe to convert.</strong> ${fmt(conv)} conversion in ${lbYr} keeps MAGI at ${fmt(magiW)}, remaining in ${tWith.l}. Up to ${fmt(tWith.mx-magiW)} additional MAGI before hitting Tier ${tWith.t+1}.</div>`;
+}
+function myBuild(){
+  const age=parseInt(document.getElementById('my-age').value)||63;
+  const filing=document.getElementById('my-filing').value;
+  const rmdAge=parseInt(document.getElementById('my-rmd').value)||73;
+  const base0=parseFloat(document.getElementById('my-base').value)||0;
+  const ira0=parseFloat(document.getElementById('my-ira').value)||0;
+  const conv=parseFloat(document.getElementById('my-conv').value)||0;
+  const convYrs=parseInt(document.getElementById('my-convyrs').value)||0;
+  const gr=(parseFloat(document.getElementById('my-growth').value)||5)/100;
+  const ig=(parseFloat(document.getElementById('my-incgrowth').value)||2)/100;
+  const yr0=new Date().getFullYear();
+  let bal=ira0,base=base0,totalSurcharge=0,totalConv=0;
+  const body=document.getElementById('my-body');body.innerHTML='';
+  for(let i=0;i<20;i++){
+    const a=age+i,yr=yr0+i,isR=a>=rmdAge,f2=RMD_F[a],rmd=isR&&f2?bal/f2:0;
+    const cv=(!isR&&i<convYrs)?Math.min(conv,bal*.9):0;
+    const magi=base+rmd+cv,tier=getTier(magi,filing),ac=(tier.pb-185)*12*2;
+    totalSurcharge+=ac;if(cv>0)totalConv+=cv;
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>${yr}<span style="font-size:11px;color:var(--text3)"> / Age ${a}</span>${a===rmdAge?'<span class="tag tag-green">RMD</span>':''}</td><td>${fmtK(bal)}</td><td style="color:${cv>0?'var(--gold)':'var(--text3)'}">${cv>0?fmt(cv):'—'}</td><td style="color:${rmd>0?'var(--text)':'var(--text3)'}">${rmd>0?fmt(rmd):'—'}</td><td>${fmt(base)}</td><td style="font-weight:500">${fmt(magi)}</td><td style="font-size:11px;color:var(--text3)">${yr+2}</td><td><span style="font-size:10px;padding:2px 7px;border-radius:6px;background:${tier.t===0?'var(--accent-pale)':tier.t===1?'var(--gold-pale)':'var(--warn-pale)'};color:${tier.t===0?'#2a6b52':tier.t===1?'#7a5a1a':'#8a2a1a'}">${tier.l}</span></td><td style="color:${ac>0?'var(--warn)':'var(--accent)'}">${ac>0?fmt(ac):'Base'}</td>`;
+    body.appendChild(row);
+    bal=Math.max(0,(bal-rmd-cv)*(1+gr));base*=(1+ig);
+  }
+  document.getElementById('my-summary').innerHTML=`<div class="notice notice-${totalSurcharge>5000?'caution':'ok'}">20-year projected IRMAA surcharges: <strong>${fmt(totalSurcharge)}</strong>. Total Roth conversions: ${fmt(totalConv)}. Adjust conversion amount and years to optimize — more conversions now = smaller RMDs later = lower future IRMAA.</div>`;
+}
+function buildIrmaaRef(){
+  ['mfj','single'].forEach(f=>{
+    const id='irmaa-ref-'+f,T=f==='mfj'?IRMAA_MFJ:IRMAA_SINGLE,colors=['#3d8b6e','#c8953a','#e8883a','#c0392b','#8b1a1a','#5a0a0a'];
+    let html='<table class="ref-table"><thead><tr><th>Tier</th><th>MAGI range</th><th>Part B /mo</th><th>Annual surcharge (1 person)</th></tr></thead><tbody>';
+    T.forEach((t,i)=>{
+      const range=t.mx===Infinity?`> ${fmt(t.mn||0)}` :`${fmt(i>0?T[i-1].mx+1:0)} – ${fmt(t.mx)}`;
+      const annual=(t.pb-185)*12;
+      html+=`<tr><td><strong style="color:${colors[i]}">${t.l}</strong></td><td style="font-family:var(--mono);font-size:12px">${range}</td><td style="font-family:var(--mono)">${fmt(t.pb)}</td><td style="font-family:var(--mono);color:${annual>0?'var(--warn)':'var(--accent)'}">${annual>0?fmt(annual):'Base rate'}</td></tr>`;
+    });
+    html+='</tbody></table>';
+    const el=document.getElementById(id);if(el)el.innerHTML=html;
+  });
+}
+
+// ─── ROTH CONVERSION LADDER ───────────────────────────────────────────────────
+function rcRefresh(){
+  const age=parseInt(document.getElementById('rc-age').value)||63;
+  const rmdAge=parseInt(document.getElementById('rc-rmdage').value)||73;
+  const filing=document.getElementById('rc-filing').value;
+  const base=parseFloat(document.getElementById('rc-base').value)||0;
+  const ira=parseFloat(document.getElementById('rc-ira').value)||0;
+  const tb=parseInt(document.getElementById('rc-targetbracket').value)||22;
+  const ic=parseInt(document.getElementById('rc-irmaaconstraint').value);
+  const win=Math.max(0,rmdAge-age);
+  const sd=stdDed(filing),bTop=getBracketTop(tb,filing)+sd,iMax=getIrmaaMax(ic,filing);
+  const ceiling=Math.min(bTop,iMax)-base,cap=Math.max(0,ceiling)*win;
+  document.getElementById('rs-window').textContent=win+' yrs';
+  document.getElementById('rs-window-sub').textContent=`ages ${age}–${rmdAge-1}`;
+  document.getElementById('rs-headroom').textContent=fmt(Math.max(0,ceiling));
+  document.getElementById('rs-headroom-sub').textContent=`max conversion/yr (${tb}% bracket)`;
+  document.getElementById('rs-capacity').textContent=fmtK(cap);
+  const tier=getTier(base+Math.max(0,ceiling),filing);
+  const el=document.getElementById('rs-irmaa'),es=document.getElementById('rs-irmaa-sub');
+  if(tier.t===0){el.textContent='Clear';el.style.color='var(--accent)';es.textContent='No surcharge at target';}
+  else{el.textContent='Tier '+tier.t;el.style.color=tier.t===1?'var(--gold)':'var(--warn)';es.textContent='Adjust IRMAA constraint';}
+  const notice=document.getElementById('rc-setup-notice');
+  if(win<=0)notice.innerHTML='<div class="notice notice-caution">RMDs have started. Conversions still possible above the RMD amount — size carefully.</div>';
+  else if(ceiling<=0)notice.innerHTML='<div class="notice notice-warn">Base income exceeds the target bracket/IRMAA ceiling. Loosen the constraint or choose a higher target bracket.</div>';
+  else notice.innerHTML=`<div class="notice notice-ok">${win}-year window open. At ${fmt(Math.max(0,ceiling))}/year, total capacity is <strong>${fmtK(cap)}</strong> before RMDs begin.</div>`;
+}
+function rcBracket(){
+  const conv=parseInt(document.getElementById('rc-conv-slider').value)||0;
+  const base=parseInt(document.getElementById('rc-base-slider').value)||0;
+  document.getElementById('rc-conv-val').textContent=fmt(conv);
+  document.getElementById('rc-base-val').textContent=fmt(base);
+  const filing=document.getElementById('rc-filing').value;
+  const total=base+conv,sd=stdDed(filing),ti=Math.max(0,total-sd);
+  const max=Math.max(total*1.3,130000),viz=document.getElementById('rc-bracket-viz');viz.innerHTML='';
+  let prev=0;
+  (filing==='mfj'?BRACKETS_MFJ:BRACKETS_SINGLE).forEach((b,idx)=>{
+    const top=b.t===Infinity?max:b.t+sd;if(prev>=max)return;
+    const w=Math.min(top,max)-prev,p=w/max*100;
+    const bi=Math.max(0,Math.min(base,top)-prev),bc=Math.max(0,Math.min(total,top)-Math.max(base,prev));
+    const bw=bi/w*100,cw=bc/w*100;
+    const inB=ti>(idx>0?(filing==='mfj'?BRACKETS_MFJ:BRACKETS_SINGLE)[idx-1].t:0)&&ti<=b.t;
+    const hr=b.t===Infinity?0:Math.max(0,(b.t+sd)-total);
+    const row=document.createElement('div');row.className='bv-row';
+    row.innerHTML=`<span class="bv-label">${b.r}%</span><div class="bv-bar-bg"><div style="height:100%;display:flex;border-radius:3px;overflow:hidden;width:${p}%">${bw>0?`<div style="width:${bw}%;background:#3a7a8a;height:100%"></div>`:''} ${cw>0?`<div style="width:${cw}%;background:#5b4fa0;height:100%"></div>`:''}</div></div><span class="bv-limit">${b.t===Infinity?'—':fmtK(b.t+sd)}</span><span class="bv-headroom">${inB&&hr>0?'↑'+fmtK(hr):''}</span>`;
+    viz.appendChild(row);prev=top;
+  });
+  const br=getBracket(ti,filing),tier=getTier(total,filing);
+  const b22=(filing==='mfj'?BRACKETS_MFJ:BRACKETS_SINGLE).find(b=>b.r===22);
+  const hr22=b22?Math.max(0,(b22.t+sd)-total):0,hr24=Math.max(0,(getBracketTop(24,filing)+sd)-total);
+  document.getElementById('rc-summary-cards').innerHTML=`<div class="target-card ${br.r<=22?'recommended':'caution'}"><div class="tc-label">Marginal rate on conversion</div><div class="tc-value" style="color:${br.r<=22?'var(--accent)':'var(--gold)'}">${br.r}%</div><div class="tc-sub">Taxable income: ${fmt(ti)}</div></div><div class="target-card ${hr22>0?'recommended':'caution'}"><div class="tc-label">Headroom to 22% top</div><div class="tc-value">${hr22>0?fmt(hr22):'Over'}</div><div class="tc-sub">${hr22>0?'Additional conversion capacity':'Above 22% ceiling'}</div></div><div class="target-card ${tier.t===0?'recommended':tier.t===1?'caution':'warning'}"><div class="tc-label">IRMAA tier (2-yr forward)</div><div class="tc-value" style="color:${tier.t===0?'var(--accent)':tier.t===1?'var(--gold)':'var(--warn)'}">${tier.l}</div><div class="tc-sub">Part B: ${fmt(tier.pb)}/mo per person</div></div><div class="target-card ${hr24>0&&br.r<=22?'recommended':'caution'}"><div class="tc-label">Headroom to 24% top</div><div class="tc-value">${hr24>0?fmt(hr24):'Over'}</div><div class="tc-sub">Max before 32% bracket</div></div>`;
+  const filing_t=document.getElementById('rc-filing').value;
+  const th1=filing_t==='mfj'?212000:106000;
+  if(tier.t===0)document.getElementById('rc-irmaa-check').textContent=`MAGI of ${fmt(total)} is ${fmt(th1-total)} below IRMAA Tier 1. Safe to convert — no surcharge two years forward. Room for ${fmt(Math.max(0,th1-total))} more.`;
+  else document.getElementById('rc-irmaa-check').textContent=`MAGI of ${fmt(total)} triggers IRMAA ${tier.l} — Part B surcharge of ${fmt((tier.pb-185)*12*2)}/year (both spouses) two years forward. ${tier.t===1?'Consider capping MAGI at '+fmt(th1-1)+'.':'Significant surcharge — weigh against long-term Roth benefit carefully.'}`;
+  const notice=document.getElementById('rc-bracket-notice');
+  if(br.r>24)notice.innerHTML=`<div class="notice notice-warn">Conversion is in the ${br.r}% bracket — likely not efficient. Reduce conversion or defer to a lower-income year.</div>`;
+  else if(tier.t>=2)notice.innerHTML=`<div class="notice notice-caution">IRMAA Tier ${tier.t} triggered. Conversion is bracket-efficient but the Medicare surcharge may erode the benefit. Consider limiting to ${fmt(tier.t===2?266000:334000)} MAGI.</div>`;
+  else notice.innerHTML=`<div class="notice notice-ok">Conversion of ${fmt(conv)} is in the ${br.r}% bracket${tier.t===0?' and clears IRMAA':' — IRMAA '+tier.l}. Est. federal tax: ~${fmt(conv*(br.r/100))}.</div>`;
+}
+function rcLadder(){
+  const age=parseInt(document.getElementById('rc-age').value)||63;
+  const rmdAge=parseInt(document.getElementById('rc-rmdage').value)||73;
+  const filing=document.getElementById('rc-filing').value;
+  const ira0=parseFloat(document.getElementById('rc-ira').value)||0;
+  const roth0=parseFloat(document.getElementById('rc-roth').value)||0;
+  const base0=parseFloat(document.getElementById('rc-base').value)||0;
+  const gr=(parseFloat(document.getElementById('rc-growth').value)||5)/100;
+  const rgr=(parseFloat(document.getElementById('rc-rothgrowth').value)||6)/100;
+  const convAmt=parseFloat(document.getElementById('rl-conv').value)||0;
+  const strat=document.getElementById('rl-strategy').value;
+  const ig=(parseFloat(document.getElementById('rl-incgrowth').value)||2)/100;
+  const showYrs=parseInt(document.getElementById('rl-years').value)||20;
+  const tb=parseInt(document.getElementById('rc-targetbracket').value)||22;
+  const ic=parseInt(document.getElementById('rc-irmaaconstraint').value);
+  const sd=stdDed(filing);
+  const yr0=new Date().getFullYear();
+  let iraB=ira0,rothB=roth0,baseI=base0,totalC=0,totalT=0,convYrs=0;
+  const body=document.getElementById('rl-body');body.innerHTML='';
+  for(let i=0;i<showYrs;i++){
+    const a=age+i,yr=yr0+i,isR=a>=rmdAge,f2=RMD_F[a],rmd=isR&&f2?iraB/f2:0;
+    let conv=0;
+    if(!isR||rmd<convAmt){
+      const avail=iraB-rmd;
+      if(strat==='fixed')conv=Math.min(convAmt,avail);
+      else if(strat==='bracket'){const bt=getBracketTop(tb,filing)+sd;conv=Math.min(Math.max(0,bt-baseI-rmd),avail);}
+      else{const im=getIrmaaMax(ic,filing);conv=Math.min(Math.max(0,im-baseI-rmd),avail);}
+      conv=Math.max(0,conv);
+    }
+    const magi=baseI+conv+rmd,ti=Math.max(0,magi-sd),br=getBracket(ti,filing),tier=getTier(magi,filing),tax=conv*(br.r/100);
+    if(conv>0){totalC+=conv;totalT+=tax;convYrs++;}
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>${yr}<span style="font-size:11px;color:var(--text3)"> / Age ${a}</span>${a===rmdAge?'<span class="tag tag-green">RMD</span>':''}${a===rmdAge-1?'<span class="tag tag-purple">Window end</span>':''}</td><td>${fmtK(iraB)}</td><td style="color:var(--accent)">${fmtK(rothB)}</td><td style="color:var(--text2)">${fmt(baseI)}</td><td style="color:${conv>0?'#5b4fa0':'var(--text3)'};font-weight:${conv>0?500:400}">${conv>0?fmt(conv):'—'}</td><td style="font-weight:500">${fmt(magi)}</td><td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${br.r<=12?'var(--accent-pale)':br.r<=22?'var(--blue-pale)':br.r<=24?'var(--gold-pale)':'var(--warn-pale)'};color:${br.r<=12?'#2a6b52':br.r<=22?'#1a3a6a':br.r<=24?'#7a5a1a':'#8a2a1a'}">${br.r}%</span></td><td style="color:${tier.t===0?'var(--accent)':tier.t===1?'var(--gold)':'var(--warn)'}">${tier.l}</td><td style="color:${rmd>0?'var(--text)':'var(--text3)'}">${rmd>0?fmt(rmd):'—'}</td><td style="color:var(--text2)">${tax>0?fmt(tax):'—'}</td>`;
+    body.appendChild(row);
+    iraB=Math.max(0,(iraB-rmd-conv)*(1+gr));
+    rothB=(rothB+conv)*(1+rgr);
+    baseI*=(1+ig);
+  }
+  document.getElementById('rl-metrics').innerHTML=`<div class="metric-card"><div class="metric-label">Total converted</div><div class="metric-value">${fmtK(totalC)}</div><div class="metric-sub">over ${convYrs} years</div></div><div class="metric-card"><div class="metric-label">Est. tax cost</div><div class="metric-value">${fmtK(totalT)}</div><div class="metric-sub">effective rate: ${totalC>0?(totalT/totalC*100).toFixed(1):'0'}%</div></div><div class="metric-card"><div class="metric-label">Ending IRA</div><div class="metric-value">${fmtK(iraB)}</div><div class="metric-sub">at end of projection</div></div><div class="metric-card"><div class="metric-label">Ending Roth</div><div class="metric-value" style="color:var(--accent)">${fmtK(rothB)}</div><div class="metric-sub">tax-free, no RMDs</div></div>`;
+  document.getElementById('rl-summary').innerHTML=`<div class="notice notice-ok">Effective conversion rate: <strong>${totalC>0?(totalT/totalC*100).toFixed(1):0}%</strong>. ${fmtK(totalC)} shifted from future RMD-taxed IRA to tax-free Roth. Use "Fill to bracket top" or "Fill to IRMAA ceiling" to auto-size each year's conversion.</div>`;
+}
+function rcBasis(){
+  const age=parseInt(document.getElementById('rc-age').value)||63;
+  const roth0=parseFloat(document.getElementById('rc-roth').value)||0;
+  const basis0=parseFloat(document.getElementById('rc-basis').value)||0;
+  const rgr=(parseFloat(document.getElementById('rc-rothgrowth').value)||6)/100;
+  const rmdAge=parseInt(document.getElementById('rc-rmdage').value)||73;
+  const convAmt=parseFloat(document.getElementById('rl-conv').value)||60000;
+  const yr0=new Date().getFullYear();
+  let cumBasis=basis0,rothB=roth0;
+  const body=document.getElementById('rc-basis-body');body.innerHTML='';
+  const rows=[];
+  if(basis0>0)rows.push({yr:yr0-1,age:age-1,type:'Prior contributions',amt:basis0,cum:basis0,bal:roth0,clock:'—',note:'Existing Roth basis'});
+  for(let i=0;i<Math.min(rmdAge-age,15);i++){
+    const yr=yr0+i,a=age+i;
+    cumBasis+=convAmt;rothB=(rothB+convAmt)*(1+rgr);
+    rows.push({yr,age:a,type:'Conversion',amt:convAmt,cum:cumBasis,bal:rothB,clock:`${yr+5} (age ${a+5})`,note:a>=59?'Age 59½+ — penalty-free':'5-yr penalty clock active'});
+  }
+  rows.forEach(r=>{
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>${r.yr}</td><td>${r.age}</td><td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${r.type==='Conversion'?'var(--purple-pale)':'var(--accent-pale)'};color:${r.type==='Conversion'?'#4a2a7a':'#2a6b52'}">${r.type}</span></td><td style="text-align:right;font-family:var(--mono)">${fmt(r.amt)}</td><td style="text-align:right;font-family:var(--mono);font-weight:500">${fmt(r.cum)}</td><td style="text-align:right;font-family:var(--mono);color:var(--accent)">${fmtK(r.bal)}</td><td style="font-size:11px;color:var(--text2)">${r.clock}</td><td style="font-size:11px;color:var(--text3)">${r.note}</td>`;
+    body.appendChild(row);
+  });
+  const last=rows[rows.length-1]||{cum:basis0,bal:roth0};
+  document.getElementById('rc-basis-cards').innerHTML=`<div class="basis-card"><div class="basis-label">Total Roth basis</div><div class="basis-value">${fmt(last.cum)}</div><div class="basis-sub">contributions + conversions</div></div><div class="basis-card"><div class="basis-label">Est. Roth balance</div><div class="basis-value" style="color:var(--accent)">${fmtK(last.bal)}</div><div class="basis-sub">at end of conversion window</div></div><div class="basis-card"><div class="basis-label">Unrealized growth</div><div class="basis-value" style="color:var(--purple)">${fmtK(Math.max(0,last.bal-last.cum))}</div><div class="basis-sub">tax-free if qualified</div></div>`;
+}
+
+// ─── SOCIAL SECURITY OPTIMIZER ───────────────────────────────────────────────
+function ssMonthlyBenefit(fraMonthly, claimAge, fraAge){
+  if(!fraMonthly||claimAge<=0)return 0;
+  if(claimAge===fraAge)return fraMonthly;
+  if(claimAge<fraAge){
+    const monthsEarly=(fraAge-claimAge)*12;
+    const first36=Math.min(monthsEarly,36);
+    const addl=Math.max(0,monthsEarly-36);
+    const reduction=(first36*(5/9/100))+(addl*(5/12/100));
+    return fraMonthly*(1-reduction);
+  }
+  const monthsLate=(claimAge-fraAge)*12;
+  const credit=Math.min(monthsLate,36)*(2/3/100);
+  return fraMonthly*(1+credit);
+}
+
+function ssCumulative(monthly, currentAge, claimAge, endAge){
+  const years=Math.max(0,endAge-Math.max(currentAge,claimAge));
+  return monthly*12*years;
+}
+
+function ssBreakEvenAge(fraMonthly, ageA, ageB, fraAge){
+  const a=ssMonthlyBenefit(fraMonthly,ageA,fraAge)*12;
+  const b=ssMonthlyBenefit(fraMonthly,ageB,fraAge)*12;
+  const delayYears=Math.max(0,ageB-ageA);
+  const foregone=a*delayYears;
+  const extra=b-a;
+  if(extra<=0)return '—';
+  return (ageB+(foregone/extra)).toFixed(1);
+}
+
+function ssGetInputs(){
+  const n1=document.getElementById('ss-name1')?.value.trim()||document.getElementById('c1-first')?.value.trim()||'Client 1';
+  const n2=document.getElementById('ss-name2')?.value.trim()||document.getElementById('c2-first')?.value.trim()||'Client 2';
+  const a1=parseFloat(document.getElementById('ss-age1')?.value)||parseFloat(document.getElementById('c1-age-input')?.value)||62;
+  const a2=parseFloat(document.getElementById('ss-age2')?.value)||parseFloat(document.getElementById('c2-age-input')?.value)||60;
+  const fra1=parseFloat(document.getElementById('ss-fra1')?.value)||parseFloat(document.getElementById('c1-ss')?.value)||0;
+  const fra2=parseFloat(document.getElementById('ss-fra2')?.value)||parseFloat(document.getElementById('c2-ss')?.value)||0;
+  const fraAge=parseInt(document.getElementById('ss-fra-age')?.value)||67;
+  const lifeExp=parseInt(document.getElementById('ss-lifeexp')?.value)||90;
+  const focus=document.getElementById('ss-focus')?.value||'balanced';
+  return {n1,n2,a1,a2,fra1,fra2,fraAge,lifeExp,focus};
+}
+
+function ssBuildScenarioRows(d){
+  const scenarios=[
+    {label:'Both claim at 62', c1Age:62, c2Age:62},
+    {label:'Both claim at FRA', c1Age:d.fraAge, c2Age:d.fraAge},
+    {label:'Both claim at 70', c1Age:70, c2Age:70},
+    {label:'Higher earner delays, lower claims at 62', c1Age:d.fra1>=d.fra2?70:62, c2Age:d.fra1>=d.fra2?62:70},
+    {label:'Higher earner delays, lower claims at FRA', c1Age:d.fra1>=d.fra2?70:d.fraAge, c2Age:d.fra1>=d.fra2?d.fraAge:70}
+  ];
+  return scenarios.map(s=>{
+    const m1=ssMonthlyBenefit(d.fra1,s.c1Age,d.fraAge);
+    const m2=ssMonthlyBenefit(d.fra2,s.c2Age,d.fraAge);
+    const annual=(m1+m2)*12;
+    const c80=ssCumulative(m1,d.a1,s.c1Age,80)+ssCumulative(m2,d.a2,s.c2Age,80);
+    const c90=ssCumulative(m1,d.a1,s.c1Age,90)+ssCumulative(m2,d.a2,s.c2Age,90);
+    const survivor=Math.max(m1,m2);
+    return {...s,m1,m2,annual,c80,c90,survivor};
+  });
+}
+
+function ssRecommendation(d){
+  const higherName=d.fra1>=d.fra2?d.n1:d.n2;
+  const lowerName=d.fra1>=d.fra2?d.n2:d.n1;
+
+  if(d.focus==='cashflow'){
+    return {
+      title:'Earlier claim bias',
+      sub:'Prioritizing immediate income support',
+      note:`Current focus is cash flow. That usually favors earlier claiming, especially for the lower earner. Still evaluate whether delaying the higher earner materially strengthens the survivor floor.`
+    };
+  }
+  if(d.focus==='longevity'){
+    return {
+      title:'Delay higher earner',
+      sub:'Longevity / survivor focused',
+      note:`Longevity focus generally supports delaying ${higherName} to age 70 if the portfolio can bridge the gap. That increases both late-life household income and the survivor benefit.`
+    };
+  }
+  if(d.focus==='tax'){
+    return {
+      title:'Preserve pre-SS window',
+      sub:'Tax planning focus',
+      note:`Tax focus usually supports delaying at least the higher earner so lower-income years remain available for Roth conversions before Social Security fills the bracket.`
+    };
+  }
+
+  return {
+    title:'Usually delay higher earner',
+    sub:`Balanced view — ${higherName} matters most`,
+    note:`For most married cases, the key decision is whether ${higherName} should delay. ${lowerName} is more flexible. The survivor benefit usually makes the higher earner’s delay the highest-value lever.`
+  };
+}
+
+function ssRefresh(){
+  const d=ssGetInputs();
+
+  const ssm1=document.getElementById('ssm-c1fra');
+  const ssm2=document.getElementById('ssm-c2fra');
+  if(ssm1)ssm1.textContent=d.fra1?fmt(d.fra1):'$—';
+  if(ssm2)ssm2.textContent=d.fra2?fmt(d.fra2):'$—';
+
+  const rec=ssRecommendation(d);
+  const higherMonthly=Math.max(d.fra1,d.fra2);
+  const higherName=d.fra1>=d.fra2?d.n1:d.n2;
+
+  const recEl=document.getElementById('ssm-rec');
+  const recSub=document.getElementById('ssm-rec-sub');
+  if(recEl)recEl.textContent=rec.title;
+  if(recSub)recSub.textContent=rec.sub;
+
+  const surv=document.getElementById('ssm-survivor');
+  const survSub=document.getElementById('ssm-survivor-sub');
+  if(surv)surv.textContent=higherMonthly?fmt(higherMonthly):'—';
+  if(survSub)survSub.textContent=higherMonthly?`${higherName} at FRA before delay credits`:'higher benefit becomes survivor anchor';
+
+  const setupNotice=document.getElementById('ss-setup-notice');
+  if(setupNotice){
+    setupNotice.innerHTML=`<div class="notice notice-blue">${rec.note}</div>`;
+  }
+
+  const rows=ssBuildScenarioRows(d);
+  const body=document.getElementById('ss-scenario-body');
+  if(body){
+    body.innerHTML=rows.map((r,idx)=>`
+      <tr>
+        <td>${r.label}${idx===4?'<span class="tag tag-green">often best</span>':''}</td>
+        <td>${fmt(r.m1)}</td>
+        <td>${fmt(r.m2)}</td>
+        <td>${fmt(r.annual)}</td>
+        <td>${fmt(r.c80)}</td>
+        <td>${fmt(r.c90)}</td>
+        <td style="color:var(--accent)">${fmt(r.survivor)}</td>
+      </tr>
+    `).join('');
+  }
+
+  const best90=rows.reduce((a,b)=>b.c90>a.c90?b:a,rows[0]);
+  const scenSummary=document.getElementById('ss-scenario-summary');
+  if(scenSummary){
+    scenSummary.textContent=`At age 90, the strongest cumulative household outcome in this simplified model is "${best90.label}" at ${fmt(best90.c90)}. That does not automatically make it the right strategy. Use it alongside survivor needs, cash-flow requirements, and tax-window considerations.`;
+  }
+
+  const be1a=ssBreakEvenAge(d.fra1,62,d.fraAge,d.fraAge);
+  const be1b=ssBreakEvenAge(d.fra1,d.fraAge,70,d.fraAge);
+  const be2a=ssBreakEvenAge(d.fra2,62,d.fraAge,d.fraAge);
+  const be2b=ssBreakEvenAge(d.fra2,d.fraAge,70,d.fraAge);
+
+  const be1=document.getElementById('ss-be1');
+  const be2=document.getElementById('ss-be2');
+  if(be1)be1.textContent=`${be1a} / ${be1b}`;
+  if(be2)be2.textContent=`${be2a} / ${be2b}`;
+
+  const hev=document.getElementById('ss-hev');
+  const taxWin=document.getElementById('ss-tax-window');
+  if(hev)hev.textContent=d.fra1!==d.fra2?'High':'Moderate';
+  if(taxWin){
+    const younger=Math.min(d.a1,d.a2);
+    const window=Math.max(0,d.fraAge-younger);
+    taxWin.textContent=window>=3?`${window} yrs`:(window>0?`${window} yr`:'Narrow');
+  }
+
+  const bes=document.getElementById('ss-breakeven-summary');
+  if(bes){
+    bes.textContent=`Estimated break-even ages are ${be1a} and ${be1b} for ${d.n1}, and ${be2a} and ${be2b} for ${d.n2}. In practice, planners should view these as directional. The higher earner’s delay often has more value than the raw break-even math suggests because the survivor benefit inherits that larger amount.`;
+  }
+
+  const taxWindowText=document.getElementById('ss-tax-window');
+  if(taxWindowText && d.focus==='tax')taxWindowText.textContent='Prioritize';
+  const guide=document.getElementById('ss-guide-notes');
+  if(guide){
+    guide.innerHTML=`
+      <strong>Planner read:</strong> If the household can bridge income from portfolio assets, delaying the higher earner is often the cleanest way to improve guaranteed lifetime income and survivor resilience. If the client is retiring early, delayed Social Security can also preserve lower-income years for Roth conversions before benefits begin. Earlier claiming becomes more compelling when health is weaker, cash-flow pressure is immediate, or the benefit being delayed is relatively small.
+    `;
+  }
+}
+
+// ─── ACA BRIDGE ──────────────────────────────────────────────────────────────
+const ACA_FPL_2025={1:15060,2:20440,3:25820,4:31200};
+const ACA_FPL_2026={1:15650,2:21250,3:26850,4:32450};
+
+function acaFplBase(year,household){
+  const tbl=String(year)==='2025'?ACA_FPL_2025:ACA_FPL_2026;
+  const hh=Math.min(Math.max(parseInt(household)||1,1),4);
+  return tbl[hh]||tbl[1];
+}
+
+function acaSync(key){
+  const a=document.getElementById('aca-'+key);
+  const b=document.getElementById('aca-'+key+'-inline');
+  if(a&&b){
+    a.value=b.value;
+    acaRefresh();
+  }
+}
+
+function acaThresholdViz(fplPct){
+  const max=500;
+  const segs=[
+    {label:'<150%',start:0,end:150,color:'#3d8b6e'},
+    {label:'150–200%',start:150,end:200,color:'#4aa882'},
+    {label:'200–250%',start:200,end:250,color:'#c8953a'},
+    {label:'250–400%',start:250,end:400,color:'#e8883a'},
+    {label:'400%+',start:400,end:500,color:'#c0392b'}
+  ];
+  const html=segs.map(s=>{
+    const w=(s.end-s.start)/max*100;
+    return `<div class="threshold-seg" style="width:${w}%;background:${s.color}22;border-right:1px solid ${s.color}44"><span style="font-size:9px;color:${s.color};font-weight:500">${s.label}</span></div>`;
+  }).join('');
+  const pos=Math.min(Math.max(fplPct,0),max)/max*100;
+  return `
+    <div class="threshold-bar-wrap">
+      <div class="magi-marker" style="left:${pos}%">
+        <div class="magi-marker-label">${Math.round(fplPct)}% FPL</div>
+        <div class="magi-marker-line"></div>
+      </div>
+      <div class="threshold-bar-bg">${html}</div>
+    </div>
+  `;
+}
+
+function acaRefresh(){
+  const age=parseFloat(document.getElementById('aca-age')?.value)||62;
+  const household=parseInt(document.getElementById('aca-household')?.value)||2;
+  const year=document.getElementById('aca-year')?.value||'2026';
+  const wages=parseFloat(document.getElementById('aca-wages')?.value)||0;
+  const ordinary=parseFloat(document.getElementById('aca-ordinary')?.value)||0;
+  const roth=parseFloat(document.getElementById('aca-roth')?.value)||0;
+  const gains=parseFloat(document.getElementById('aca-gains')?.value)||0;
+  const muni=parseFloat(document.getElementById('aca-muni')?.value)||0;
+  const ss=parseFloat(document.getElementById('aca-ss')?.value)||0;
+
+  const inlinePairs=['wages','ordinary','roth','gains','muni','ss'];
+  inlinePairs.forEach(k=>{
+    const a=document.getElementById('aca-'+k);
+    const b=document.getElementById('aca-'+k+'-inline');
+    if(a&&b&&document.activeElement!==b)b.value=a.value;
+  });
+
+  const magi=wages+ordinary+roth+gains+muni+ss;
+  const fpl=acaFplBase(year,household);
+  const fplPct=fpl>0?(magi/fpl*100):0;
+  const yearsToMedicare=Math.max(0,65-age);
+
+  let run=0;
+  [['wages',wages],['ordinary',ordinary],['roth',roth],['gains',gains],['muni',muni],['ss',ss]].forEach(([id,val])=>{
+    run+=val;
+    const el=document.getElementById('aca-rt-'+id);
+    if(el)el.textContent=fmt(run);
+  });
+
+  const rt=document.getElementById('aca-rt-total');
+  if(rt)rt.textContent=fmt(magi);
+
+  const magiVal=document.getElementById('aca-magival');
+  if(magiVal)magiVal.textContent=fmt(magi);
+
+  const fplPctEl=document.getElementById('aca-fplpct');
+  if(fplPctEl)fplPctEl.textContent=Math.round(fplPct)+'%';
+
+  const ageEl=document.getElementById('aca-m-age');
+  const yearsEl=document.getElementById('aca-m-years');
+  const magiTop=document.getElementById('aca-m-magi');
+  if(ageEl)ageEl.textContent=age.toFixed(0);
+  if(yearsEl)yearsEl.textContent=yearsToMedicare>0?yearsToMedicare.toFixed(0):'0';
+  if(magiTop)magiTop.textContent=fmt(magi);
+
+  let posture='High subsidy potential';
+  let postureSub='Lower MAGI zone';
+  let subsidy='Favorable';
+  let subsidySub='Likely stronger subsidy posture';
+  let rothPressure='Low';
+  let noticeClass='notice-ok';
+  let noticeText=`MAGI appears relatively controlled for ACA bridge planning. This is the type of case where preserving flexibility and avoiding unnecessary taxable income may materially reduce premium cost.`;
+
+  if(fplPct>=150 && fplPct<250){
+    posture='Manage carefully';
+    postureSub='Moderate subsidy sensitivity';
+    subsidy='Moderate';
+    subsidySub='Subsidies may still matter';
+    rothPressure=roth>0?'Moderate':'Low';
+    noticeClass='notice-caution';
+    noticeText=`This is a middle zone. Roth conversions, gains, or extra IRA income can still meaningfully erode subsidy value. The planner should compare premium cost against long-term tax benefit, not maximize either in isolation.`;
+  } else if(fplPct>=250 && fplPct<400){
+    posture='Tighter zone';
+    postureSub='Subsidy erosion likely';
+    subsidy='Reduced';
+    subsidySub='Less favorable subsidy posture';
+    rothPressure=roth>0?'High':'Moderate';
+    noticeClass='notice-caution';
+    noticeText=`MAGI is high enough that subsidy value may be meaningfully reduced. This does not automatically mean the strategy is wrong. It means Roth conversions or gains should be intentional and weighed against the lost subsidy.`;
+  } else if(fplPct>=400){
+    posture='Minimal subsidy focus';
+    postureSub='Likely above key subsidy range';
+    subsidy='Weak';
+    subsidySub='ACA subsidy value may be limited';
+    rothPressure=roth>0?'High':'Moderate';
+    noticeClass='notice-warn';
+    noticeText=`MAGI is high relative to household FPL. In this case, ACA subsidy preservation may matter less than broader tax planning, but planners should still confirm actual marketplace economics and not assume a low-income approach is best.`;
+  }
+
+  if(yearsToMedicare<=1){
+    posture='Short bridge window';
+    postureSub='Near Medicare';
+  }
+
+  const postureEl=document.getElementById('aca-m-posture');
+  const postureSubEl=document.getElementById('aca-m-posture-sub');
+  const subsidyEl=document.getElementById('aca-subsidy');
+  const subsidySubEl=document.getElementById('aca-subsidy-sub');
+  const rothEl=document.getElementById('aca-rothpressure');
+  if(postureEl)postureEl.textContent=posture;
+  if(postureSubEl)postureSubEl.textContent=postureSub;
+  if(subsidyEl)subsidyEl.textContent=subsidy;
+  if(subsidySubEl)subsidySubEl.textContent=subsidySub;
+  if(rothEl)rothEl.textContent=rothPressure;
+
+  const threshold=document.getElementById('aca-threshold-viz');
+  if(threshold)threshold.innerHTML=acaThresholdViz(fplPct);
+
+  const plannerNotice=document.getElementById('aca-planner-notice');
+  if(plannerNotice)plannerNotice.innerHTML=`<div class="notice ${noticeClass}">${noticeText}</div>`;
+
+  const overview=document.getElementById('aca-overview-notice');
+  if(overview){
+    overview.innerHTML=`<div class="notice notice-blue"><strong>Planner framing:</strong> ACA years are not just an insurance issue. They are a tax-distribution issue. If a client has a 2- to 3-year bridge before Medicare, you may preserve meaningful premium support by keeping MAGI lower. But if the client has a severe future RMD problem, sacrificing some subsidy now for Roth conversion space may still be the better long-term decision.</div>`;
+  }
+
+  const notes=document.getElementById('aca-guide-notes');
+  if(notes){
+    notes.innerHTML=`<strong>Planner read:</strong> This module is directional, not a marketplace quoting engine. Use it to identify when a pre-65 retiree has enough MAGI flexibility that ACA subsidy preservation should be part of the planning conversation. The real decision is often whether a Roth conversion, gain harvest, or extra IRA withdrawal is worth the premium tradeoff. Clients with short bridge windows, large deferred balances, or unusually valuable Roth windows may rationally accept weaker ACA economics in exchange for better long-term tax outcomes.`;
+  }
+}
+
+// ─── AI Q&A ───────────────────────────────────────────────────────────────────
+function aiAppend(text,type){
+  const msgs=document.getElementById('ai-msgs');
+  const el=document.createElement('div');el.className='ai-msg '+type;el.textContent=text;
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+}
+function aiRemoveLast(){const msgs=document.getElementById('ai-msgs');if(msgs.lastChild)msgs.removeChild(msgs.lastChild);}
+async function aiSend(){
+  const box=document.getElementById('ai-input'),text=box.value.trim();
+  if(!text)return;box.value='';
+  aiAppend(text,'user');aiAppend('Thinking...','thinking');
+  document.getElementById('ai-send-btn').disabled=true;
+  try{
+    const sys=`You are a retirement planning AI assistant embedded in an RIA advisor tool. You are knowledgeable about:
+- US domestic retirement planning using an income-first, bucket-strategy methodology
+- The firm's bucket structure: Bucket A (money market, monthly distributions), Buckets B-F (5- and 10-year FIAs that surrender to A at maturity), Bucket G (equity/growth)
+- Social Security optimization, spousal/survivor coordination, break-even analysis
+- Multi-year Roth conversion laddering, bracket management (filling to 12% or 22% bracket tops)
+- IRMAA surcharge tiers, 2-year lookback, MAGI management, Part B and D premiums
+- RMD rules under SECURE 2.0 (age 73/75), QCDs, aggregation rules
+- Medicare Parts A/B/D enrollment windows, ACA bridge for pre-65 retirees
+- LTC planning: standalone, hybrid life/LTC, self-insure analysis
+- Estate basics: beneficiary coordination, stepped-up basis, account titling, Roth as legacy
+- Sequence of returns risk and how the bucket model addresses it
+- State tax treatment of retirement income
+Only answer retirement and tax planning questions. For other topics say you are specialized for retirement planning. Do not make up specific product rates or current market prices. Keep answers concise and advisor-focused.`;
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:text}]})});
+    const data=await res.json();
+    aiRemoveLast();aiAppend(data.content?.[0]?.text||'Unable to get response.','system');
+  }catch(e){aiRemoveLast();aiAppend('Connection error — please try again.','system');}
+  document.getElementById('ai-send-btn').disabled=false;
+}
+function aiAsk(q){document.getElementById('ai-input').value=q;aiSend();}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+// Load saved client
+try{const s=localStorage.getItem('rph-client');if(s){clientData=JSON.parse(s);const d=clientData;if(d.c1First)document.getElementById('c1-first').value=d.c1First;if(d.c1Last)document.getElementById('c1-last').value=d.c1Last;if(d.c2First)document.getElementById('c2-first').value=d.c2First;if(d.incomeTarget)document.getElementById('income-target').value=d.incomeTarget;if(d.c1Ss)document.getElementById('c1-ss').value=d.c1Ss;if(d.c2Ss)document.getElementById('c2-ss').value=d.c2Ss;if(d.tradIra)document.getElementById('trad-ira').value=d.tradIra;if(d.rothIra)document.getElementById('roth-ira').value=d.rothIra;if(d.taxable)document.getElementById('taxable').value=d.taxable;if(d.cash)document.getElementById('cash').value=d.cash;updateClientBadge();if(d.totalAssets)document.getElementById('ip-total').textContent=fmt(d.totalAssets);if(d.incomeTarget)document.getElementById('ip-monthly').textContent=fmt(d.incomeTarget);if(d.c1Ss)document.getElementById('ss-c1').textContent=fmt(d.c1Ss);if(d.c2Ss)document.getElementById('ss-c2').textContent=fmt(d.c2Ss);document.getElementById('save-dot').style.background='var(--accent)';document.getElementById('save-status-txt').textContent=(d.c1First||'')+' '+(d.c1Last||'')+' — profile loaded';}}catch(e){}
+rmdRenderAccounts();rmdRefresh();
+imCompute();buildIrmaaRef();
+rcRefresh();rcBracket();rcLadder();rcBasis();
+lbBuild();myBuild();
+ssRefresh();
+acaRefresh();
+
+// Pre-load sample RMD accounts
+rmdAccounts=[{name:"Client 1 — Traditional IRA",balance:450000,type:'tira'},{name:"Client 1 — 401(k)",balance:200000,type:'401k'},{name:"Client 2 — Traditional IRA",balance:120000,type:'tira'}];
+rmdRenderAccounts();rmdRefresh();
+imCompute();buildIrmaaRef();
+rcRefresh();rcBracket();rcLadder();rcBasis();
+lbBuild();myBuild();
+</script>
+</body>
+</html>
