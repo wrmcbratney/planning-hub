@@ -965,9 +965,240 @@ input[type=range] { flex: 1; }
 
     <!-- KNOWLEDGE BASE -->
     <div class="page" id="page-medicare">
-      <div class="page-header"><div class="pillar-tag tag-tax">Knowledge Base</div><div class="page-title">Medicare &amp; IRMAA</div><div class="page-sub">Use the IRMAA Planner tool for full interactive modeling. Key reference below.</div></div>
-      <div class="stub-notice"><div class="stub-dot"></div>Full module coming — enrollment windows, Part B/D/C options, SEP rules, IRMAA appeals (SSA-44).</div>
-      <div class="card" style="background:var(--gold-pale);border-color:rgba(200,149,58,0.2)"><div class="card-title" style="color:#7a5a1a">2025 IRMAA quick reference — MFJ</div><table class="ref-table"><thead><tr><th>Tier</th><th>MAGI range</th><th>Part B /mo</th><th>Annual surcharge (both)</th></tr></thead><tbody><tr><td>No surcharge</td><td>≤ $212,000</td><td>$185.00</td><td style="color:var(--accent)">Base rate</td></tr><tr><td>Tier 1</td><td>$212,001–$266,000</td><td>$259.00</td><td style="color:var(--gold)">+$1,776/yr</td></tr><tr><td>Tier 2</td><td>$266,001–$334,000</td><td>$370.00</td><td style="color:var(--warn)">+$4,440/yr</td></tr><tr><td>Tier 3</td><td>$334,001–$400,000</td><td>$481.00</td><td style="color:var(--warn)">+$7,104/yr</td></tr><tr><td>Tier 4</td><td>$400,001–$750,000</td><td>$554.00</td><td style="color:var(--warn)">+$8,856/yr</td></tr><tr><td>Tier 5</td><td>> $750,000</td><td>$591.00</td><td style="color:var(--warn)">+$9,744/yr</td></tr></tbody></table></div>
+      <div class="page-header">
+        <div class="pillar-tag tag-tax">Knowledge Base — Medicare</div>
+        <div class="page-title">Medicare &amp; IRMAA</div>
+        <div class="page-sub">Enrollment mechanics, coverage options, late enrollment penalties, IRMAA surcharges, and the pre-65 retirement trap. Advisor reference with interactive calculators.</div>
+      </div>
+      <div class="section-tabs">
+        <button class="stab active" onclick="switchTool('medicare','parts')">Parts A–D</button>
+        <button class="stab" onclick="switchTool('medicare','enrollment')">Enrollment Windows</button>
+        <button class="stab" onclick="switchTool('medicare','penalties')">Late Penalties</button>
+        <button class="stab" onclick="switchTool('medicare','medigap')">Medigap vs. MA</button>
+        <button class="stab" onclick="switchTool('medicare','irmaaref')">IRMAA Reference</button>
+        <button class="stab" onclick="switchTool('medicare','checklist')">Advisor Checklist</button>
+      </div>
+
+      <!-- PARTS A-D -->
+      <div class="tab-panel active" id="medicare-parts">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+          <div style="border-radius:var(--rl);padding:14px 16px;border:0.5px solid;background:var(--accent-pale);border-color:rgba(61,139,110,0.3);">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#2a6b52;margin-bottom:4px;">Part A</div>
+            <div style="font-size:14px;font-weight:500;color:#1a5a42;margin-bottom:6px;">Hospital Insurance</div>
+            <div style="font-size:12px;color:#2a6b52;line-height:1.5;margin-bottom:8px;">Inpatient hospital, skilled nursing facility, hospice, and some home health care.</div>
+            <div style="font-size:12px;font-family:var(--mono);font-weight:500;color:#1a5a42;">$0 premium for most</div>
+            <div style="font-size:11px;color:#2a6b52;margin-top:4px;">10% penalty if not premium-free and late</div>
+          </div>
+          <div style="border-radius:var(--rl);padding:14px 16px;border:0.5px solid;background:var(--blue-pale);border-color:rgba(37,99,168,0.25);">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#1a3a6a;margin-bottom:4px;">Part B</div>
+            <div style="font-size:14px;font-weight:500;color:#0a2a5a;margin-bottom:6px;">Medical Insurance</div>
+            <div style="font-size:12px;color:#1a3a6a;line-height:1.5;margin-bottom:8px;">Outpatient care, physician visits, preventive services, lab tests, durable equipment.</div>
+            <div style="font-size:12px;font-family:var(--mono);font-weight:500;color:#0a2a5a;">$185.00/mo (2025)</div>
+            <div style="font-size:11px;color:#1a3a6a;margin-top:4px;">10%/yr late — permanent lifetime penalty</div>
+          </div>
+          <div style="border-radius:var(--rl);padding:14px 16px;border:0.5px solid;background:var(--purple-pale);border-color:rgba(107,63,160,0.25);">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#4a2a7a;margin-bottom:4px;">Part C</div>
+            <div style="font-size:14px;font-weight:500;color:#3a1a6a;margin-bottom:6px;">Medicare Advantage</div>
+            <div style="font-size:12px;color:#4a2a7a;line-height:1.5;margin-bottom:8px;">Private plan combining Parts A &amp; B (usually + D). Network-based. Still pay Part B premium.</div>
+            <div style="font-size:12px;font-family:var(--mono);font-weight:500;color:#3a1a6a;">$0–$100+/mo plan premium</div>
+            <div style="font-size:11px;color:#4a2a7a;margin-top:4px;">No separate penalty — must have Parts A &amp; B</div>
+          </div>
+          <div style="border-radius:var(--rl);padding:14px 16px;border:0.5px solid;background:var(--gold-pale);border-color:rgba(200,149,58,0.3);">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#7a5a1a;margin-bottom:4px;">Part D</div>
+            <div style="font-size:14px;font-weight:500;color:#6a4a0a;margin-bottom:6px;">Prescription Drug</div>
+            <div style="font-size:12px;color:#7a5a1a;line-height:1.5;margin-bottom:8px;">Prescription coverage through private plans. ~$55/mo average. IRMAA surcharge applies.</div>
+            <div style="font-size:12px;font-family:var(--mono);font-weight:500;color:#6a4a0a;">~$55/mo average (2025)</div>
+            <div style="font-size:11px;color:#7a5a1a;margin-top:4px;">1%/mo without creditable coverage — permanent</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Two coverage paths at enrollment</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div style="padding:14px 16px;border:0.5px solid rgba(61,139,110,0.3);border-radius:var(--rl);background:var(--accent-pale);">
+              <div style="font-size:13px;font-weight:500;color:#2a6b52;margin-bottom:8px;">Path 1 — Original Medicare + Medigap + Part D</div>
+              <div style="font-size:12px;color:#3a7a60;line-height:1.7;">Parts A &amp; B → any doctor/hospital that accepts Medicare<br>+ Medigap supplement → fills gaps (deductibles, coinsurance)<br>+ Part D plan → prescription drug coverage<br><br><strong>Higher monthly premium, predictable out-of-pocket, no network restrictions</strong></div>
+            </div>
+            <div style="padding:14px 16px;border:0.5px solid rgba(107,63,160,0.25);border-radius:var(--rl);background:var(--purple-pale);">
+              <div style="font-size:13px;font-weight:500;color:#4a2a7a;margin-bottom:8px;">Path 2 — Medicare Advantage (Part C)</div>
+              <div style="font-size:12px;color:#5a3a8a;line-height:1.7;">Parts A &amp; B → must still enroll<br>+ Part C plan → replaces A &amp; B through private insurer<br>Often includes dental, vision, hearing<br><br><strong>Lower or $0 premium, network restrictions, variable out-of-pocket</strong></div>
+            </div>
+          </div>
+          <div class="notice notice-blue"><strong>Key planning point:</strong> The choice should be made at 65. Switching from MA back to Original Medicare + Medigap later may require medical underwriting and can be denied. Clients in good health at 65 have the best window to lock in Medigap.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">2025 cost reference</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div>
+              <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px;">Part A (Hospital)</div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px;"><span style="color:var(--text2)">Premium (40+ quarters)</span><span style="font-family:var(--mono);color:var(--accent)">$0</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px;"><span style="color:var(--text2)">Inpatient deductible</span><span style="font-family:var(--mono)">$1,676/benefit period</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px;"><span style="color:var(--text2)">Days 61–90 coinsurance</span><span style="font-family:var(--mono)">$419/day</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px;"><span style="color:var(--text2)">SNF days 21–100</span><span style="font-family:var(--mono)">$209.50/day</span></div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px;">Part B (Medical)</div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px;"><span style="color:var(--text2)">Standard premium</span><span style="font-family:var(--mono);font-weight:500">$185.00/mo</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px;"><span style="color:var(--text2)">Annual deductible</span><span style="font-family:var(--mono)">$257</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px;"><span style="color:var(--text2)">IRMAA Tier 1 (MFJ &gt;$212k)</span><span style="font-family:var(--mono);color:var(--gold)">$259.00/mo</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px;"><span style="color:var(--text2)">IRMAA Tier 5 (MFJ &gt;$750k)</span><span style="font-family:var(--mono);color:var(--warn)">$591.00/mo</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENROLLMENT WINDOWS -->
+      <div class="tab-panel" id="medicare-enrollment">
+        <div style="border:1.5px solid var(--warn);border-radius:var(--rl);padding:16px 18px;margin-bottom:16px;background:var(--warn-pale);">
+          <div style="font-size:13px;font-weight:500;color:var(--warn);margin-bottom:8px;">The pre-65 retirement trap — most common Medicare mistake</div>
+          <div style="font-size:13px;color:#7a2a1a;line-height:1.7;">A client retires at 62, enrolls in ACA marketplace coverage, and assumes Medicare will notify them at 65. <strong>It won't.</strong> Unless they are receiving Social Security, Medicare does not auto-enroll them. They must actively sign up during their Initial Enrollment Period. Missing it triggers <strong>permanent lifetime penalties</strong> on Part B and Part D. One of the most costly and irreversible mistakes in retirement planning.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Enrollment window calculator</div>
+          <div class="form-grid form-grid-2" style="margin-bottom:14px;">
+            <div class="form-group"><label class="form-label">Client date of birth</label><input class="form-input" type="date" id="mc-enroll-dob" value="1960-08-15" oninput="mcCalcEnrollment()"></div>
+            <div class="form-group"><label class="form-label">Still working at 65 with employer coverage?</label><select class="form-input" id="mc-still-working" onchange="mcCalcEnrollment()"><option value="no">No — retiring before or at 65</option><option value="yes">Yes — active employer group health coverage</option></select></div>
+          </div>
+          <div id="mc-enrollment-windows"></div>
+          <div id="mc-enrollment-notice" style="margin-top:12px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">General Enrollment Period (GEP) — if IEP was missed</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">If a client misses their IEP and has no SEP, they must wait for the GEP. Every 12-month period without coverage generates a permanent 10% Part B penalty.</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+            <div style="padding:10px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2);"><div style="font-size:11px;color:#8a2a1a;margin-bottom:3px;">GEP window</div><div style="font-size:14px;font-weight:500;color:var(--warn)">Jan 1 – Mar 31</div><div style="font-size:11px;color:#8a2a1a;margin-top:3px;">Every calendar year</div></div>
+            <div style="padding:10px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2);"><div style="font-size:11px;color:#8a2a1a;margin-bottom:3px;">Coverage starts</div><div style="font-size:14px;font-weight:500;color:var(--warn)">July 1</div><div style="font-size:11px;color:#8a2a1a;margin-top:3px;">Of enrollment year</div></div>
+            <div style="padding:10px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2);"><div style="font-size:11px;color:#8a2a1a;margin-bottom:3px;">Penalty added</div><div style="font-size:14px;font-weight:500;color:var(--warn)">10% per year late</div><div style="font-size:11px;color:#8a2a1a;margin-top:3px;">Permanent lifetime surcharge</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LATE PENALTIES -->
+      <div class="tab-panel" id="medicare-penalties">
+        <div class="notice notice-warn"><strong>Late enrollment penalties are permanent and compound with inflation.</strong> They are recalculated annually on the current standard premium — so they grow every time premiums increase. A client 2 years late on Part B will pay 20% more than the standard premium every month for the rest of their life.</div>
+        <div class="card">
+          <div class="card-title">Penalty calculator</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Part B — months without coverage after IEP</label><input class="form-input" type="number" id="pen-b-months" value="24" min="0" oninput="mcCalcPenalties()"></div>
+            <div class="form-group"><label class="form-label">Part D — months without creditable coverage</label><input class="form-input" type="number" id="pen-d-months" value="18" min="0" oninput="mcCalcPenalties()"></div>
+            <div class="form-group"><label class="form-label">Planning life expectancy (age)</label><input class="form-input" type="number" id="pen-life" value="88" min="66" oninput="mcCalcPenalties()"></div>
+          </div>
+          <div id="mc-penalty-result"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">What counts as creditable coverage (avoids Part D penalty)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">
+            <div style="padding:8px 12px;background:var(--accent-pale);border-radius:var(--r);color:#2a6b52;">Employer group health plan drug coverage</div>
+            <div style="padding:8px 12px;background:var(--accent-pale);border-radius:var(--r);color:#2a6b52;">VA drug benefits</div>
+            <div style="padding:8px 12px;background:var(--accent-pale);border-radius:var(--r);color:#2a6b52;">TRICARE prescription coverage</div>
+            <div style="padding:8px 12px;background:var(--accent-pale);border-radius:var(--r);color:#2a6b52;">COBRA continuation (if creditable)</div>
+            <div style="padding:8px 12px;background:var(--warn-pale);border-radius:var(--r);color:#8a2a1a;">ACA marketplace plans — NOT creditable for Part D</div>
+            <div style="padding:8px 12px;background:var(--warn-pale);border-radius:var(--r);color:#8a2a1a;">Individual health insurance — NOT creditable</div>
+          </div>
+          <div class="notice notice-caution" style="margin-top:12px;">Clients on ACA plans accumulate Part D penalty months even if they have drug coverage through the marketplace. Advisors should confirm clients are tracking this during the bridge years.</div>
+        </div>
+      </div>
+
+      <!-- MEDIGAP vs MA -->
+      <div class="tab-panel" id="medicare-medigap">
+        <div class="notice notice-blue"><strong>The enrollment window matters more than the choice itself.</strong> Clients have guaranteed issue rights for Medigap during the 6-month Open Enrollment Period after Part B enrollment at 65. After that, insurers can medically underwrite and deny. Choosing MA at 65 and switching to Medigap later is often impossible for clients with health conditions.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+          <div style="border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden;">
+            <div style="padding:12px 16px;font-size:13px;font-weight:500;background:var(--accent-pale);color:#2a6b52;">Original Medicare + Medigap + Part D</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Network</span><span style="text-align:right;line-height:1.4;">Any doctor/hospital accepting Medicare — nationwide</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Monthly cost</span><span style="text-align:right;line-height:1.4;">Part B ($185) + Medigap ($100–$400) + Part D ($30–$100)</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Out-of-pocket</span><span style="text-align:right;">Very predictable — Medigap covers most gaps</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Travel</span><span style="text-align:right;">Covered anywhere in the US</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Switching</span><span style="text-align:right;color:var(--warn);">Hard to switch back — may be underwritten</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Best for</span><span style="text-align:right;">Travel, complex health needs, predictability, choice</span></div>
+          </div>
+          <div style="border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden;">
+            <div style="padding:12px 16px;font-size:13px;font-weight:500;background:var(--purple-pale);color:#4a2a7a;">Medicare Advantage (Part C)</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Network</span><span style="text-align:right;line-height:1.4;">HMO or PPO network — varies by plan and region</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Monthly cost</span><span style="text-align:right;line-height:1.4;">Part B ($185) + plan premium ($0–$100) — often lower total</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Out-of-pocket</span><span style="text-align:right;">Variable copays/coinsurance — annual OOP max applies</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Travel</span><span style="text-align:right;color:var(--gold);">Limited — may not cover out-of-network</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Extra benefits</span><span style="text-align:right;">Often includes dental, vision, hearing, fitness</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px;border-top:0.5px solid var(--border);font-size:12px;gap:12px;"><span style="color:var(--text2);min-width:100px;">Best for</span><span style="text-align:right;">Local clients, healthy, lower premium preference</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Medigap plan comparison — most common plans</div>
+          <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead><tr style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;"><th style="padding:6px 10px;border-bottom:0.5px solid var(--border);text-align:left;">Benefit</th><th style="padding:6px 10px;border-bottom:0.5px solid var(--border);text-align:center;">Plan G</th><th style="padding:6px 10px;border-bottom:0.5px solid var(--border);text-align:center;">Plan N</th><th style="padding:6px 10px;border-bottom:0.5px solid var(--border);text-align:center;">Plan K</th><th style="padding:6px 10px;border-bottom:0.5px solid var(--border);text-align:center;">High-G</th></tr></thead>
+            <tbody>
+              <tr><td style="padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--text2)">Part A coinsurance + hospital</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">100%</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">100%</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--gold)">50%</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">100%*</td></tr>
+              <tr><td style="padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--text2)">Part B coinsurance / copay</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">100%</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--gold)">100% (copays apply)</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--gold)">50%</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">100%*</td></tr>
+              <tr><td style="padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--text2)">Part B deductible</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--warn)">Not covered</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--warn)">Not covered</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--warn)">Not covered</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--warn)">Not covered</td></tr>
+              <tr><td style="padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--text2)">Foreign travel emergency</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">80%</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">80%</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--warn)">None</td><td style="text-align:center;padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--accent)">80%*</td></tr>
+              <tr><td style="padding:8px 10px;color:var(--text2)">Typical monthly premium</td><td style="text-align:center;padding:8px 10px;font-family:var(--mono)">$120–$280</td><td style="text-align:center;padding:8px 10px;font-family:var(--mono)">$80–$200</td><td style="text-align:center;padding:8px 10px;font-family:var(--mono)">$40–$80</td><td style="text-align:center;padding:8px 10px;font-family:var(--mono)">$30–$70</td></tr>
+            </tbody>
+          </table></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px;">* High-G has a deductible ($2,870 in 2025) before coverage kicks in. Plan F (covers Part B deductible) no longer available to new Medicare enrollees as of 2020.</div>
+        </div>
+      </div>
+
+      <!-- IRMAA REFERENCE -->
+      <div class="tab-panel" id="medicare-irmaaref">
+        <div class="notice notice-blue">IRMAA surcharges are based on MAGI from <strong>two years prior</strong>. Use the <strong>IRMAA Planner tool</strong> for full interactive modeling including multi-year projection and conversion optimization. This tab is a quick reference.</div>
+        <div class="card">
+          <div class="card-title">2025 IRMAA tiers — Part B</div>
+          <div style="display:flex;flex-direction:column;border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr 1fr;gap:0;padding:8px 14px;font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;background:var(--bg3);">
+              <span>Tier</span><span>MFJ MAGI</span><span>Single MAGI</span><span>Part B /mo</span><span>Annual (both)</span>
+            </div>
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr 1fr;padding:9px 14px;border-top:0.5px solid var(--border);font-size:12px;align-items:center;"><span><span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;background:var(--accent-pale);color:#2a6b52;">Clear</span></span><span style="font-family:var(--mono);">≤ $212,000</span><span style="font-family:var(--mono);">≤ $106,000</span><span style="font-family:var(--mono);font-weight:500">$185.00</span><span style="font-family:var(--mono);color:var(--accent)">Base rate</span></div>
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr 1fr;padding:9px 14px;border-top:0.5px solid var(--border);font-size:12px;align-items:center;"><span><span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;background:var(--gold-pale);color:#7a5a1a;">Tier 1</span></span><span style="font-family:var(--mono);">$212,001–$266,000</span><span style="font-family:var(--mono);">$106,001–$133,000</span><span style="font-family:var(--mono);font-weight:500">$259.00</span><span style="font-family:var(--mono);color:var(--gold)">+$1,776/yr</span></div>
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr 1fr;padding:9px 14px;border-top:0.5px solid var(--border);font-size:12px;align-items:center;"><span><span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;background:var(--warn-pale);color:#8a2a1a;">Tier 2</span></span><span style="font-family:var(--mono);">$266,001–$334,000</span><span style="font-family:var(--mono);">$133,001–$167,000</span><span style="font-family:var(--mono);font-weight:500">$370.00</span><span style="font-family:var(--mono);color:var(--warn)">+$4,440/yr</span></div>
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr 1fr;padding:9px 14px;border-top:0.5px solid var(--border);font-size:12px;align-items:center;"><span><span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;background:var(--warn-pale);color:#8a2a1a;">Tier 3</span></span><span style="font-family:var(--mono);">$334,001–$400,000</span><span style="font-family:var(--mono);">$167,001–$200,000</span><span style="font-family:var(--mono);font-weight:500">$481.00</span><span style="font-family:var(--mono);color:var(--warn)">+$7,104/yr</span></div>
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr 1fr;padding:9px 14px;border-top:0.5px solid var(--border);font-size:12px;align-items:center;"><span><span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;background:var(--warn-pale);color:#8a2a1a;">Tier 4</span></span><span style="font-family:var(--mono);">$400,001–$750,000</span><span style="font-family:var(--mono);">$200,001–$500,000</span><span style="font-family:var(--mono);font-weight:500">$554.00</span><span style="font-family:var(--mono);color:var(--warn)">+$8,856/yr</span></div>
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr 1fr;padding:9px 14px;border-top:0.5px solid var(--border);font-size:12px;align-items:center;"><span><span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;background:var(--warn-pale);color:#8a2a1a;">Tier 5</span></span><span style="font-family:var(--mono);">&gt; $750,000</span><span style="font-family:var(--mono);">&gt; $500,000</span><span style="font-family:var(--mono);font-weight:500">$591.00</span><span style="font-family:var(--mono);color:var(--warn)">+$9,744/yr</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">SSA-44 Life Event Appeals</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">If income drops due to a qualifying life event, clients can appeal IRMAA using Form SSA-44. SSA will use more recent data instead of the 2-year lookback.</div>
+          <table class="ref-table"><thead><tr><th>Life event</th><th>Qualifies?</th><th>Planning notes</th></tr></thead><tbody>
+            <tr><td style="font-weight:500">Work stoppage / retirement</td><td style="color:var(--accent);font-weight:500">Yes</td><td style="font-size:12px;color:var(--text2)">File SSA-44 in the year Medicare starts if income dropped at retirement</td></tr>
+            <tr><td style="font-weight:500">Marriage / divorce / death of spouse</td><td style="color:var(--accent);font-weight:500">Yes</td><td style="font-size:12px;color:var(--text2)">Filing status change affects thresholds — especially MFJ vs. single after death</td></tr>
+            <tr><td style="font-weight:500">Loss of income-producing property</td><td style="color:var(--accent);font-weight:500">Yes</td><td style="font-size:12px;color:var(--text2)">Involuntary loss only — sale does not qualify</td></tr>
+            <tr><td style="font-weight:500">Pension termination</td><td style="color:var(--accent);font-weight:500">Yes</td><td style="font-size:12px;color:var(--text2)">Involuntary reduction in pension income</td></tr>
+            <tr><td style="font-weight:500;color:var(--warn)">Large Roth conversion</td><td style="color:var(--warn);font-weight:500">No</td><td style="font-size:12px;color:var(--warn)">Voluntary income events do not qualify — plan conversions carefully around Medicare years</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card" style="background:var(--gold-pale);border-color:rgba(200,149,58,0.2);">
+          <div class="card-title" style="color:#7a5a1a;">Key IRMAA planning rules</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:#7a5a1a;line-height:1.6;">
+            <div>— Based on MAGI from two years prior — plan now for premiums two years out</div>
+            <div>— Affects both spouses on Medicare separately — surcharge is per person</div>
+            <div>— Roth conversions, capital gains, RMDs, and muni interest all count toward MAGI</div>
+            <div>— Roth IRA distributions are NOT included in MAGI — the premier long-term defense</div>
+            <div>— QCDs reduce AGI and MAGI — highly effective for charitable clients age 70½+</div>
+            <div>— One dollar over a tier threshold triggers the full surcharge (hard cliff effect)</div>
+            <div>— Part D surcharges are additional (~$13–$84/mo per person by tier)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADVISOR CHECKLIST -->
+      <div class="tab-panel" id="medicare-checklist">
+        <div class="card">
+          <div class="card-title">Pre-65 retirement — Medicare planning checklist</div>
+          <div class="checklist">
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm client's 65th birthday and calculate IEP window (3 months before through 3 months after)</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Verify whether client will receive SS before 65 — if yes, confirm auto-enrollment in Medicare Parts A &amp; B</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm current health coverage (ACA, COBRA, employer) and whether it is creditable for Part D</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Educate client: ACA marketplace plans are NOT creditable for Part D — months accumulate toward penalty</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Review MAGI from two years prior — determine IRMAA tier at Medicare enrollment</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">If IRMAA applies due to a qualifying life event (retirement), prepare SSA-44 appeal</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Present Medigap vs. Medicare Advantage decision — emphasize the guaranteed issue window at 65</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">If choosing Medigap: compare Plan G (no copays) vs. Plan N (lower premium with copays)</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Set calendar reminder 4 months before client's 65th birthday — IEP action date</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Project IRMAA exposure for next 5 years — coordinate with Roth conversion ladder</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">Confirm Part D plan enrollment — even if no current prescriptions (avoids future penalty)</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div><span class="check-text">During Annual Enrollment Period (Oct 15–Dec 7): review Part D plan for formulary changes</span></div>
+          </div>
+        </div>
+      </div>
     </div>
         <div class="page" id="page-aca">
       <div class="page-header">
@@ -1172,8 +1403,9 @@ function navigate(id){
   if(id==='rmd')rmdRefresh();
   if(id==='irmaa'){imCompute();buildIrmaaRef();}
   if(id==='roth'){rcRefresh();rcBracket();rcLadder();rcBasis();}
-     if(id==='ss'){ssRefresh();}
-     if(id==='aca'){acaRefresh();}
+  if(id==='ss'){ssRefresh();}
+  if(id==='medicare'){mcCalcEnrollment();mcCalcPenalties();}
+  if(id==='aca'){acaRefresh();}
 }
 function switchTool(tool,tab){
   const prefix=tool+'-';
@@ -1193,6 +1425,10 @@ function switchTool(tool,tab){
   if(tool==='roth'&&tab==='ladder')rcLadder();
   if(tool==='roth'&&tab==='basis')rcBasis();
   if(tool==='ss'){ssRefresh();}
+  if(tool==='medicare'){
+    if(tab==='enrollment')mcCalcEnrollment();
+    if(tab==='penalties')mcCalcPenalties();
+  }
      if(tool==='aca'){acaRefresh();}
 }
 function toggleCheck(el){el.classList.toggle('checked');}
@@ -1404,7 +1640,8 @@ function imCompute(){
   else hd.textContent='At highest IRMAA tier. Focus on QCDs and reducing future IRA balance via conversions.';
 }
 function buildImThreshold(magi,filing){
-  const T=f==='mfj'?IRMAA_MFJ:IRMAA_SINGLE,f=filing;
+  const f=filing;
+  const T=f==='mfj'?IRMAA_MFJ:IRMAA_SINGLE;
   const max=f==='mfj'?800000:550000,colors=['#3d8b6e','#c8953a','#e8883a','#c0392b','#8b1a1a','#5a0a0a'];
   const segs=T.map((t,i)=>{
     const top=Math.min(t.mx===Infinity?max:t.mx,max),bot=i>0?T[i-1].mx:0;
@@ -1602,19 +1839,43 @@ function rcBasis(){
 }
 
 // ─── SOCIAL SECURITY OPTIMIZER ───────────────────────────────────────────────
-function ssMonthlyBenefit(fraMonthly, claimAge, fraAge){
+// Proper FRA by birth year (SSA rules)
+function ssFRA(dob){
+  if(!dob)return{years:67,months:0};
+  const yr=new Date(dob).getFullYear();
+  if(yr<=1937)return{years:65,months:0};
+  if(yr===1938)return{years:65,months:2};
+  if(yr===1939)return{years:65,months:4};
+  if(yr===1940)return{years:65,months:6};
+  if(yr===1941)return{years:65,months:8};
+  if(yr===1942)return{years:65,months:10};
+  if(yr<=1954)return{years:66,months:0};
+  if(yr===1955)return{years:66,months:2};
+  if(yr===1956)return{years:66,months:4};
+  if(yr===1957)return{years:66,months:6};
+  if(yr===1958)return{years:66,months:8};
+  if(yr===1959)return{years:66,months:10};
+  return{years:67,months:0};
+}
+function fraDecimal(fra){return fra.years+fra.months/12;}
+
+// Proper benefit calculation using exact month math
+function ssMonthlyBenefit(fraMonthly, claimAge, fraYears, fraMonths){
   if(!fraMonthly||claimAge<=0)return 0;
-  if(claimAge===fraAge)return fraMonthly;
-  if(claimAge<fraAge){
-    const monthsEarly=(fraAge-claimAge)*12;
-    const first36=Math.min(monthsEarly,36);
-    const addl=Math.max(0,monthsEarly-36);
-    const reduction=(first36*(5/9/100))+(addl*(5/12/100));
-    return fraMonthly*(1-reduction);
+  const fraTotal=fraYears*12+(fraMonths||0);
+  const claimTotal=claimAge*12;
+  const diff=claimTotal-fraTotal;
+  if(diff===0)return fraMonthly;
+  if(diff>0){
+    // Delayed: 8%/yr = 2/3% per month, max to 70
+    const delayMonths=Math.min(diff,(70-fraYears)*12-(fraMonths||0));
+    return fraMonthly*(1+delayMonths*(8/12/100));
   }
-  const monthsLate=(claimAge-fraAge)*12;
-  const credit=Math.min(monthsLate,36)*(2/3/100);
-  return fraMonthly*(1+credit);
+  // Early: first 36 months = 5/9% per month, beyond = 5/12% per month
+  const earlyMonths=Math.abs(diff);
+  const first36=Math.min(earlyMonths,36);
+  const beyond=Math.max(0,earlyMonths-36);
+  return fraMonthly*(1-(first36*(5/9/100)+beyond*(5/12/100)));
 }
 
 function ssCumulative(monthly, currentAge, claimAge, endAge){
@@ -1622,9 +1883,9 @@ function ssCumulative(monthly, currentAge, claimAge, endAge){
   return monthly*12*years;
 }
 
-function ssBreakEvenAge(fraMonthly, ageA, ageB, fraAge){
-  const a=ssMonthlyBenefit(fraMonthly,ageA,fraAge)*12;
-  const b=ssMonthlyBenefit(fraMonthly,ageB,fraAge)*12;
+function ssBreakEvenAge(fraMonthly, ageA, ageB, fraYears, fraMonths){
+  const a=ssMonthlyBenefit(fraMonthly,ageA,fraYears,fraMonths)*12;
+  const b=ssMonthlyBenefit(fraMonthly,ageB,fraYears,fraMonths)*12;
   const delayYears=Math.max(0,ageB-ageA);
   const foregone=a*delayYears;
   const extra=b-a;
@@ -1639,23 +1900,31 @@ function ssGetInputs(){
   const a2=parseFloat(document.getElementById('ss-age2')?.value)||parseFloat(document.getElementById('c2-age-input')?.value)||60;
   const fra1=parseFloat(document.getElementById('ss-fra1')?.value)||parseFloat(document.getElementById('c1-ss')?.value)||0;
   const fra2=parseFloat(document.getElementById('ss-fra2')?.value)||parseFloat(document.getElementById('c2-ss')?.value)||0;
-  const fraAge=parseInt(document.getElementById('ss-fra-age')?.value)||67;
+  const dob1=document.getElementById('c1-dob')?.value;
+  const dob2=document.getElementById('c2-dob')?.value;
+  const fraObj1=dob1?ssFRA(dob1):{years:parseInt(document.getElementById('ss-fra-age')?.value)||67,months:0};
+  const fraObj2=dob2?ssFRA(dob2):{years:parseInt(document.getElementById('ss-fra-age')?.value)||67,months:0};
   const lifeExp=parseInt(document.getElementById('ss-lifeexp')?.value)||90;
   const focus=document.getElementById('ss-focus')?.value||'balanced';
-  return {n1,n2,a1,a2,fra1,fra2,fraAge,lifeExp,focus};
+  const spousal2=fra1*0.5;
+  const c2UsesSpousal=fra2>0&&fra1>0&&spousal2>fra2;
+  return {n1,n2,a1,a2,fra1,fra2,fraObj1,fraObj2,lifeExp,focus,spousal2,c2UsesSpousal};
 }
 
 function ssBuildScenarioRows(d){
+  const fraY1=d.fraObj1.years,fraM1=d.fraObj1.months;
+  const fraY2=d.fraObj2.years,fraM2=d.fraObj2.months;
   const scenarios=[
     {label:'Both claim at 62', c1Age:62, c2Age:62},
-    {label:'Both claim at FRA', c1Age:d.fraAge, c2Age:d.fraAge},
+    {label:`Both claim at FRA (${fraY1})`, c1Age:fraY1, c2Age:fraY2},
     {label:'Both claim at 70', c1Age:70, c2Age:70},
-    {label:'Higher earner delays, lower claims at 62', c1Age:d.fra1>=d.fra2?70:62, c2Age:d.fra1>=d.fra2?62:70},
-    {label:'Higher earner delays, lower claims at FRA', c1Age:d.fra1>=d.fra2?70:d.fraAge, c2Age:d.fra1>=d.fra2?d.fraAge:70}
+    {label:'Higher earner delays to 70, lower claims at 62', c1Age:d.fra1>=d.fra2?70:62, c2Age:d.fra1>=d.fra2?62:70},
+    {label:'Higher earner delays to 70, lower claims at FRA', c1Age:d.fra1>=d.fra2?70:fraY1, c2Age:d.fra1>=d.fra2?fraY2:70}
   ];
   return scenarios.map(s=>{
-    const m1=ssMonthlyBenefit(d.fra1,s.c1Age,d.fraAge);
-    const m2=ssMonthlyBenefit(d.fra2,s.c2Age,d.fraAge);
+    const m1=ssMonthlyBenefit(d.fra1,s.c1Age,fraY1,fraM1);
+    const ownM2=ssMonthlyBenefit(d.fra2,s.c2Age,fraY2,fraM2);
+    const m2=d.c2UsesSpousal?Math.max(ownM2,d.spousal2):ownM2;
     const annual=(m1+m2)*12;
     const c80=ssCumulative(m1,d.a1,s.c1Age,80)+ssCumulative(m2,d.a2,s.c2Age,80);
     const c90=ssCumulative(m1,d.a1,s.c1Age,90)+ssCumulative(m2,d.a2,s.c2Age,90);
@@ -1666,39 +1935,20 @@ function ssBuildScenarioRows(d){
 
 function ssRecommendation(d){
   const higherName=d.fra1>=d.fra2?d.n1:d.n2;
-  const lowerName=d.fra1>=d.fra2?d.n2:d.n1;
-
-  if(d.focus==='cashflow'){
-    return {
-      title:'Earlier claim bias',
-      sub:'Prioritizing immediate income support',
-      note:`Current focus is cash flow. That usually favors earlier claiming, especially for the lower earner. Still evaluate whether delaying the higher earner materially strengthens the survivor floor.`
-    };
-  }
-  if(d.focus==='longevity'){
-    return {
-      title:'Delay higher earner',
-      sub:'Longevity / survivor focused',
-      note:`Longevity focus generally supports delaying ${higherName} to age 70 if the portfolio can bridge the gap. That increases both late-life household income and the survivor benefit.`
-    };
-  }
-  if(d.focus==='tax'){
-    return {
-      title:'Preserve pre-SS window',
-      sub:'Tax planning focus',
-      note:`Tax focus usually supports delaying at least the higher earner so lower-income years remain available for Roth conversions before Social Security fills the bracket.`
-    };
-  }
-
-  return {
-    title:'Usually delay higher earner',
-    sub:`Balanced view — ${higherName} matters most`,
-    note:`For most married cases, the key decision is whether ${higherName} should delay. ${lowerName} is more flexible. The survivor benefit usually makes the higher earner’s delay the highest-value lever.`
-  };
+  if(d.focus==='cashflow')return{title:'Earlier claim bias',sub:'Prioritizing immediate income',note:`Cash flow focus favors earlier claiming, especially for the lower earner. Still evaluate whether delaying ${higherName} strengthens the survivor floor.`};
+  if(d.focus==='longevity')return{title:'Delay higher earner',sub:'Longevity / survivor focused',note:`Longevity focus supports delaying ${higherName} to age 70. Maximizes late-life income and the survivor benefit floor — the highest-value lever for most married couples.`};
+  if(d.focus==='tax')return{title:'Preserve pre-SS window',sub:'Tax planning focus',note:`Delaying SS keeps lower-income years open for Roth conversions before Social Security fills the bracket. Delaying ${higherName} is often the strongest move.`};
+  return{title:'Usually delay higher earner',sub:`${higherName} decision matters most`,note:`For most married cases, the key question is whether ${higherName} should delay to 70. The survivor benefit — 100% of the higher earner's actual benefit including delayed credits — makes that delay valuable well beyond the raw break-even age.`};
 }
 
 function ssRefresh(){
   const d=ssGetInputs();
+  const fraY1=d.fraObj1.years,fraM1=d.fraObj1.months;
+  const fraY2=d.fraObj2.years,fraM2=d.fraObj2.months;
+  const at70_1=ssMonthlyBenefit(d.fra1,70,fraY1,fraM1);
+  const at70_2=ssMonthlyBenefit(d.fra2,70,fraY2,fraM2);
+  const fraLabel1=fraM1>0?`${fraY1} & ${fraM1} mo`:String(fraY1);
+  const fraLabel2=fraM2>0?`${fraY2} & ${fraM2} mo`:String(fraY2);
 
   const ssm1=document.getElementById('ssm-c1fra');
   const ssm2=document.getElementById('ssm-c2fra');
@@ -1706,9 +1956,8 @@ function ssRefresh(){
   if(ssm2)ssm2.textContent=d.fra2?fmt(d.fra2):'$—';
 
   const rec=ssRecommendation(d);
-  const higherMonthly=Math.max(d.fra1,d.fra2);
+  const higherAtMax=Math.max(at70_1,at70_2);
   const higherName=d.fra1>=d.fra2?d.n1:d.n2;
-
   const recEl=document.getElementById('ssm-rec');
   const recSub=document.getElementById('ssm-rec-sub');
   if(recEl)recEl.textContent=rec.title;
@@ -1716,13 +1965,11 @@ function ssRefresh(){
 
   const surv=document.getElementById('ssm-survivor');
   const survSub=document.getElementById('ssm-survivor-sub');
-  if(surv)surv.textContent=higherMonthly?fmt(higherMonthly):'—';
-  if(survSub)survSub.textContent=higherMonthly?`${higherName} at FRA before delay credits`:'higher benefit becomes survivor anchor';
+  if(surv)surv.textContent=higherAtMax?fmt(higherAtMax):'—';
+  if(survSub)survSub.textContent=higherAtMax?`${higherName} at 70 — survivor anchor`:'enter data to calculate';
 
   const setupNotice=document.getElementById('ss-setup-notice');
-  if(setupNotice){
-    setupNotice.innerHTML=`<div class="notice notice-blue">${rec.note}</div>`;
-  }
+  if(setupNotice)setupNotice.innerHTML=`<div class="notice notice-blue">${rec.note}${d.c2UsesSpousal?`<br><br><strong>Spousal benefit:</strong> ${d.n2}'s own benefit (${fmt(d.fra2)}/mo) is below the spousal maximum of ${fmt(d.spousal2)}/mo (50% of ${d.n1}'s PIA). ${d.n2} will receive the spousal benefit.`:''}</div>`;
 
   const rows=ssBuildScenarioRows(d);
   const body=document.getElementById('ss-scenario-body');
@@ -1731,7 +1978,7 @@ function ssRefresh(){
       <tr>
         <td>${r.label}${idx===4?'<span class="tag tag-green">often best</span>':''}</td>
         <td>${fmt(r.m1)}</td>
-        <td>${fmt(r.m2)}</td>
+        <td>${fmt(r.m2)}${d.c2UsesSpousal&&idx>0?' <span style="font-size:10px;color:var(--gold)">(spousal)</span>':''}</td>
         <td>${fmt(r.annual)}</td>
         <td>${fmt(r.c80)}</td>
         <td>${fmt(r.c90)}</td>
@@ -1742,14 +1989,12 @@ function ssRefresh(){
 
   const best90=rows.reduce((a,b)=>b.c90>a.c90?b:a,rows[0]);
   const scenSummary=document.getElementById('ss-scenario-summary');
-  if(scenSummary){
-    scenSummary.textContent=`At age 90, the strongest cumulative household outcome in this simplified model is "${best90.label}" at ${fmt(best90.c90)}. That does not automatically make it the right strategy. Use it alongside survivor needs, cash-flow requirements, and tax-window considerations.`;
-  }
+  if(scenSummary)scenSummary.textContent=`At age 90, the strongest cumulative outcome in this model is "${best90.label}" at ${fmt(best90.c90)}. Weigh alongside survivor needs, health, cash-flow requirements, and the Roth conversion window.`;
 
-  const be1a=ssBreakEvenAge(d.fra1,62,d.fraAge,d.fraAge);
-  const be1b=ssBreakEvenAge(d.fra1,d.fraAge,70,d.fraAge);
-  const be2a=ssBreakEvenAge(d.fra2,62,d.fraAge,d.fraAge);
-  const be2b=ssBreakEvenAge(d.fra2,d.fraAge,70,d.fraAge);
+  const be1a=ssBreakEvenAge(d.fra1,62,fraY1,fraY1,fraM1);
+  const be1b=ssBreakEvenAge(d.fra1,fraY1,70,fraY1,fraM1);
+  const be2a=d.fra2?ssBreakEvenAge(d.fra2,62,fraY2,fraY2,fraM2):'—';
+  const be2b=d.fra2?ssBreakEvenAge(d.fra2,fraY2,70,fraY2,fraM2):'—';
 
   const be1=document.getElementById('ss-be1');
   const be2=document.getElementById('ss-be2');
@@ -1757,27 +2002,100 @@ function ssRefresh(){
   if(be2)be2.textContent=`${be2a} / ${be2b}`;
 
   const hev=document.getElementById('ss-hev');
-  const taxWin=document.getElementById('ss-tax-window');
   if(hev)hev.textContent=d.fra1!==d.fra2?'High':'Moderate';
+
+  const taxWin=document.getElementById('ss-tax-window');
   if(taxWin){
-    const younger=Math.min(d.a1,d.a2);
-    const window=Math.max(0,d.fraAge-younger);
-    taxWin.textContent=window>=3?`${window} yrs`:(window>0?`${window} yr`:'Narrow');
+    const window_=Math.max(0,Math.min(fraY1,fraY2)-Math.min(d.a1,d.a2));
+    taxWin.textContent=window_>=3?`${window_} yrs`:(window_>0?`${window_} yr`:'Narrow');
   }
 
   const bes=document.getElementById('ss-breakeven-summary');
-  if(bes){
-    bes.textContent=`Estimated break-even ages are ${be1a} and ${be1b} for ${d.n1}, and ${be2a} and ${be2b} for ${d.n2}. In practice, planners should view these as directional. The higher earner’s delay often has more value than the raw break-even math suggests because the survivor benefit inherits that larger amount.`;
-  }
+  if(bes)bes.innerHTML=`
+    <strong>${d.n1}</strong>: FRA ${fraLabel1} &mdash; benefit at 70: <strong>${fmt(at70_1)}/mo</strong> &mdash; break-even ages: ${be1a} (vs 62) / ${be1b} (FRA vs 70)<br>
+    <strong>${d.n2}</strong>: FRA ${fraLabel2} &mdash; benefit at 70: <strong>${fmt(at70_2)}/mo</strong> &mdash; break-even ages: ${be2a} (vs 62) / ${be2b} (FRA vs 70)${d.c2UsesSpousal?` &mdash; <span style="color:var(--gold)">spousal benefit (${fmt(d.spousal2)}/mo) exceeds own</span>`:''}<br><br>
+    Break-even math is directional. The higher earner&apos;s delay has survivor implications that typically justify it even when break-even is beyond the planning horizon &mdash; the surviving spouse receives 100% of the deceased&apos;s benefit including delayed credits.
+  `;
 
-  const taxWindowText=document.getElementById('ss-tax-window');
-  if(taxWindowText && d.focus==='tax')taxWindowText.textContent='Prioritize';
   const guide=document.getElementById('ss-guide-notes');
-  if(guide){
-    guide.innerHTML=`
-      <strong>Planner read:</strong> If the household can bridge income from portfolio assets, delaying the higher earner is often the cleanest way to improve guaranteed lifetime income and survivor resilience. If the client is retiring early, delayed Social Security can also preserve lower-income years for Roth conversions before benefits begin. Earlier claiming becomes more compelling when health is weaker, cash-flow pressure is immediate, or the benefit being delayed is relatively small.
-    `;
+  if(guide)guide.innerHTML=`<strong>Planner read:</strong> If the household can bridge income from Bucket A and the FIA ladder, delaying the higher earner is usually the strongest move &mdash; it maximizes lifetime income, the survivor floor, and (before SS begins) preserves low-income years for Roth conversions. Earlier claiming becomes more compelling when health is a concern, cash-flow pressure is immediate, or the marginal benefit of delay is small relative to foregone income.`;
+}
+
+
+// ─── MEDICARE KNOWLEDGE MODULE ───────────────────────────────────────────────
+function mcAddMonths(date, months){const d=new Date(date);d.setMonth(d.getMonth()+months);return d;}
+function mcFmtDate(d){return d.toLocaleDateString('en-US',{month:'short',year:'numeric'});}
+
+function mcCalcEnrollment(){
+  const dobVal=document.getElementById('mc-enroll-dob')?.value;
+  const working=document.getElementById('mc-still-working')?.value;
+  if(!dobVal)return;
+  const dob=new Date(dobVal);
+  let bday65=new Date(dob);bday65.setFullYear(dob.getFullYear()+65);
+  const bornOn1st=dob.getDate()===1;
+  if(bornOn1st)bday65.setMonth(bday65.getMonth()-1);
+  const iepStart=mcAddMonths(bday65,-3);
+  const iepEnd=mcAddMonths(bday65,3);
+  const now=new Date();
+  const yearsTo65=Math.round((bday65-now)/(365.25*24*3600*1000)*10)/10;
+  const windows=document.getElementById('mc-enrollment-windows');
+  if(windows){
+    windows.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;">
+      <div style="background:var(--blue-pale);border-radius:var(--r);padding:12px 14px;border:0.5px solid rgba(37,99,168,0.2);">
+        <div style="font-size:11px;color:#1a3a6a;margin-bottom:4px;">65th birthday (IEP center)</div>
+        <div style="font-size:14px;font-weight:500;font-family:var(--mono);color:var(--blue)">${bday65.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+        <div style="font-size:11px;color:#1a3a6a;margin-top:3px;">${yearsTo65>0?yearsTo65+' years from today':'Past age 65'}${bornOn1st?' (born on 1st — SSA shifts month back)':''}</div>
+      </div>
+      <div style="background:var(--accent-pale);border-radius:var(--r);padding:12px 14px;border:0.5px solid rgba(61,139,110,0.2);">
+        <div style="font-size:11px;color:#2a6b52;margin-bottom:4px;">IEP opens (earliest enroll)</div>
+        <div style="font-size:14px;font-weight:500;font-family:var(--mono);color:var(--accent)">${mcFmtDate(iepStart)}</div>
+        <div style="font-size:11px;color:#2a6b52;margin-top:3px;">3 months before birthday month</div>
+      </div>
+      <div style="background:${working==='yes'?'var(--gold-pale)':'var(--warn-pale)'};border-radius:var(--r);padding:12px 14px;border:0.5px solid rgba(${working==='yes'?'200,149,58':'192,57,43'},0.25);">
+        <div style="font-size:11px;color:${working==='yes'?'#7a5a1a':'#8a2a1a'};margin-bottom:4px;">IEP closes</div>
+        <div style="font-size:14px;font-weight:500;font-family:var(--mono);color:${working==='yes'?'var(--gold)':'var(--warn)'}">${mcFmtDate(iepEnd)}</div>
+        <div style="font-size:11px;color:${working==='yes'?'#7a5a1a':'#8a2a1a'};margin-top:3px;">3 months after birthday month</div>
+      </div>
+    </div>`;
   }
+  const notice=document.getElementById('mc-enrollment-notice');
+  if(notice){
+    if(working==='yes')notice.innerHTML=`<div class="notice notice-caution"><strong>Active employer coverage — SEP applies.</strong> Client qualifies for a Special Enrollment Period when employer coverage ends — up to 8 months after. No penalty during active employer coverage. <strong>COBRA does not count as employer group health coverage for SEP purposes</strong> — the 8-month SEP clock starts at the end of active employment, not at the end of COBRA.</div>`;
+    else notice.innerHTML=`<div class="notice notice-warn"><strong>Client is not working.</strong> Must enroll during IEP (${mcFmtDate(iepStart)} – ${mcFmtDate(iepEnd)}). Missing this window without a valid SEP triggers permanent lifetime penalties. If receiving SS before 65, Medicare auto-enrolls — confirm this is happening and that Part D is also addressed.</div>`;
+  }
+}
+
+function mcCalcPenalties(){
+  const bMonths=parseInt(document.getElementById('pen-b-months')?.value)||0;
+  const dMonths=parseInt(document.getElementById('pen-d-months')?.value)||0;
+  const life=parseInt(document.getElementById('pen-life')?.value)||88;
+  const yearsLeft=Math.max(0,life-65);
+  const stdB=185.00,dBase=36.78;
+  const bPeriods=Math.floor(bMonths/12);
+  const bPct=bPeriods*10;
+  const bMonthly=stdB*(bPct/100);
+  const bLifetime=bMonthly*12*yearsLeft;
+  const dPct=dMonths*1;
+  const dMonthly=dBase*(dPct/100);
+  const dLifetime=dMonthly*12*yearsLeft;
+  const total=bLifetime+dLifetime;
+  const result=document.getElementById('mc-penalty-result');
+  if(!result)return;
+  result.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+      <div style="padding:13px 15px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.25);">
+        <div style="font-size:11px;color:#8a2a1a;margin-bottom:4px;">Part B penalty</div>
+        <div style="font-size:20px;font-weight:500;font-family:var(--mono);color:var(--warn)">+${bPct}%</div>
+        <div style="font-size:12px;color:#8a2a1a;margin-top:5px;line-height:1.5;">${bPeriods} period${bPeriods!==1?'s':''} × 10% = ${bPct}% surcharge<br>+$${bMonthly.toFixed(2)}/mo on standard premium<br>Lifetime cost: <strong>${fmt(bLifetime)}</strong> (${yearsLeft} yrs)</div>
+      </div>
+      <div style="padding:13px 15px;background:var(--gold-pale);border-radius:var(--r);border:0.5px solid rgba(200,149,58,0.25);">
+        <div style="font-size:11px;color:#7a5a1a;margin-bottom:4px;">Part D penalty</div>
+        <div style="font-size:20px;font-weight:500;font-family:var(--mono);color:var(--gold)">+${dPct.toFixed(0)}%</div>
+        <div style="font-size:12px;color:#7a5a1a;margin-top:5px;line-height:1.5;">${dMonths} months × 1% = ${dPct}% surcharge<br>+$${dMonthly.toFixed(2)}/mo on base (~$36.78)<br>Lifetime cost: <strong>${fmt(dLifetime)}</strong> (${yearsLeft} yrs)</div>
+      </div>
+    </div>
+    <div class="notice notice-warn" style="margin-top:12px;"><strong>Total estimated lifetime penalty: ${fmt(total)}</strong> over ${yearsLeft} year planning horizon. Penalties are recalculated annually as premiums increase — actual lifetime cost will be higher with inflation.</div>
+  `;
 }
 
 // ─── ACA BRIDGE ──────────────────────────────────────────────────────────────
@@ -1980,6 +2298,8 @@ rcRefresh();rcBracket();rcLadder();rcBasis();
 lbBuild();myBuild();
 ssRefresh();
 acaRefresh();
+mcCalcEnrollment();
+mcCalcPenalties();
 
 // Pre-load sample RMD accounts
 rmdAccounts=[{name:"Client 1 — Traditional IRA",balance:450000,type:'tira'},{name:"Client 1 — 401(k)",balance:200000,type:'401k'},{name:"Client 2 — Traditional IRA",balance:120000,type:'tira'}];
