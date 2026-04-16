@@ -248,6 +248,42 @@ input[type=range] { flex: 1; }
 .bracket-legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
 .bl-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
 .bl-swatch { width: 12px; height: 12px; border-radius: 2px; }
+
+/* INTERACTIVE TIMELINE TOOL */
+.tl-filter-btn { font-family: var(--font); font-size: 11px; padding: 4px 12px; border-radius: 12px; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text2); cursor: pointer; transition: all 0.12s; }
+.tl-filter-btn:hover { background: var(--bg3); color: var(--text); }
+.tl-filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.tl-section-header { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); padding: 6px 0 8px; margin-top: 6px; display: flex; align-items: center; gap: 10px; }
+.tl-section-header::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+.tl-milestone { display: flex; gap: 14px; padding-bottom: 16px; position: relative; transition: opacity 0.2s; }
+.tl-milestone:not(:last-child)::before { content: ''; position: absolute; left: 19px; top: 40px; bottom: 0; width: 1px; background: var(--border); }
+.tl-node { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; z-index: 1; letter-spacing: 0.02em; text-align: center; line-height: 1.2; }
+.tl-node-future { background: var(--bg3); border: 1.5px solid var(--border2); color: var(--text2); }
+.tl-node-active { background: var(--accent); border: 1.5px solid var(--accent); color: #fff; box-shadow: 0 0 0 3px rgba(61,139,110,0.18); }
+.tl-node-retire { background: var(--navy); border: 2px solid var(--navy); color: #fff; }
+.tl-node-post { background: var(--bg3); border: 1.5px solid var(--border2); color: var(--text3); }
+.tl-node-urgent { background: var(--warn-pale); border: 1.5px solid var(--warn); color: var(--warn); }
+.tl-node-gold { background: var(--gold-pale); border: 1.5px solid var(--gold); color: #7a5a1a; }
+.tl-body { flex: 1; min-width: 0; padding-top: 2px; }
+.tl-date-badge { font-size: 10px; font-weight: 500; font-family: var(--mono); color: var(--text3); margin-bottom: 3px; }
+.tl-label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tl-detail { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.tl-cat-tag { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
+.tl-tag-ss { background: var(--accent-pale); color: #2a6b52; }
+.tl-tag-medicare { background: var(--blue-pale); color: #1a3a6a; }
+.tl-tag-roth { background: var(--purple-pale); color: #4a2a7a; }
+.tl-tag-bucket { background: var(--gold-pale); color: #7a5a1a; }
+.tl-tag-ltc { background: var(--blue-pale); color: #1a3a6a; }
+.tl-tag-estate { background: var(--purple-pale); color: #4a2a7a; }
+.tl-tag-income { background: var(--accent-pale); color: #2a6b52; }
+.tl-tag-tax { background: var(--gold-pale); color: #7a5a1a; }
+.tl-tag-critical { background: var(--warn-pale); color: #8a2a1a; }
+.tl-milestone.hidden { display: none; }
+.tl-countdown-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 500; font-family: var(--mono); margin-left: 6px; }
+.tl-cp-future { background: var(--bg3); color: var(--text2); border: 0.5px solid var(--border2); }
+.tl-cp-past { background: rgba(0,0,0,0.04); color: var(--text3); text-decoration: line-through; }
+.tl-cp-soon { background: var(--gold-pale); color: #7a5a1a; border: 0.5px solid rgba(200,149,58,0.3); }
+.tl-cp-urgent { background: var(--warn-pale); color: #8a2a1a; border: 0.5px solid rgba(192,57,43,0.25); }
 </style>
 </head>
 <body>
@@ -1210,6 +1246,11 @@ input[type=range] { flex: 1; }
       <div class="section-tabs">
         <button class="stab active" onclick="switchTool('aca','overview')">Overview</button>
         <button class="stab" onclick="switchTool('aca','planner')">MAGI Planner</button>
+        <button class="stab" onclick="switchTool('aca','fpl')">FPL Cliff Visualizer</button>
+        <button class="stab" onclick="switchTool('aca','roth')">Roth vs. Subsidy</button>
+        <button class="stab" onclick="switchTool('aca','cobra')">COBRA Decision</button>
+        <button class="stab" onclick="switchTool('aca','transition')">Medicare Transition</button>
+        <button class="stab" onclick="switchTool('aca','trap')">ACA→Medicare Trap</button>
         <button class="stab" onclick="switchTool('aca','guide')">Planner Guide</button>
       </div>
 
@@ -1273,6 +1314,162 @@ input[type=range] { flex: 1; }
         </div>
       </div>
 
+      <!-- FPL CLIFF VISUALIZER -->
+      <div class="tab-panel" id="aca-fpl">
+        <div class="notice notice-blue"><strong>FPL Cliff Visualizer:</strong> ACA subsidies are sensitive to where MAGI lands relative to Federal Poverty Level thresholds. Moving even $1 across a key threshold can cost thousands in annual premiums. This visualizer maps exactly where the client sits relative to each cliff.</div>
+        <div class="card">
+          <div class="card-title">FPL cliff parameters</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Household MAGI ($)</label><input class="form-input" type="number" id="fpl-magi" value="55000" oninput="fplRefresh()"></div>
+            <div class="form-group"><label class="form-label">Household size</label><select class="form-input" id="fpl-size" onchange="fplRefresh()"><option value="1">1 person</option><option value="2" selected>2 people</option><option value="3">3 people</option><option value="4">4 people</option></select></div>
+            <div class="form-group"><label class="form-label">State</label><select class="form-input" id="fpl-state" onchange="fplRefresh()"><option value="cont">Contiguous US</option><option value="ak">Alaska</option><option value="hi">Hawaii</option></select></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">FPL threshold map — 2026</div>
+          <div id="fpl-cliff-viz"></div>
+          <div id="fpl-zone-summary" style="margin-top:16px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Subsidy impact at each threshold</div>
+          <div id="fpl-threshold-table"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Headroom analysis — income management levers</div>
+          <div id="fpl-headroom"></div>
+        </div>
+      </div>
+
+      <!-- ROTH CONVERSION vs SUBSIDY TRADEOFF -->
+      <div class="tab-panel" id="aca-roth">
+        <div class="notice notice-purple"><strong>The core ACA planning tension:</strong> Every dollar of Roth conversion is included in ACA MAGI. This tool quantifies the tradeoff — how much subsidy is lost at each conversion amount, and whether the long-term Roth benefit still justifies the premium cost.</div>
+        <div class="card">
+          <div class="card-title">Scenario inputs</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Base income (no conversion) ($)</label><input class="form-input" type="number" id="rc-base" value="45000" oninput="rcSubRefresh()"></div>
+            <div class="form-group"><label class="form-label">Household size</label><select class="form-input" id="rc-size" onchange="rcSubRefresh()"><option value="1">1 person</option><option value="2" selected>2 people</option><option value="3">3 people</option><option value="4">4 people</option></select></div>
+            <div class="form-group"><label class="form-label">Years on ACA remaining</label><input class="form-input" type="number" id="rc-years" value="3" min="1" max="10" oninput="rcSubRefresh()"></div>
+            <div class="form-group"><label class="form-label">Roth conversion amount ($)</label><input class="form-input" type="number" id="rc-conv" value="30000" oninput="rcSubRefresh()"></div>
+            <div class="form-group"><label class="form-label">Marginal tax rate on conversion (%)</label><input class="form-input" type="number" id="rc-tax-rate" value="12" step="1" min="0" max="37" oninput="rcSubRefresh()"></div>
+            <div class="form-group"><label class="form-label">Expected Roth growth rate (%/yr)</label><input class="form-input" type="number" id="rc-growth" value="7" step="0.5" oninput="rcSubRefresh()"></div>
+            <div class="form-group"><label class="form-label">Years until Roth assets accessed</label><input class="form-input" type="number" id="rc-horizon" value="15" min="5" oninput="rcSubRefresh()"></div>
+            <div class="form-group"><label class="form-label">Estimated annual SLCSP premium ($)</label><input class="form-input" type="number" id="rc-slcsp" value="18000" oninput="rcSubRefresh()"></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div class="card" style="border-color:rgba(61,139,110,0.3);background:var(--accent-pale);">
+            <div class="card-title" style="color:#2a6b52">Without conversion — subsidy preserved</div>
+            <div id="rc-no-conv-panel"></div>
+          </div>
+          <div class="card" style="border-color:rgba(107,63,160,0.3);background:var(--purple-pale);">
+            <div class="card-title" style="color:#4a2a7a">With Roth conversion — tradeoff analysis</div>
+            <div id="rc-with-conv-panel"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Net present value comparison — is the conversion worth it?</div>
+          <div id="rc-verdict"></div>
+          <div id="rc-multi-table" style="margin-top:16px"></div>
+        </div>
+      </div>
+
+      <!-- COBRA DECISION TOOL -->
+      <div class="tab-panel" id="aca-cobra">
+        <div class="notice notice-caution"><strong>COBRA timing matters:</strong> COBRA continuation coverage gives you up to 18 months of the former employer plan, but at full cost plus 2% admin. The subsidy math changes everything — in many cases, switching to ACA marketplace immediately beats COBRA on cost. This tool runs the comparison.</div>
+        <div class="card">
+          <div class="card-title">COBRA vs. Marketplace inputs</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Monthly COBRA premium ($)</label><input class="form-input" type="number" id="cb-cobra-prem" value="1800" oninput="cobraRefresh()"></div>
+            <div class="form-group"><label class="form-label">Estimated ACA MAGI ($)</label><input class="form-input" type="number" id="cb-magi" value="52000" oninput="cobraRefresh()"></div>
+            <div class="form-group"><label class="form-label">Household size</label><select class="form-input" id="cb-size" onchange="cobraRefresh()"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option></select></div>
+            <div class="form-group"><label class="form-label">Months until Medicare eligible</label><input class="form-input" type="number" id="cb-months-mc" value="36" min="1" oninput="cobraRefresh()"></div>
+            <div class="form-group"><label class="form-label">Estimated SLCSP benchmark premium ($/yr)</label><input class="form-input" type="number" id="cb-slcsp" value="16800" oninput="cobraRefresh()"></div>
+            <div class="form-group"><label class="form-label">Client values employer plan continuity?</label><select class="form-input" id="cb-continuity" onchange="cobraRefresh()"><option value="no">No strong preference</option><option value="yes">Yes — doctor/specialist networks matter</option></select></div>
+          </div>
+        </div>
+        <div class="metric-row" style="margin-bottom:0">
+          <div class="metric-card"><div class="metric-label">Monthly COBRA cost</div><div class="metric-value" id="cb-m-cobra">$—</div><div class="metric-sub">full premium + 2% admin</div></div>
+          <div class="metric-card"><div class="metric-label">Est. marketplace cost</div><div class="metric-value" id="cb-m-market">$—</div><div class="metric-sub">after estimated subsidy</div></div>
+          <div class="metric-card"><div class="metric-label">Monthly savings on ACA</div><div class="metric-value" id="cb-m-savings">$—</div><div class="metric-sub">vs. staying on COBRA</div></div>
+          <div class="metric-card"><div class="metric-label">18-mo COBRA total cost</div><div class="metric-value" id="cb-m-total">$—</div><div class="metric-sub">vs. marketplace equivalent</div></div>
+        </div>
+        <div id="cb-verdict" style="margin-top:14px"></div>
+        <div class="card" style="margin-top:14px">
+          <div class="card-title">COBRA decision timeline</div>
+          <div id="cb-timeline"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">When COBRA actually makes sense</div>
+          <div id="cb-cobra-cases"></div>
+        </div>
+      </div>
+
+      <!-- MEDICARE TRANSITION CHECKLIST -->
+      <div class="tab-panel" id="aca-transition">
+        <div class="notice notice-ok"><strong>The 6-month countdown:</strong> Clients approaching 65 on ACA coverage need to actively manage the transition to Medicare. ACA plans do not auto-terminate, Medicare does not auto-notify, and missing the enrollment window creates permanent penalties. This checklist coordinates both sides.</div>
+        <div class="card">
+          <div class="card-title">Medicare transition parameters</div>
+          <div class="form-grid form-grid-2">
+            <div class="form-group"><label class="form-label">Client date of birth</label><input class="form-input" type="date" id="tr-dob" value="1961-09-15" oninput="trRefresh()"></div>
+            <div class="form-group"><label class="form-label">Currently on ACA marketplace plan?</label><select class="form-input" id="tr-on-aca" onchange="trRefresh()"><option value="yes" selected>Yes — marketplace coverage</option><option value="no">No — COBRA or other</option></select></div>
+          </div>
+          <div id="tr-countdown" style="margin-top:14px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">6-Month pre-65 action checklist</div>
+          <div id="tr-checklist-wrap"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">ACA plan cancellation — critical steps</div>
+          <div id="tr-cancel-steps"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">First-year Medicare MAGI — ACA subsidy reconciliation risk</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7">In the year of Medicare enrollment, a client may have received ACA premium tax credits for the months they were on the marketplace plan, then switch to Medicare mid-year. The IRS reconciles subsidies based on full-year income. If full-year MAGI is higher than projected (due to Roth conversions, RMDs, or asset sales), the client may owe back some or all of the premium credits received during the ACA months. Flag this in the tax projection for the transition year.</div>
+          <div id="tr-recon-notice" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <!-- ACA TO MEDICARE TRAP -->
+      <div class="tab-panel" id="aca-trap">
+        <div style="border:1.5px solid var(--warn);border-radius:var(--rl);padding:16px 18px;margin-bottom:16px;background:var(--warn-pale);">
+          <div style="font-size:13px;font-weight:500;color:var(--warn);margin-bottom:8px;">The ACA → Medicare auto-renewal trap — a mirror of the Medicare enrollment trap</div>
+          <div style="font-size:13px;color:#7a2a1a;line-height:1.7;">A client turns 65 while on an ACA marketplace plan. The ACA plan auto-renews for the next year. Meanwhile, Medicare does not auto-enroll them unless they are already receiving Social Security. The result: the client is paying for ACA marketplace coverage they can no longer receive subsidies for, while accumulating Part B and Part D late enrollment penalties. This is the ACA-side mirror of the Medicare enrollment trap — and it is increasingly common as more early retirees use the marketplace bridge.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">The trap mechanism — step by step</div>
+          <div id="trap-timeline"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Subsidy eligibility ends at 65</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px">Once a client is eligible for Medicare (age 65 or earlier if on SSDI), they are no longer eligible for ACA premium tax credits — even if they remain enrolled in a marketplace plan. If they received subsidies in advance during months when they were Medicare-eligible, they must repay them in full when filing taxes. There is no cap on repayment for clients who are Medicare-eligible.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="padding:12px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2)">
+              <div style="font-size:11px;color:#8a2a1a;margin-bottom:5px;font-weight:500">What the client thinks</div>
+              <div style="font-size:13px;color:#7a2a1a;line-height:1.6">My marketplace plan auto-renewed. I have coverage. I'll figure out Medicare later.</div>
+            </div>
+            <div style="padding:12px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2)">
+              <div style="font-size:11px;color:#8a2a1a;margin-bottom:5px;font-weight:500">What is actually happening</div>
+              <div style="font-size:13px;color:#7a2a1a;line-height:1.6">All subsidies received after age 65 are repayable. Part B and D penalty months are accumulating. IEP window may be closing or closed.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Trap risk assessment</div>
+          <div class="form-grid form-grid-2">
+            <div class="form-group"><label class="form-label">Client date of birth</label><input class="form-input" type="date" id="trap-dob" value="1960-06-01" oninput="trapRefresh()"></div>
+            <div class="form-group"><label class="form-label">Currently receiving Social Security?</label><select class="form-input" id="trap-ss" onchange="trapRefresh()"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+            <div class="form-group"><label class="form-label">Currently enrolled in ACA marketplace?</label><select class="form-input" id="trap-aca-enrolled" onchange="trapRefresh()"><option value="yes" selected>Yes</option><option value="no">No</option></select></div>
+            <div class="form-group"><label class="form-label">Monthly ACA premium (including subsidy) ($)</label><input class="form-input" type="number" id="trap-prem" value="450" oninput="trapRefresh()"></div>
+          </div>
+          <div id="trap-risk-result" style="margin-top:14px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Prevention protocol</div>
+          <div id="trap-prevention"></div>
+        </div>
+      </div>
+
       <div class="tab-panel" id="aca-guide">
         <div class="card">
           <div class="card-title">Planner decision guide</div>
@@ -1328,18 +1525,694 @@ input[type=range] { flex: 1; }
       </div>
     </div>
     <div class="page" id="page-sor">
-      <div class="page-header"><div class="pillar-tag tag-risk">Knowledge Base</div><div class="page-title">Sequence of Returns Risk</div><div class="page-sub">Why early-retirement market declines are uniquely damaging — and how your bucket model addresses this.</div></div>
-      <div class="stub-notice"><div class="stub-dot"></div>Full module coming — interactive SOR simulator comparing traditional withdrawal vs. bucket approach.</div>
-      <div class="card"><div class="card-title">Why sequence matters</div><div style="font-size:13px;color:var(--text2);line-height:1.8">A retiree withdrawing from a portfolio that drops 30% in year 1 loses far more than just 30% — they lock in losses by selling at the bottom to fund living expenses, permanently reducing the base from which future returns compound. Two retirees with identical 20-year average returns can have dramatically different outcomes if one experiences losses early and the other late.<br><br>Your bucket model solves this directly: Bucket A (money market) funds distributions for 2–3 years. Bucket G never needs to be touched during a downturn. FIA positions (Buckets B–F) are principal-protected and not subject to market volatility. The result: clients never sell equities at a loss to fund income.</div></div>
-    </div>
+      <div class="page-header">
+        <div class="pillar-tag tag-risk">Knowledge Base</div>
+        <div class="page-title">Sequence of Returns Risk</div>
+        <div class="page-sub">Interactive simulator — compare traditional withdrawal vs. bucket model side-by-side. Adjust return sequence, withdrawal rate, and bucket allocation to see how timing of losses shapes long-term outcomes.</div>
+      </div>
+
+      <!-- CONCEPT EXPLAINER -->
+      <div class="card">
+        <div class="card-title">Why sequence matters</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">A retiree withdrawing from a portfolio that drops 30% in year 1 loses far more than just 30% — they lock in losses by selling at the bottom to fund living expenses, permanently reducing the base from which future returns compound. Two retirees with identical 20-year average returns can have dramatically different outcomes if one experiences losses early and the other late.<br><br>Your bucket model solves this directly: Bucket A (money market) funds distributions for 2–3 years. Bucket G never needs to be touched during a downturn. FIA positions (Buckets B–F) are principal-protected and not subject to market volatility. The result: clients never sell equities at a loss to fund income.</div>
+      </div>
+
+      <!-- SOR SIMULATOR TABS -->
+      <div class="section-tabs">
+        <button class="stab active" onclick="sorTab('simulator',this)">Portfolio Simulator</button>
+        <button class="stab" onclick="sorTab('bucket',this)">Bucket Model Overlay</button>
+        <button class="stab" onclick="sorTab('concepts',this)">Key Concepts</button>
+      </div>
+
+      <!-- TAB: SIMULATOR -->
+      <div class="tab-panel active" id="sor-tab-simulator">
+        <div class="notice notice-blue" style="margin-bottom:16px">
+          <strong>How to use:</strong> Configure a starting balance, withdrawal rate, and return sequence below. The simulator runs Portfolio A (bad early sequence) vs. Portfolio B (good early sequence) — same 20-year average return, opposite timing. Both experience identical total returns but dramatically different outcomes.
+        </div>
+
+        <!-- INPUTS -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title">Simulation parameters</div>
+          <div class="form-grid form-grid-4" style="margin-bottom:12px">
+            <div class="form-group">
+              <label class="form-label">Starting portfolio ($)</label>
+              <input class="form-input" type="number" id="sor-start" value="1000000" step="50000" oninput="sorRun()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Annual withdrawal ($)</label>
+              <input class="form-input" type="number" id="sor-withdrawal" value="50000" step="1000" oninput="sorRun()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Simulation period (years)</label>
+              <input class="form-input" type="number" id="sor-years" value="25" min="10" max="40" oninput="sorRun()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Inflation adjustment (%/yr)</label>
+              <input class="form-input" type="number" id="sor-inflation" value="3" step="0.5" oninput="sorRun()">
+            </div>
+          </div>
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Crash scenario (Portfolio A — bad sequence)</label>
+              <select class="form-input" id="sor-crash-type" onchange="sorRun()">
+                <option value="2008">2008-style: −38% yr1, −12% yr2, then recovery</option>
+                <option value="dotcom">Dot-com: −22% yr1, −35% yr2, −15% yr3</option>
+                <option value="mild">Mild bear: −15% yr1, −10% yr2</option>
+                <option value="severe">Severe: −45% yr1, −20% yr2</option>
+                <option value="custom">Custom (adjust below)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Long-run avg return after crash (%)</label>
+              <input class="form-input" type="number" id="sor-avg-return" value="7" step="0.5" oninput="sorRun()">
+            </div>
+          </div>
+          <div id="sor-custom-row" style="display:none;margin-top:12px">
+            <div class="form-grid" style="grid-template-columns:repeat(3,1fr)">
+              <div class="form-group"><label class="form-label">Year 1 return (%)</label><input class="form-input" type="number" id="sor-c1" value="-30" oninput="sorRun()"></div>
+              <div class="form-group"><label class="form-label">Year 2 return (%)</label><input class="form-input" type="number" id="sor-c2" value="-15" oninput="sorRun()"></div>
+              <div class="form-group"><label class="form-label">Year 3 return (%)</label><input class="form-input" type="number" id="sor-c3" value="5" oninput="sorRun()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OUTCOME METRICS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <!-- Portfolio A -->
+          <div>
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--warn);margin-bottom:8px">Portfolio A — Bad Early Sequence</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+              <div class="metric-card"><div class="metric-label">Final Balance</div><div class="metric-value" id="sor-a-final">—</div></div>
+              <div class="metric-card"><div class="metric-label">Depleted In Year</div><div class="metric-value" id="sor-a-depleted">—</div></div>
+              <div class="metric-card"><div class="metric-label">Total Withdrawn</div><div class="metric-value" id="sor-a-withdrawn">—</div></div>
+              <div class="metric-card"><div class="metric-label">Effective Rate</div><div class="metric-value" id="sor-a-rate">—</div></div>
+            </div>
+          </div>
+          <!-- Portfolio B -->
+          <div>
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:8px">Portfolio B — Good Early Sequence (reversed)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+              <div class="metric-card"><div class="metric-label">Final Balance</div><div class="metric-value" id="sor-b-final">—</div></div>
+              <div class="metric-card"><div class="metric-label">Depleted In Year</div><div class="metric-value" id="sor-b-depleted">—</div></div>
+              <div class="metric-card"><div class="metric-label">Total Withdrawn</div><div class="metric-value" id="sor-b-withdrawn">—</div></div>
+              <div class="metric-card"><div class="metric-label">Effective Rate</div><div class="metric-value" id="sor-b-rate">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIVERGENCE NOTICE -->
+        <div id="sor-divergence-notice" style="margin-bottom:14px"></div>
+
+        <!-- CHART CANVAS -->
+        <div class="card" style="padding:16px 18px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div class="card-title" style="margin-bottom:0">Portfolio balance over time</div>
+            <div style="display:flex;gap:16px;font-size:11px;color:var(--text2)">
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:20px;height:2px;background:var(--warn);border-radius:1px;display:inline-block"></span>Bad sequence</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:20px;height:2px;background:var(--accent);border-radius:1px;display:inline-block"></span>Good sequence</span>
+            </div>
+          </div>
+          <canvas id="sor-chart" style="width:100%;height:220px;display:block"></canvas>
+        </div>
+
+        <!-- YEAR-BY-YEAR TABLE -->
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <div class="card-title" style="margin:0">Year-by-year detail</div>
+            <button class="btn" onclick="sorToggleTable()" id="sor-table-btn">Show table</button>
+          </div>
+          <div id="sor-table-wrap" style="display:none;overflow-x:auto;max-height:300px;overflow-y:auto">
+            <table class="data-table" id="sor-detail-table">
+              <thead><tr>
+                <th style="text-align:left">Year</th>
+                <th>Return A</th><th>Bal. A (start)</th><th>Bal. A (end)</th>
+                <th>Return B</th><th>Bal. B (start)</th><th>Bal. B (end)</th>
+                <th>Withdrawal</th>
+              </tr></thead>
+              <tbody id="sor-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: BUCKET MODEL OVERLAY -->
+      <div class="tab-panel" id="sor-tab-bucket">
+        <div class="notice notice-ok" style="margin-bottom:16px">
+          <strong>Bucket model protection:</strong> The bucket structure eliminates forced selling during downturns. Bucket A (liquid) covers 2–3 years of distributions at all times. FIA buckets (B–F) are principal-protected — they don't go down in a crash. Bucket G (equity) is never liquidated during a market decline.
+        </div>
+
+        <!-- BUCKET CONFIG -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title">Bucket allocation</div>
+          <div class="notice notice-blue" style="margin-bottom:14px;font-size:12px">Configure the client's bucket balances below. The overlay will show how the bucket structure changes the distribution path during the crash scenario from the simulator.</div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:14px">
+            <div class="bucket-cell"><div class="bucket-label">A</div><div class="bucket-type">Money Market<br>2–3 yr buffer</div><input class="bucket-input" type="number" id="bkt-a" value="150000" oninput="sorBucketRun()" placeholder="0"></div>
+            <div class="bucket-cell"><div class="bucket-label">B</div><div class="bucket-type">FIA — 5yr<br>matures yr 5</div><input class="bucket-input" type="number" id="bkt-b" value="100000" oninput="sorBucketRun()" placeholder="0"></div>
+            <div class="bucket-cell"><div class="bucket-label">C</div><div class="bucket-type">FIA — 5yr<br>matures yr 5</div><input class="bucket-input" type="number" id="bkt-c" value="100000" oninput="sorBucketRun()" placeholder="0"></div>
+            <div class="bucket-cell"><div class="bucket-label">D</div><div class="bucket-type">FIA — 10yr<br>matures yr 10</div><input class="bucket-input" type="number" id="bkt-d" value="100000" oninput="sorBucketRun()" placeholder="0"></div>
+            <div class="bucket-cell"><div class="bucket-label">E</div><div class="bucket-type">FIA — 10yr<br>matures yr 10</div><input class="bucket-input" type="number" id="bkt-e" value="100000" oninput="sorBucketRun()" placeholder="0"></div>
+            <div class="bucket-cell"><div class="bucket-label">F</div><div class="bucket-type">FIA — 10yr<br>matures yr 10</div><input class="bucket-input" type="number" id="bkt-f" value="100000" oninput="sorBucketRun()" placeholder="0"></div>
+            <div class="bucket-cell"><div class="bucket-label">G</div><div class="bucket-type">Equity<br>growth asset</div><input class="bucket-input" type="number" id="bkt-g" value="250000" oninput="sorBucketRun()" placeholder="0"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div class="metric-card"><div class="metric-label">Total bucket allocation</div><div class="metric-value" id="bkt-total">$900,000</div></div>
+            <div class="metric-card"><div class="metric-label">Liquid buffer (Bucket A)</div><div class="metric-value" id="bkt-liquid-yrs">—</div></div>
+            <div class="metric-card"><div class="metric-label">Protected allocation</div><div class="metric-value" id="bkt-pct-protected">—</div></div>
+          </div>
+        </div>
+
+        <!-- BUCKET PROTECTION SCENARIO -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title">Crash scenario — bucket model response</div>
+          <div id="bkt-scenario-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div>
+              <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--warn);margin-bottom:8px">Traditional Portfolio (No Buckets)</div>
+              <div id="bkt-trad-steps" style="display:flex;flex-direction:column;gap:6px"></div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:8px">Bucket Model Response</div>
+              <div id="bkt-model-steps" style="display:flex;flex-direction:column;gap:6px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUCKET BALANCE OVER TIME CHART -->
+        <div class="card" style="padding:16px 18px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div class="card-title" style="margin-bottom:0">Bucket balances over time (bucket model)</div>
+            <div style="display:flex;gap:12px;font-size:11px;color:var(--text2);flex-wrap:wrap">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:#2563a8;display:inline-block"></span>Bucket A</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:var(--gold);display:inline-block"></span>FIA (B–F)</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:var(--accent);display:inline-block"></span>Bucket G</span>
+            </div>
+          </div>
+          <canvas id="bkt-chart" style="width:100%;height:220px;display:block"></canvas>
+        </div>
+
+        <!-- ADVISOR FRAMING -->
+        <div class="notice notice-caution" style="margin-top:14px">
+          <strong>Advisor conversation framing:</strong> "The bucket model doesn't eliminate volatility — it eliminates the need to sell during volatility. Because Bucket A is always funded 2–3 years forward, and FIA positions are principal-protected, we never have to liquidate Bucket G when markets are down. That's the structural answer to sequence of returns risk."
+        </div>
+      </div>
+
+      <!-- TAB: KEY CONCEPTS -->
+      <div class="tab-panel" id="sor-tab-concepts">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div class="card">
+            <div class="card-title">The core mechanic</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.7">
+              <strong style="color:var(--text)">Forced selling at a loss</strong> is the mechanism that makes early downturns so destructive. When a portfolio drops 40% and the retiree still needs $50,000/yr, they sell shares at the bottom. Those shares never compound back. A 40% loss requires a 67% gain just to break even — but with fewer shares, that recovery matters less.
+              <br><br>
+              <strong style="color:var(--text)">Average return doesn't predict outcome.</strong> Two portfolios with the same CAGR over 20 years can have wildly different ending balances based solely on when the bad years occurred. This is the core insight behind SOR risk — and why average return assumptions are insufficient for retirement planning.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Withdrawal rate amplifies the effect</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.7">
+              <strong style="color:var(--text)">The 4% rule</strong> was derived from historical worst-case sequences (1966 retiree) — it does not guarantee success for all future sequences. Higher withdrawal rates amplify SOR risk dramatically.
+              <br><br>
+              <strong style="color:var(--text)">Dollar withdrawals vs. percentage:</strong> When a client takes a fixed dollar amount (e.g., $50k/yr), a portfolio decline means they're selling a larger percentage of the remaining balance. A 40% drop that turns $1M into $600K means $50K is now 8.3% of the portfolio — not 5%. The portfolio mathematically cannot recover.
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div class="card">
+            <div class="card-title">Why "stay the course" doesn't work in retirement</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.7">
+              During accumulation, a market decline is an opportunity — you're buying more shares at lower prices. The math works in your favor.
+              <br><br>
+              During distribution, the math reverses. Every withdrawal during a decline is a permanent reduction in base — you are selling shares at the worst time and cannot buy them back. "Staying the course" doesn't repair the damage because the compounding base is permanently smaller.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Structural mitigations</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="min-width:20px;height:20px;border-radius:50%;background:var(--accent-pale);color:#2a6b52;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span>
+                <div><strong style="color:var(--text)">Cash buffer (Bucket A):</strong> Eliminates forced selling for 2–3 years. Distributions never come from equities.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="min-width:20px;height:20px;border-radius:50%;background:var(--accent-pale);color:#2a6b52;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span>
+                <div><strong style="color:var(--text)">FIA ladder (Buckets B–F):</strong> Principal-protected contracts that mature at known dates. Not subject to market drawdowns — they refill Bucket A on schedule.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="min-width:20px;height:20px;border-radius:50%;background:var(--accent-pale);color:#2a6b52;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</span>
+                <div><strong style="color:var(--text)">Bucket G as long-term engine:</strong> Equity grows untouched during downturns. Never liquidated during a bear market. Only harvested when conditions are favorable.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="min-width:20px;height:20px;border-radius:50%;background:var(--accent-pale);color:#2a6b52;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</span>
+                <div><strong style="color:var(--text)">Flexible withdrawal rate:</strong> If Bucket G is down materially, defer discretionary spending and extend the buffer before refilling from G.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Common client objections and responses</div>
+          <table class="data-table">
+            <thead><tr><th style="text-align:left">Objection</th><th style="text-align:left">Advisor response</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:var(--font)">"The market always comes back."</td><td style="font-family:var(--font);text-align:left;color:var(--text2)">It often does — but your portfolio doesn't come back the same way. If you sold 10% of your shares at the bottom to fund income, those shares never recover. The portfolio is permanently smaller.</td></tr>
+              <tr><td style="font-family:var(--font)">"My average return will be 7%."</td><td style="font-family:var(--font);text-align:left;color:var(--text2)">Average return is a planning fiction in retirement. The sequence of those returns determines whether you run out of money. Two identical 7% averages can produce wildly different outcomes.</td></tr>
+              <tr><td style="font-family:var(--font)">"Can't I just hold a balanced fund?"</td><td style="font-family:var(--font);text-align:left;color:var(--text2)">A balanced fund is better than pure equity, but you still face the same forced-selling problem during any drawdown. The bucket structure completely separates the income engine from the growth engine.</td></tr>
+              <tr><td style="font-family:var(--font)">"Aren't FIAs expensive?"</td><td style="font-family:var(--font);text-align:left;color:var(--text2)">The cost comparison should be: what is the cost of NOT having principal protection during year 1 or 2 of retirement? If a crash happens in year 2, the FIA premium buys you the ability to let Bucket G recover without selling.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- end page-sor -->
+
+<style>
+/* SOR module specific styles */
+#sor-chart, #bkt-chart {
+  width: 100%;
+  height: 220px;
+}
+.sor-step {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  padding: 8px 12px;
+  border-radius: var(--r);
+  border: 0.5px solid var(--border);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text2);
+}
+.sor-step-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+.sor-step-bad { border-color: rgba(192,57,43,0.2); background: var(--warn-pale); }
+.sor-step-bad .sor-step-icon { background: var(--warn); color: white; }
+.sor-step-good { border-color: rgba(61,139,110,0.2); background: var(--accent-pale); }
+.sor-step-good .sor-step-icon { background: var(--accent); color: white; }
+</style>
+
+<script>
+// ─── SOR SIMULATOR ────────────────────────────────────────────────────────────
+
+function sorTab(name, el) {
+  document.querySelectorAll('#page-sor .tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#page-sor .stab').forEach(b => b.classList.remove('active'));
+  document.getElementById('sor-tab-' + name).classList.add('active');
+  el.classList.add('active');
+  if (name === 'simulator') sorRun();
+  if (name === 'bucket') sorBucketRun();
+}
+
+function sorGetReturns() {
+  const type = document.getElementById('sor-crash-type').value;
+  const avg = parseFloat(document.getElementById('sor-avg-return').value) / 100 || 0.07;
+  const years = parseInt(document.getElementById('sor-years').value) || 25;
+  document.getElementById('sor-custom-row').style.display = type === 'custom' ? 'block' : 'none';
+
+  let crashReturns = [];
+  if (type === '2008') { crashReturns = [-0.38, -0.12, 0.26, 0.15]; }
+  else if (type === 'dotcom') { crashReturns = [-0.22, -0.35, -0.15, 0.28, 0.10]; }
+  else if (type === 'mild') { crashReturns = [-0.15, -0.10, 0.18]; }
+  else if (type === 'severe') { crashReturns = [-0.45, -0.20, 0.35, 0.20]; }
+  else if (type === 'custom') {
+    const c1 = parseFloat(document.getElementById('sor-c1').value) / 100 || -0.30;
+    const c2 = parseFloat(document.getElementById('sor-c2').value) / 100 || -0.15;
+    const c3 = parseFloat(document.getElementById('sor-c3').value) / 100 || 0.05;
+    crashReturns = [c1, c2, c3];
+  }
+
+  const numGoodYears = years - crashReturns.length;
+  const goodYears = Array(numGoodYears).fill(avg);
+  const seqA = [...crashReturns, ...goodYears];
+  const seqB = [...goodYears.slice().reverse(), ...crashReturns.slice().reverse()];
+  return { seqA, seqB };
+}
+
+function sorSimulate(returns, startBal, annualWithdrawal, inflation) {
+  let bal = startBal;
+  let totalWithdrawn = 0;
+  let depletedYear = null;
+  const history = [{ year: 0, bal: bal }];
+  for (let i = 0; i < returns.length; i++) {
+    const withdrawal = annualWithdrawal * Math.pow(1 + inflation / 100, i);
+    if (bal <= 0) { history.push({ year: i + 1, bal: 0, ret: returns[i], wd: 0 }); continue; }
+    const preWithdraw = bal - withdrawal;
+    if (preWithdraw <= 0) {
+      totalWithdrawn += Math.max(0, bal);
+      if (!depletedYear) depletedYear = i + 1;
+      bal = 0;
+      history.push({ year: i + 1, bal: 0, ret: returns[i], wd: Math.max(0, bal) });
+      continue;
+    }
+    totalWithdrawn += withdrawal;
+    bal = preWithdraw * (1 + returns[i]);
+    history.push({ year: i + 1, bal: Math.max(0, bal), ret: returns[i], wd: withdrawal });
+  }
+  return { finalBal: Math.max(0, bal), totalWithdrawn, depletedYear, history };
+}
+
+function fmtK(v) {
+  if (v >= 1000000) return '$' + (v / 1000000).toFixed(2) + 'M';
+  if (v >= 1000) return '$' + Math.round(v / 1000) + 'K';
+  return '$' + Math.round(v);
+}
+
+let sorChartCtx = null;
+let sorChartData = null;
+
+function sorDrawChart(histA, histB) {
+  const canvas = document.getElementById('sor-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth;
+  const H = 220;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 20, right: 20, bottom: 32, left: 60 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  const allBals = [...histA, ...histB].map(d => d.bal);
+  const maxVal = Math.max(...allBals, 1);
+  const years = histA.length;
+
+  // grid lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + ch - (i / 5) * ch;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cw, y); ctx.stroke();
+    ctx.fillStyle = '#9a9a90';
+    ctx.font = '9px DM Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtK((i / 5) * maxVal), pad.left - 4, y + 3);
+  }
+
+  // x axis labels
+  ctx.fillStyle = '#9a9a90'; ctx.font = '9px DM Sans, sans-serif'; ctx.textAlign = 'center';
+  for (let i = 0; i < years; i += Math.ceil(years / 8)) {
+    const x = pad.left + (i / (years - 1)) * cw;
+    ctx.fillText('Yr ' + histA[i].year, x, H - pad.bottom + 14);
+  }
+
+  function drawLine(hist, color) {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    hist.forEach((d, i) => {
+      const x = pad.left + (i / (hist.length - 1)) * cw;
+      const y = pad.top + ch - (d.bal / maxVal) * ch;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // fill under
+    ctx.beginPath();
+    hist.forEach((d, i) => {
+      const x = pad.left + (i / (hist.length - 1)) * cw;
+      const y = pad.top + ch - (d.bal / maxVal) * ch;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.lineTo(pad.left + cw, pad.top + ch);
+    ctx.lineTo(pad.left, pad.top + ch);
+    ctx.closePath();
+    ctx.fillStyle = color.replace(')', ',0.07)').replace('rgb', 'rgba').replace('#', '');
+    // simpler alpha fill
+    ctx.globalAlpha = 0.07;
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  drawLine(histB, '#3d8b6e');
+  drawLine(histA, '#c0392b');
+}
+
+function sorRun() {
+  const start = parseFloat(document.getElementById('sor-start').value) || 1000000;
+  const wd = parseFloat(document.getElementById('sor-withdrawal').value) || 50000;
+  const infl = parseFloat(document.getElementById('sor-inflation').value) || 3;
+  const { seqA, seqB } = sorGetReturns();
+
+  const resA = sorSimulate(seqA, start, wd, infl);
+  const resB = sorSimulate(seqB, start, wd, infl);
+
+  document.getElementById('sor-a-final').textContent = fmtK(resA.finalBal);
+  document.getElementById('sor-a-depleted').textContent = resA.depletedYear ? 'Year ' + resA.depletedYear : 'Never';
+  document.getElementById('sor-a-withdrawn').textContent = fmtK(resA.totalWithdrawn);
+  document.getElementById('sor-a-rate').textContent = ((wd / start) * 100).toFixed(1) + '%';
+
+  document.getElementById('sor-b-final').textContent = fmtK(resB.finalBal);
+  document.getElementById('sor-b-depleted').textContent = resB.depletedYear ? 'Year ' + resB.depletedYear : 'Never';
+  document.getElementById('sor-b-withdrawn').textContent = fmtK(resB.totalWithdrawn);
+  document.getElementById('sor-b-rate').textContent = ((wd / start) * 100).toFixed(1) + '%';
+
+  // Divergence notice
+  const notice = document.getElementById('sor-divergence-notice');
+  const gap = resB.finalBal - resA.finalBal;
+  if (resA.depletedYear && !resB.depletedYear) {
+    notice.innerHTML = `<div class="notice notice-warn"><strong>Critical divergence:</strong> Portfolio A depleted in year ${resA.depletedYear} — client runs out of money. Portfolio B survives the full ${seqA.length}-year period with ${fmtK(resB.finalBal)} remaining. Same average return, same withdrawals, same starting balance. The only difference: which years the losses occurred.</div>`;
+  } else if (resA.depletedYear && resB.depletedYear) {
+    notice.innerHTML = `<div class="notice notice-warn"><strong>Both portfolios depleted:</strong> A depleted in year ${resA.depletedYear}, B in year ${resB.depletedYear}. Consider reducing the withdrawal rate or increasing the starting balance.</div>`;
+  } else if (gap > 50000) {
+    notice.innerHTML = `<div class="notice notice-caution"><strong>Balance gap: ${fmtK(gap)}</strong> — Portfolio B ends with ${fmtK(gap)} more than Portfolio A despite identical average returns. This gap is entirely attributable to return sequence — not average performance.</div>`;
+  } else {
+    notice.innerHTML = `<div class="notice notice-ok">Both portfolios survive the full period. The withdrawal rate is sustainable across both sequences, though Portfolio B still outperforms by ${fmtK(Math.abs(gap))}.</div>`;
+  }
+
+  // Table
+  const tbody = document.getElementById('sor-tbody');
+  tbody.innerHTML = '';
+  for (let i = 1; i < resA.history.length; i++) {
+    const a = resA.history[i]; const ap = resA.history[i - 1];
+    const b = resB.history[i]; const bp = resB.history[i - 1];
+    const wd2 = wd * Math.pow(1 + infl / 100, i - 1);
+    const aRetPct = ((a.ret || 0) * 100).toFixed(1) + '%';
+    const bRetPct = ((b.ret || 0) * 100).toFixed(1) + '%';
+    const aColor = (a.ret || 0) < 0 ? 'color:var(--warn)' : 'color:var(--accent)';
+    const bColor = (b.ret || 0) < 0 ? 'color:var(--warn)' : 'color:var(--accent)';
+    tbody.innerHTML += `<tr>
+      <td style="text-align:left;font-family:var(--font)">Year ${i}</td>
+      <td style="${aColor}">${aRetPct}</td><td>${fmtK(ap.bal)}</td><td>${fmtK(a.bal)}</td>
+      <td style="${bColor}">${bRetPct}</td><td>${fmtK(bp.bal)}</td><td>${fmtK(b.bal)}</td>
+      <td>${fmtK(wd2)}</td>
+    </tr>`;
+  }
+
+  sorDrawChart(resA.history, resB.history);
+}
+
+function sorToggleTable() {
+  const wrap = document.getElementById('sor-table-wrap');
+  const btn = document.getElementById('sor-table-btn');
+  const hidden = wrap.style.display === 'none';
+  wrap.style.display = hidden ? 'block' : 'none';
+  btn.textContent = hidden ? 'Hide table' : 'Show table';
+}
+
+// ─── BUCKET MODEL OVERLAY ─────────────────────────────────────────────────────
+
+function sorBucketRun() {
+  const a = parseFloat(document.getElementById('bkt-a').value) || 0;
+  const b = parseFloat(document.getElementById('bkt-b').value) || 0;
+  const c = parseFloat(document.getElementById('bkt-c').value) || 0;
+  const d = parseFloat(document.getElementById('bkt-d').value) || 0;
+  const e = parseFloat(document.getElementById('bkt-e').value) || 0;
+  const f = parseFloat(document.getElementById('bkt-f').value) || 0;
+  const g = parseFloat(document.getElementById('bkt-g').value) || 0;
+  const total = a + b + c + d + e + f + g;
+  const fiaTotal = b + c + d + e + f;
+  const wd = parseFloat(document.getElementById('sor-withdrawal').value) || 50000;
+
+  document.getElementById('bkt-total').textContent = fmtK(total);
+  document.getElementById('bkt-liquid-yrs').textContent = wd > 0 ? (a / wd).toFixed(1) + ' years' : '—';
+  document.getElementById('bkt-pct-protected').textContent = total > 0 ? Math.round(((a + fiaTotal) / total) * 100) + '%' : '—';
+
+  // Get crash type from simulator
+  const { seqA } = sorGetReturns();
+  const crashYears = seqA.filter(r => r < 0).length;
+  const worstCrash = Math.min(...seqA);
+
+  // Traditional portfolio steps
+  const tradSteps = document.getElementById('bkt-trad-steps');
+  tradSteps.innerHTML = '';
+  const tradItems = [
+    `Market drops ${Math.abs(Math.round(worstCrash * 100))}% — full portfolio exposed to decline`,
+    `To fund $${Math.round(wd / 1000)}K annual distribution, must sell ${Math.round(wd / (total * (1 + worstCrash)) * 100)}% of depressed portfolio`,
+    `Locked-in losses permanently reduce compounding base`,
+    `Recovery requires ${Math.round((1 / (1 + worstCrash) - 1) * 100)}% gain just to break even — with a smaller share count`,
+    crashYears >= 2 ? `Second down year compounds the damage — no buffer to absorb continued withdrawals` : `Even a single down year with forced selling has lasting impact on long-term balance`,
+  ];
+  tradItems.forEach(txt => {
+    tradSteps.innerHTML += `<div class="sor-step sor-step-bad"><div class="sor-step-icon">✕</div><div>${txt}</div></div>`;
+  });
+
+  // Bucket model steps
+  const modelSteps = document.getElementById('bkt-model-steps');
+  modelSteps.innerHTML = '';
+  const aYears = (a / wd).toFixed(1);
+  const modelItems = [
+    `Market drops ${Math.abs(Math.round(worstCrash * 100))}% — Bucket G is affected, but <strong>no distribution comes from Bucket G</strong>`,
+    `Bucket A (${fmtK(a)}) funds distributions — approximately ${aYears} years of income, no selling required`,
+    `FIA positions (${fmtK(fiaTotal)}) are principal-protected — no market loss applied to Buckets B–F`,
+    `Bucket G allowed to recover fully before any harvest is triggered`,
+    `When market recovers, Bucket A is replenished from FIA maturities (Buckets B/C at year 5, D/E/F at year 10)`,
+  ];
+  modelItems.forEach(txt => {
+    modelSteps.innerHTML += `<div class="sor-step sor-step-good"><div class="sor-step-icon">✓</div><div>${txt}</div></div>`;
+  });
+
+  // Bucket chart
+  sorDrawBucketChart(a, fiaTotal, g, seqA, wd);
+}
+
+function sorDrawBucketChart(initA, initFia, initG, seqA, annualWd) {
+  const canvas = document.getElementById('bkt-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth;
+  const H = 220;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  // Simulate bucket model over time
+  const years = seqA.length;
+  let bucketA = initA, fiaRemaining = initFia, bucketG = initG;
+  const histA = [{ year: 0, val: bucketA }];
+  const histFia = [{ year: 0, val: fiaRemaining }];
+  const histG = [{ year: 0, val: bucketG }];
+
+  for (let i = 0; i < years; i++) {
+    const ret = seqA[i];
+    // Withdraw from A first
+    bucketA = Math.max(0, bucketA - annualWd);
+    // If A is low, pull from FIA if available (maturity events at years 5 and 10)
+    if (bucketA < annualWd && fiaRemaining > 0) {
+      const refill = Math.min(fiaRemaining, annualWd * 2);
+      bucketA += refill;
+      fiaRemaining -= refill;
+    }
+    // G grows/shrinks
+    bucketG = Math.max(0, bucketG * (1 + ret));
+    // FIA: 0% floor, no loss
+    fiaRemaining = fiaRemaining; // principal protected
+    histA.push({ year: i + 1, val: bucketA });
+    histFia.push({ year: i + 1, val: fiaRemaining });
+    histG.push({ year: i + 1, val: bucketG });
+  }
+
+  const maxVal = Math.max(...histA.map(d => d.val), ...histFia.map(d => d.val), ...histG.map(d => d.val), 1);
+  const pad = { top: 20, right: 20, bottom: 32, left: 60 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  // grid
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)'; ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + ch - (i / 4) * ch;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cw, y); ctx.stroke();
+    ctx.fillStyle = '#9a9a90'; ctx.font = '9px DM Mono,monospace'; ctx.textAlign = 'right';
+    ctx.fillText(fmtK((i / 4) * maxVal), pad.left - 4, y + 3);
+  }
+  ctx.fillStyle = '#9a9a90'; ctx.font = '9px DM Sans,sans-serif'; ctx.textAlign = 'center';
+  for (let i = 0; i <= years; i += Math.ceil(years / 8)) {
+    const x = pad.left + (i / years) * cw;
+    ctx.fillText('Yr ' + i, x, H - pad.bottom + 14);
+  }
+
+  function drawBucketLine(hist, color, dashed) {
+    ctx.beginPath();
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    if (dashed) ctx.setLineDash([4, 3]); else ctx.setLineDash([]);
+    hist.forEach((d, i) => {
+      const x = pad.left + (i / years) * cw;
+      const y = pad.top + ch - (d.val / maxVal) * ch;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  drawBucketLine(histG, '#3d8b6e', false);
+  drawBucketLine(histFia, '#c8953a', true);
+  drawBucketLine(histA, '#2563a8', false);
+}
+
+// Initialize on load
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    sorRun();
+    sorBucketRun();
+  }, 100);
+});
+</script>
     <div class="page" id="page-timeline">
-      <div class="page-header"><div class="pillar-tag tag-income">Knowledge Base</div><div class="page-title">Pre-Retirement Timeline</div><div class="page-sub">Key action items from 5 years out through the first year of retirement.</div></div>
-      <div class="timeline-item"><div class="timeline-node">5y</div><div><div class="timeline-label">5 years out</div><div class="timeline-detail">Begin income gap analysis. Assess LTC insurability. Model SS claiming scenarios. Start Roth conversion window if in lower bracket. Review beneficiary designations.</div></div></div>
-      <div class="timeline-item"><div class="timeline-node">3y</div><div><div class="timeline-label">3 years out</div><div class="timeline-detail">Finalize bucket allocation. Place FIA positions with staggered maturities. Confirm LTC decision. Update estate documents. Model ACA bridge if retiring before 65.</div></div></div>
-      <div class="timeline-item"><div class="timeline-node">2y</div><div><div class="timeline-label">2 years out</div><div class="timeline-detail">IRMAA 2-year lookback window opens. Confirm Medicare enrollment plan. Finalize SS claiming strategy. Continue Roth conversions if bracket allows.</div></div></div>
-      <div class="timeline-item"><div class="timeline-node">1y</div><div><div class="timeline-label">1 year out</div><div class="timeline-detail">Fund Bucket A to target level. Complete remaining Roth conversions. Confirm pension election. Review all account titling and TOD designations.</div></div></div>
-      <div class="timeline-item"><div class="timeline-node done">R</div><div><div class="timeline-label">Retirement date</div><div class="timeline-detail">Activate monthly distribution from Bucket A. Enroll in Medicare Parts A &amp; B. Begin SS if claiming at retirement. Confirm all income sources are flowing.</div></div></div>
-      <div class="timeline-item"><div class="timeline-node">+1y</div><div><div class="timeline-label">First year review</div><div class="timeline-detail">Verify income plan is on track. Review Bucket G performance. Assess Roth conversion opportunity for next tax year. Update all plan projections.</div></div></div>
+      <div class="page-header"><div class="pillar-tag tag-income">Interactive Tool</div><div class="page-title">Pre-Retirement Timeline Calculator</div><div class="page-sub">Enter a retirement date to generate a personalized countdown with exact dated milestones for every major planning action.</div></div>
+
+      <!-- INPUT CARD -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Retirement date input</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px;align-items:end">
+          <div class="form-group">
+            <label class="form-label">Retirement date</label>
+            <input class="form-input" type="date" id="tl-retire-date" oninput="tlGenerate()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Client date of birth</label>
+            <input class="form-input" type="date" id="tl-dob" oninput="tlGenerate()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Spouse / Client 2 DOB (optional)</label>
+            <input class="form-input" type="date" id="tl-dob2" oninput="tlGenerate()">
+          </div>
+          <div>
+            <button class="btn btn-primary" onclick="tlLoadFromSetup()" style="white-space:nowrap">↑ Load from Client Setup</button>
+          </div>
+        </div>
+        <div id="tl-summary" style="display:none;margin-top:14px;padding:12px 16px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2)">
+          <span id="tl-summary-text" style="font-size:13px;color:#2a6b52;font-weight:500"></span>
+        </div>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div id="tl-filter-bar" style="display:none;margin-bottom:16px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-right:4px">Filter:</span>
+          <button class="tl-filter-btn active" data-cat="all" onclick="tlFilter('all')">All milestones</button>
+          <button class="tl-filter-btn" data-cat="ss" onclick="tlFilter('ss')">Social Security</button>
+          <button class="tl-filter-btn" data-cat="medicare" onclick="tlFilter('medicare')">Medicare</button>
+          <button class="tl-filter-btn" data-cat="roth" onclick="tlFilter('roth')">Roth Conversions</button>
+          <button class="tl-filter-btn" data-cat="bucket" onclick="tlFilter('bucket')">Bucket Funding</button>
+          <button class="tl-filter-btn" data-cat="ltc" onclick="tlFilter('ltc')">LTC</button>
+          <button class="tl-filter-btn" data-cat="estate" onclick="tlFilter('estate')">Estate</button>
+          <button class="tl-filter-btn" data-cat="critical" onclick="tlFilter('critical')">⚠ Critical dates</button>
+        </div>
+      </div>
+
+      <!-- TIMELINE OUTPUT -->
+      <div id="tl-prompt" class="notice notice-blue" style="font-size:13px">
+        Enter a retirement date above to generate your personalized milestone calendar. Milestones will be calculated backward from that date with specific month and year targets for each action.
+      </div>
+      <div id="tl-output" style="display:none"></div>
+
+      <!-- PRINT SUMMARY -->
+      <div id="tl-print-bar" style="display:none;margin-top:6px">
+        <button class="btn" onclick="tlPrint()">Print / Export timeline</button>
+      </div>
     </div>
 
     <!-- AI Q&A -->
@@ -1429,7 +2302,14 @@ function switchTool(tool,tab){
     if(tab==='enrollment')mcCalcEnrollment();
     if(tab==='penalties')mcCalcPenalties();
   }
-     if(tool==='aca'){acaRefresh();}
+     if(tool==='aca'){
+    acaRefresh();
+    if(tab==='fpl')fplRefresh();
+    if(tab==='roth')rcSubRefresh();
+    if(tab==='cobra')cobraRefresh();
+    if(tab==='transition')trRefresh();
+    if(tab==='trap')trapRefresh();
+  }
 }
 function toggleCheck(el){el.classList.toggle('checked');}
 
@@ -2255,6 +3135,422 @@ function acaRefresh(){
   }
 }
 
+// ─── FPL CLIFF VISUALIZER ─────────────────────────────────────────────────────
+const FPL_BASE = { cont: 15060, ak: 18810, hi: 17310 };
+const FPL_ADD  = { cont: 5380,  ak: 6730,  hi: 6150  };
+
+function fplLine(size, state, pct) {
+  const base = FPL_BASE[state] || FPL_BASE.cont;
+  const add  = FPL_ADD[state]  || FPL_ADD.cont;
+  return (base + add * (size - 1)) * (pct / 100);
+}
+
+function fplRefresh() {
+  const magi  = parseFloat(document.getElementById('fpl-magi')?.value) || 0;
+  const size  = parseInt(document.getElementById('fpl-size')?.value) || 2;
+  const state = document.getElementById('fpl-state')?.value || 'cont';
+
+  const thresholds = [100, 150, 200, 250, 400];
+  const incomes    = thresholds.map(p => fplLine(size, state, p));
+  const fplPct     = (magi / fplLine(size, state, 100)) * 100;
+
+  // ── Build SVG bar ──
+  const maxInc = incomes[4] * 1.05;
+  const W = 680, H = 100, padL = 10, padR = 10, barY = 38, barH = 32;
+  const toX = v => padL + (v / maxInc) * (W - padL - padR);
+  const colors = ['#4aa882','#6fcfae','#f0c060','#e89040','#c0392b'];
+  const labels = ['100%','150%','200%','250%','400%'];
+
+  let segs = '';
+  for (let i = 0; i < thresholds.length; i++) {
+    const x0 = i === 0 ? padL : toX(incomes[i-1]);
+    const x1 = toX(incomes[i]);
+    segs += `<rect x="${x0}" y="${barY}" width="${x1-x0}" height="${barH}" fill="${colors[i]}" opacity="0.8"/>`;
+    segs += `<text x="${x1-2}" y="${barY-6}" font-size="9" fill="${colors[i]}" text-anchor="end" font-family="DM Mono,monospace">${labels[i]}</text>`;
+    segs += `<line x1="${x1}" y1="${barY-4}" x2="${x1}" y2="${barY+barH+4}" stroke="${colors[i]}" stroke-width="1" stroke-dasharray="3,2"/>`;
+    segs += `<text x="${x1-2}" y="${barY+barH+14}" font-size="8" fill="#9a9a90" text-anchor="end" font-family="DM Mono,monospace">$${Math.round(incomes[i]/1000)}k</text>`;
+  }
+
+  // Client marker
+  const cx = Math.min(Math.max(toX(magi), padL+1), W-padR-1);
+  segs += `<line x1="${cx}" y1="${barY-12}" x2="${cx}" y2="${barY+barH+8}" stroke="#1a1a18" stroke-width="2"/>`;
+  segs += `<rect x="${cx-28}" y="${barY-28}" width="56" height="16" rx="3" fill="#1a1a18"/>`;
+  segs += `<text x="${cx}" y="${barY-17}" font-size="9" fill="white" text-anchor="middle" font-weight="500" font-family="DM Sans,sans-serif">Client ${Math.round(fplPct)}%</text>`;
+
+  const viz = document.getElementById('fpl-cliff-viz');
+  if (viz) viz.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;overflow:visible">${segs}</svg>`;
+
+  // ── Zone summary ──
+  let zone, zoneClass, zoneDesc, subsidyDesc;
+  if (fplPct < 100)      { zone='Below 100% FPL'; zoneClass='notice-warn'; subsidyDesc='Below 100% FPL — ineligible for marketplace subsidies in most states (unless Medicaid expansion applies). Review Medicaid eligibility.'; }
+  else if (fplPct < 150) { zone='100%–150% FPL'; zoneClass='notice-ok'; subsidyDesc='Strongest subsidy zone. Clients here often pay $0 or very low net premiums. Maximum subsidy preservation value — every dollar of income added is very costly.'; }
+  else if (fplPct < 200) { zone='150%–200% FPL'; zoneClass='notice-ok'; subsidyDesc='Strong subsidy range. SLCSP cap is approximately 3%–6% of income. Subsidies are substantial and worth protecting.'; }
+  else if (fplPct < 250) { zone='200%–250% FPL'; zoneClass='notice-caution'; subsidyDesc='Moderate subsidy zone. Cap rises to ~6%–8% of income. Still meaningful value — Roth conversions or gains that push into 250%+ can erode subsidy noticeably.'; }
+  else if (fplPct < 400) { zone='250%–400% FPL'; zoneClass='notice-caution'; subsidyDesc='Tighter subsidy zone. Cap approaches 8.5% of income. Subsidies exist but are reduced. Roth conversion math must weigh premium cost carefully.'; }
+  else                   { zone='Above 400% FPL'; zoneClass='notice-warn'; subsidyDesc='Above the 400% threshold. Under current law (ARP extensions), subsidies may still be available — but they are significantly reduced or zero for many plans. Prioritize broader tax planning over subsidy preservation.'; }
+
+  const summary = document.getElementById('fpl-zone-summary');
+  if (summary) summary.innerHTML = `<div class="notice ${zoneClass}"><strong>Client zone: ${zone}</strong> — ${subsidyDesc}<br><span style="font-size:11px;color:inherit;opacity:0.75">FPL % = ${fplPct.toFixed(1)}% &nbsp;|&nbsp; Household MAGI = $${magi.toLocaleString()} &nbsp;|&nbsp; 100% FPL for ${size}-person HH = $${Math.round(fplLine(size,state,100)).toLocaleString()}</span></div>`;
+
+  // ── Threshold table ──
+  const subsCapPcts = [null, 2.0, 4.0, 6.0, 8.5, 8.5];
+  let rows = thresholds.map((pct,i) => {
+    const inc = incomes[i];
+    const annualCap = subsCapPcts[i+1] !== null ? (inc * subsCapPcts[i+1] / 100) : null;
+    const slcsp = 16800; // typical benchmark
+    const subsidy = annualCap !== null ? Math.max(0, slcsp - annualCap) : 0;
+    const crossed = magi < inc;
+    return `<tr style="background:${crossed ? 'var(--accent-pale)' : ''}">
+      <td style="padding:8px 12px;border-bottom:0.5px solid var(--border);font-size:12px;font-weight:500">${pct}% FPL</td>
+      <td style="padding:8px 12px;border-bottom:0.5px solid var(--border);font-family:var(--mono);font-size:12px">$${Math.round(inc).toLocaleString()}</td>
+      <td style="padding:8px 12px;border-bottom:0.5px solid var(--border);font-size:11px;color:var(--text2)">${subsCapPcts[i+1]}% of income</td>
+      <td style="padding:8px 12px;border-bottom:0.5px solid var(--border);font-family:var(--mono);font-size:12px;color:${subsidy > 5000 ? 'var(--accent)' : subsidy > 2000 ? 'var(--gold)' : 'var(--warn)'}">~$${Math.round(subsidy/12).toLocaleString()}/mo</td>
+      <td style="padding:8px 12px;border-bottom:0.5px solid var(--border);font-size:11px">${crossed ? '<span style="color:var(--accent);font-weight:500">← Client below this line</span>' : '<span style="color:var(--text3)">Above</span>'}</td>
+    </tr>`;
+  }).join('');
+  const tbl = document.getElementById('fpl-threshold-table');
+  if (tbl) tbl.innerHTML = `<table style="width:100%;border-collapse:collapse"><thead><tr style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em"><th style="padding:7px 12px;border-bottom:0.5px solid var(--border);text-align:left">FPL%</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">Income threshold</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">Premium cap</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">Est. monthly subsidy</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">Client position</th></tr></thead><tbody>${rows}</tbody></table><div style="font-size:11px;color:var(--text3);margin-top:6px">Estimated subsidy assumes $16,800/yr SLCSP benchmark. Actual subsidy varies by region and plan selection.</div>`;
+
+  // ── Headroom ──
+  const headroom = document.getElementById('fpl-headroom');
+  if (headroom) {
+    let items = [];
+    for (let i = 0; i < thresholds.length; i++) {
+      if (magi < incomes[i]) {
+        const gap = incomes[i] - magi;
+        items.push(`<div style="display:flex;justify-content:space-between;padding:8px 14px;border:0.5px solid var(--border);border-radius:var(--r);margin-bottom:6px;font-size:13px"><span style="color:var(--text2)">Headroom to ${thresholds[i]}% FPL cliff</span><span style="font-family:var(--mono);font-weight:500;color:${gap < 5000 ? 'var(--warn)' : gap < 15000 ? 'var(--gold)' : 'var(--accent)'}">$${Math.round(gap).toLocaleString()}</span></div>`);
+      }
+    }
+    if (items.length === 0) items.push(`<div class="notice notice-warn">Client is above all tracked FPL thresholds. Subsidy value may be limited. Focus on broader tax planning.</div>`);
+    else items.push(`<div style="font-size:12px;color:var(--text3);margin-top:8px">Headroom = maximum additional MAGI (from Roth conversions, gains, or income) before crossing the next subsidy cliff. Under $5,000 of headroom is high-risk — any unexpected income may push the client across the threshold.</div>`);
+    headroom.innerHTML = items.join('');
+  }
+}
+
+// ─── ROTH CONVERSION vs SUBSIDY TRADEOFF ──────────────────────────────────────
+function rcSubRefresh() {
+  const base     = parseFloat(document.getElementById('rc-base')?.value) || 0;
+  const size     = parseInt(document.getElementById('rc-size')?.value) || 2;
+  const years    = parseInt(document.getElementById('rc-years')?.value) || 3;
+  const conv     = parseFloat(document.getElementById('rc-conv')?.value) || 0;
+  const taxRate  = parseFloat(document.getElementById('rc-tax-rate')?.value) / 100 || 0.12;
+  const growth   = parseFloat(document.getElementById('rc-growth')?.value) / 100 || 0.07;
+  const horizon  = parseInt(document.getElementById('rc-horizon')?.value) || 15;
+  const slcsp    = parseFloat(document.getElementById('rc-slcsp')?.value) || 18000;
+
+  // FPL % with and without conversion
+  const fpl100 = fplLine(size, 'cont', 100);
+  const fplPctBase = (base / fpl100) * 100;
+  const fplPctWith = ((base + conv) / fpl100) * 100;
+
+  // Subsidy estimate function based on FPL zone
+  function estSubsidy(fplPct, income) {
+    let capPct;
+    if (fplPct < 100) return 0;
+    else if (fplPct < 150) capPct = 2.0;
+    else if (fplPct < 200) capPct = 4.0;
+    else if (fplPct < 250) capPct = 6.0;
+    else if (fplPct < 400) capPct = 8.5;
+    else capPct = 8.5;
+    const cap = income * capPct / 100;
+    return Math.max(0, slcsp - cap);
+  }
+
+  const subsidyBase = estSubsidy(fplPctBase, base);
+  const subsidyWith = estSubsidy(fplPctWith, base + conv);
+  const subsidyLost = Math.max(0, subsidyBase - subsidyWith);
+  const subsidyLostTotal = subsidyLost * years;
+
+  // Tax cost of conversion
+  const taxCost = conv * taxRate;
+
+  // Long-term Roth benefit: conv grows tax-free vs. paying tax at same rate later
+  const rothFV = conv * Math.pow(1 + growth, horizon);
+  const taxIfDeferred = rothFV * taxRate;
+  const rothBenefit = taxIfDeferred - taxCost;
+
+  // Net verdict
+  const net = rothBenefit - subsidyLostTotal;
+
+  const noConvPanel = document.getElementById('rc-no-conv-panel');
+  if (noConvPanel) noConvPanel.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(61,139,110,0.15)"><span style="color:#3a7a60">Base MAGI</span><span style="font-family:var(--mono);font-weight:500">$${base.toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(61,139,110,0.15)"><span style="color:#3a7a60">FPL position</span><span style="font-family:var(--mono);font-weight:500">${fplPctBase.toFixed(1)}%</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(61,139,110,0.15)"><span style="color:#3a7a60">Est. annual subsidy</span><span style="font-family:var(--mono);font-weight:500;color:#2a6b52">$${Math.round(subsidyBase).toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0"><span style="color:#3a7a60">Total subsidies (${years} yrs)</span><span style="font-family:var(--mono);font-weight:500;color:#2a6b52">$${Math.round(subsidyBase*years).toLocaleString()}</span></div>
+    </div>`;
+
+  const withConvPanel = document.getElementById('rc-with-conv-panel');
+  if (withConvPanel) withConvPanel.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(107,63,160,0.15)"><span style="color:#5a3a8a">MAGI with conversion</span><span style="font-family:var(--mono);font-weight:500">$${(base+conv).toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(107,63,160,0.15)"><span style="color:#5a3a8a">FPL position</span><span style="font-family:var(--mono);font-weight:500">${fplPctWith.toFixed(1)}%</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(107,63,160,0.15)"><span style="color:#5a3a8a">Est. annual subsidy</span><span style="font-family:var(--mono);font-weight:500;color:#4a2a7a">$${Math.round(subsidyWith).toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(107,63,160,0.15)"><span style="color:#5a3a8a">Annual subsidy lost</span><span style="font-family:var(--mono);font-weight:500;color:var(--warn)">−$${Math.round(subsidyLost).toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(107,63,160,0.15)"><span style="color:#5a3a8a">Tax cost of conversion</span><span style="font-family:var(--mono);font-weight:500;color:var(--warn)">−$${Math.round(taxCost).toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 0"><span style="color:#5a3a8a">Total ACA subsidy lost (${years} yrs)</span><span style="font-family:var(--mono);font-weight:500;color:var(--warn)">−$${Math.round(subsidyLostTotal).toLocaleString()}</span></div>
+    </div>`;
+
+  const verdictEl = document.getElementById('rc-verdict');
+  if (verdictEl) {
+    const worthy = net > 0;
+    const color = worthy ? 'var(--accent)' : 'var(--warn)';
+    const label = worthy ? 'Conversion likely worth it' : 'Conversion may not be worth it';
+    const explanation = worthy
+      ? `The long-term tax benefit of the Roth conversion ($${Math.round(rothBenefit).toLocaleString()} estimated tax savings at ${horizon}-year horizon) exceeds the total ACA subsidy lost ($${Math.round(subsidyLostTotal).toLocaleString()} over ${years} years). Net advantage of converting: $${Math.round(net).toLocaleString()}.`
+      : `The total ACA subsidy surrendered ($${Math.round(subsidyLostTotal).toLocaleString()} over ${years} years) exceeds the estimated long-term Roth benefit ($${Math.round(rothBenefit).toLocaleString()}). The conversion destroys more value than it creates — consider a smaller amount or deferring until fewer ACA years remain.`;
+    verdictEl.innerHTML = `
+      <div style="padding:16px 18px;border-radius:var(--rl);border:1.5px solid ${color};background:${worthy ? 'var(--accent-pale)' : 'var(--warn-pale)'}">
+        <div style="font-size:15px;font-weight:500;color:${color};margin-bottom:6px">${label}</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7">${explanation}</div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div style="background:white;border-radius:var(--r);padding:10px 12px;text-align:center"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">ACA cost (total)</div><div style="font-size:15px;font-family:var(--mono);font-weight:500;color:var(--warn)">−$${Math.round(subsidyLostTotal).toLocaleString()}</div></div>
+          <div style="background:white;border-radius:var(--r);padding:10px 12px;text-align:center"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">Roth benefit (est.)</div><div style="font-size:15px;font-family:var(--mono);font-weight:500;color:var(--accent)">+$${Math.round(rothBenefit).toLocaleString()}</div></div>
+          <div style="background:white;border-radius:var(--r);padding:10px 12px;text-align:center"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">Net value</div><div style="font-size:15px;font-family:var(--mono);font-weight:500;color:${color}">${net >= 0 ? '+' : ''}$${Math.round(net).toLocaleString()}</div></div>
+        </div>
+      </div>`;
+  }
+
+  // Multi-scenario table
+  const scenarios = [5000, 10000, 20000, 30000, 50000, 75000, 100000];
+  let tableRows = scenarios.map(amt => {
+    const fplW = ((base + amt) / fpl100) * 100;
+    const subW = estSubsidy(fplW, base + amt);
+    const lost = Math.max(0, subsidyBase - subW) * years;
+    const tc = amt * taxRate;
+    const rfv = amt * Math.pow(1 + growth, horizon);
+    const rb = rfv * taxRate - tc;
+    const n = rb - lost;
+    const worthy = n > 0;
+    return `<tr>
+      <td style="padding:7px 12px;border-bottom:0.5px solid var(--border);font-family:var(--mono);font-size:12px">$${amt.toLocaleString()}</td>
+      <td style="padding:7px 12px;border-bottom:0.5px solid var(--border);font-family:var(--mono);font-size:12px">${fplW.toFixed(0)}%</td>
+      <td style="padding:7px 12px;border-bottom:0.5px solid var(--border);font-family:var(--mono);font-size:12px;color:var(--warn)">−$${Math.round(lost).toLocaleString()}</td>
+      <td style="padding:7px 12px;border-bottom:0.5px solid var(--border);font-family:var(--mono);font-size:12px;color:var(--accent)">+$${Math.round(rb).toLocaleString()}</td>
+      <td style="padding:7px 12px;border-bottom:0.5px solid var(--border);font-family:var(--mono);font-size:12px;font-weight:500;color:${worthy ? 'var(--accent)' : 'var(--warn)'}">${n >= 0 ? '+' : ''}$${Math.round(n).toLocaleString()}</td>
+      <td style="padding:7px 12px;border-bottom:0.5px solid var(--border);font-size:11px">${worthy ? '✓ Favorable' : '✗ Not favorable'}</td>
+    </tr>`;
+  }).join('');
+  const multiTable = document.getElementById('rc-multi-table');
+  if (multiTable) multiTable.innerHTML = `<div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px">Conversion amount sensitivity — all scenarios vs. your inputs</div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;background:var(--bg3)"><th style="padding:7px 12px;border-bottom:0.5px solid var(--border);text-align:left">Conversion</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">FPL%</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">ACA cost</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">Roth benefit</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">Net</th><th style="padding:7px 12px;border-bottom:0.5px solid var(--border)">Verdict</th></tr></thead><tbody>${tableRows}</tbody></table></div><div style="font-size:11px;color:var(--text3);margin-top:6px">Roth benefit estimated as tax avoided at ${horizon}-year horizon assuming ${(growth*100).toFixed(1)}% growth. ACA cost is total subsidy forfeited over ${years} ACA years. Model is directional — not a tax opinion.</div>`;
+}
+
+// ─── COBRA DECISION TOOL ──────────────────────────────────────────────────────
+function cobraRefresh() {
+  const cobraPremMo = parseFloat(document.getElementById('cb-cobra-prem')?.value) || 0;
+  const magi        = parseFloat(document.getElementById('cb-magi')?.value) || 0;
+  const size        = parseInt(document.getElementById('cb-size')?.value) || 2;
+  const monthsMC    = parseInt(document.getElementById('cb-months-mc')?.value) || 36;
+  const slcsp       = parseFloat(document.getElementById('cb-slcsp')?.value) || 16800;
+  const continuity  = document.getElementById('cb-continuity')?.value === 'yes';
+
+  const fpl100 = fplLine(size, 'cont', 100);
+  const fplPct = (magi / fpl100) * 100;
+
+  let capPct;
+  if (fplPct < 100) capPct = 0;
+  else if (fplPct < 150) capPct = 2.0;
+  else if (fplPct < 200) capPct = 4.0;
+  else if (fplPct < 250) capPct = 6.0;
+  else capPct = 8.5;
+
+  const annualCap = magi * capPct / 100;
+  const annualSubsidy = Math.max(0, slcsp - annualCap);
+  const annualMarket = slcsp - annualSubsidy;
+  const monthlyMarket = annualMarket / 12;
+
+  const monthly18COBRA = cobraPremMo * 18;
+  const monthly18Market = monthlyMarket * 18;
+  const savings = cobraPremMo - monthlyMarket;
+  const total18Savings = savings * 18;
+
+  const mC = document.getElementById('cb-m-cobra');
+  const mM = document.getElementById('cb-m-market');
+  const mS = document.getElementById('cb-m-savings');
+  const mT = document.getElementById('cb-m-total');
+  if (mC) mC.textContent = '$' + Math.round(cobraPremMo).toLocaleString();
+  if (mM) mM.textContent = '$' + Math.round(monthlyMarket).toLocaleString();
+  if (mS) { mS.textContent = (savings >= 0 ? '+' : '') + '$' + Math.round(savings).toLocaleString(); mS.style.color = savings >= 0 ? 'var(--accent)' : 'var(--warn)'; }
+  if (mT) mT.textContent = '$' + Math.round(monthly18COBRA).toLocaleString() + ' vs $' + Math.round(monthly18Market).toLocaleString();
+
+  const verdict = document.getElementById('cb-verdict');
+  if (verdict) {
+    if (savings > 200 && !continuity) {
+      verdict.innerHTML = `<div class="notice notice-ok"><strong>Recommendation: Switch to Marketplace now.</strong> The estimated ACA marketplace premium of $${Math.round(monthlyMarket).toLocaleString()}/mo is $${Math.round(savings).toLocaleString()}/mo less than COBRA. Over the full 18-month COBRA window, staying on COBRA would cost an estimated $${Math.round(total18Savings).toLocaleString()} more. There is no financial case for COBRA at this income level unless network continuity is critical.</div>`;
+    } else if (savings > 0 && continuity) {
+      verdict.innerHTML = `<div class="notice notice-caution"><strong>COBRA may be worth 1–3 months for continuity.</strong> The marketplace is $${Math.round(savings).toLocaleString()}/mo cheaper, but if the client has ongoing treatment, in-progress deductibles, or specialist relationships tied to the employer plan, a brief COBRA window (1–3 months) can preserve those before switching to ACA. After that, the savings argument is clear.</div>`;
+    } else if (savings <= 0) {
+      verdict.innerHTML = `<div class="notice notice-warn"><strong>COBRA may be cheaper or comparable.</strong> At ${fplPct.toFixed(0)}% FPL, subsidies are limited and the marketplace premium may match or exceed COBRA. Review actual plan options on healthcare.gov before deciding. COBRA's value includes familiar network and continuity of deductible.</div>`;
+    } else {
+      verdict.innerHTML = `<div class="notice notice-blue">Marketplace appears moderately cheaper. Compare actual plan options in your region before making a final recommendation.</div>`;
+    }
+  }
+
+  const timeline = document.getElementById('cb-timeline');
+  if (timeline) {
+    const items = [
+      { t: 'Day 1 — Job/coverage end', d: 'COBRA election period begins. Client has 60 days to elect COBRA from date of notice or loss of coverage, whichever is later.' },
+      { t: 'Day 1–60 — Marketplace SEP open', d: 'Loss of employer coverage triggers a 60-day Special Enrollment Period for ACA marketplace. This window runs in parallel with the COBRA election period. You can switch to marketplace without waiting for COBRA decision.' },
+      { t: 'Within 60 days — Decision point', d: `Compare COBRA ($${Math.round(cobraPremMo).toLocaleString()}/mo) vs. estimated ACA ($${Math.round(monthlyMarket).toLocaleString()}/mo). If electing COBRA, coverage is retroactive to coverage loss date — useful if medical bills arise before you decide.` },
+      { t: 'Month 18 — COBRA maximum', d: 'COBRA expires at 18 months (36 months for dependents in some cases). At this point, a new SEP opens for ACA. If Medicare is within 6 months, do not re-enroll in marketplace — begin Medicare transition instead.' },
+      { t: `Month ${Math.min(monthsMC, 18)} — Medicare approaching`, d: 'Begin Medicare enrollment 3 months before turning 65. Cancel ACA plan effective the month Medicare starts to avoid subsidy repayment for overlapping months.' },
+    ];
+    timeline.innerHTML = `<div class="timeline-items" style="padding-top:6px">${items.map((item, i) => `<div class="timeline-item"><div class="timeline-node" style="background:var(--accent);color:white;font-size:9px">${i+1}</div><div><div class="timeline-label">${item.t}</div><div class="timeline-detail">${item.d}</div></div></div>`).join('')}</div>`;
+  }
+
+  const cases = document.getElementById('cb-cobra-cases');
+  if (cases) cases.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="padding:12px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2)">
+        <div style="font-size:11px;font-weight:500;color:#2a6b52;margin-bottom:6px">COBRA makes sense when…</div>
+        <div style="font-size:12px;color:#3a7a60;line-height:1.7">— Income is above 400% FPL (no meaningful subsidy)<br>— Active treatment mid-year (deductible already met)<br>— Critical specialist in employer network<br>— Bridge is very short (1–3 months to Medicare)<br>— Marketplace options in the area are limited</div>
+      </div>
+      <div style="padding:12px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2)">
+        <div style="font-size:11px;font-weight:500;color:#8a2a1a;margin-bottom:6px">COBRA almost never makes sense when…</div>
+        <div style="font-size:12px;color:#7a3a2a;line-height:1.7">— MAGI is 100%–300% FPL (subsidies are large)<br>— Multiple ACA bridge years remain<br>— No active treatment or in-progress claims<br>— Client is healthy with no urgent specialist needs<br>— Marketplace savings exceed $200/month</div>
+      </div>
+    </div>`;
+}
+
+// ─── MEDICARE TRANSITION CHECKLIST ───────────────────────────────────────────
+function trRefresh() {
+  const dob = document.getElementById('tr-dob')?.value;
+  const onAca = document.getElementById('tr-on-aca')?.value === 'yes';
+  if (!dob) return;
+
+  const dobDate = new Date(dob);
+  const age65 = new Date(dobDate.getFullYear() + 65, dobDate.getMonth(), dobDate.getDate());
+  const today = new Date();
+  const msToAge65 = age65 - today;
+  const daysToAge65 = Math.round(msToAge65 / (1000 * 60 * 60 * 24));
+  const monthsToAge65 = Math.round(daysToAge65 / 30.4);
+
+  const countdown = document.getElementById('tr-countdown');
+  if (countdown) {
+    let statusColor = 'var(--accent)'; let statusClass = 'notice-ok';
+    if (daysToAge65 < 0)      { statusColor = 'var(--warn)'; statusClass = 'notice-warn'; }
+    else if (monthsToAge65 < 3) { statusColor = 'var(--warn)'; statusClass = 'notice-warn'; }
+    else if (monthsToAge65 < 6) { statusColor = 'var(--gold)'; statusClass = 'notice-caution'; }
+
+    const age65Str = age65.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+    countdown.innerHTML = `<div class="notice ${statusClass}"><strong>Medicare eligibility date: ${age65Str}</strong><br>${daysToAge65 > 0 ? `${monthsToAge65} months (${daysToAge65} days) until age 65.` : 'Client is age 65 or older — Medicare enrollment should have been initiated.'} ${monthsToAge65 <= 6 && daysToAge65 > 0 ? '<strong> Critical window — begin transition coordination now.</strong>' : ''}</div>`;
+  }
+
+  const months = Math.max(0, monthsToAge65);
+  const checklistItems = [
+    { mo: 6, done: months < 6, text: '6 months out — Review ACA plan year end date and confirm it does not auto-renew past Medicare start date.', tag: 'ACA Coordination', urgent: false },
+    { mo: 6, done: months < 6, text: '6 months out — Determine whether to use Original Medicare + Medigap or Medicare Advantage. Research local plan options.', tag: 'Plan Selection', urgent: false },
+    { mo: 5, done: months < 5, text: '5 months out — Confirm IEP window. Initial Enrollment Period is 3 months before the month of your 65th birthday through 3 months after.', tag: 'Enrollment Timing', urgent: false },
+    { mo: 4, done: months < 4, text: '4 months out — Check Social Security status. If not yet receiving SS benefits, Medicare will NOT auto-enroll. Must apply actively.', tag: 'Enrollment Risk', urgent: true },
+    { mo: 3, done: months < 3, text: '3 months out — Enroll in Medicare Part A and Part B. Apply online at ssa.gov, by phone, or in person.', tag: 'Action Required', urgent: true },
+    { mo: 3, done: months < 3, text: '3 months out — If choosing Medigap: apply now. Guaranteed issue rights apply only during 6-month Medigap Open Enrollment Period beginning with Part B enrollment.', tag: 'Medigap Window', urgent: true },
+    { mo: 2, done: months < 2, text: '2 months out — Cancel ACA marketplace plan effective the first day of the month Medicare Part B begins. Do not carry both plans simultaneously.', tag: 'ACA Cancellation', urgent: true },
+    { mo: 2, done: months < 2, text: '2 months out — Notify health insurer. Request termination letter for records. Confirm no auto-renewal occurs.', tag: 'ACA Coordination', urgent: false },
+    { mo: 1, done: months < 1, text: '1 month out — Enroll in Part D drug plan (or confirm MA plan includes drug coverage). Avoid Part D gap and penalty accumulation.', tag: 'Part D', urgent: true },
+    { mo: 1, done: months < 1, text: '1 month out — Review first-year MAGI projection. In the year of transition, ACA subsidies received during marketplace months will be reconciled against full-year income. Flag any Roth conversions or large income events.', tag: 'Tax Planning', urgent: false },
+    { mo: 0, done: false, text: 'At age 65 — Confirm Medicare card received. Medicare coverage begins first day of the month you turn 65 (or July 1 if born June 1 — special rule).', tag: 'Coverage Start', urgent: false },
+  ];
+
+  const wrap = document.getElementById('tr-checklist-wrap');
+  if (wrap) {
+    wrap.innerHTML = checklistItems.map((item, idx) => {
+      const tagColor = item.urgent ? 'tag-warn' : (item.done ? 'tag-green' : 'tag-blue');
+      return `<div class="check-item ${item.done ? 'checked' : ''}" onclick="this.classList.toggle('checked')" style="gap:12px;padding:10px 14px">
+        <div class="check-box"><svg class="check-tick" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+            <span style="font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px" class="tag ${tagColor}">${item.tag}</span>
+            <span style="font-size:10px;color:var(--text3)">${item.mo === 0 ? 'At 65' : item.mo + ' months before'}</span>
+          </div>
+          <div class="check-text" style="font-size:13px;color:var(--text);line-height:1.5">${item.text}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const cancelSteps = document.getElementById('tr-cancel-steps');
+  if (cancelSteps) cancelSteps.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+      <div style="padding:10px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2);line-height:1.6;color:#7a2a1a"><strong>Critical:</strong> ACA plans auto-renew annually. You must actively cancel the plan. It does NOT automatically terminate when you turn 65.</div>
+      <div style="padding:10px 14px;background:var(--bg3);border-radius:var(--r);line-height:1.6;color:var(--text2)"><strong style="color:var(--text)">Step 1:</strong> Log in to HealthCare.gov (or state marketplace) and request cancellation effective the first day of the month Medicare Part B begins.</div>
+      <div style="padding:10px 14px;background:var(--bg3);border-radius:var(--r);line-height:1.6;color:var(--text2)"><strong style="color:var(--text)">Step 2:</strong> Request written confirmation of the cancellation date. Keep on file for tax records and subsidy reconciliation.</div>
+      <div style="padding:10px 14px;background:var(--bg3);border-radius:var(--r);line-height:1.6;color:var(--text2)"><strong style="color:var(--text)">Step 3:</strong> Do NOT cancel early. The ACA plan should cover the final days before Medicare begins. A same-day or 1-day gap is common — typically Medicare covers from the 1st of the month.</div>
+      <div style="padding:10px 14px;background:var(--blue-pale);border-radius:var(--r);line-height:1.6;color:#1a3a6a"><strong>Note on Open Enrollment:</strong> If your Medicare start date falls during ACA open enrollment (Nov 1 – Jan 15), do NOT re-enroll in an ACA plan for the following year. This is a common mistake that creates a Medicare enrollment gap and potential subsidy repayment liability.</div>
+    </div>`;
+
+  const reconNotice = document.getElementById('tr-recon-notice');
+  if (reconNotice) reconNotice.innerHTML = onAca
+    ? `<div class="notice notice-caution">Client is on ACA marketplace. Flag the transition year for subsidy reconciliation review. If total-year MAGI exceeds what was projected when advance premium tax credits were set, some or all credits received during the ACA months must be repaid on the tax return. Run a full-year income projection for the Medicare transition year.</div>`
+    : `<div class="notice notice-blue">Client is on COBRA or other non-marketplace coverage. No advance premium tax credit reconciliation risk at transition, but Part D penalty months may have accumulated if COBRA drug coverage is not creditable. Confirm coverage status.</div>`;
+}
+
+// ─── ACA TO MEDICARE TRAP ────────────────────────────────────────────────────
+function trapRefresh() {
+  const dob     = document.getElementById('trap-dob')?.value;
+  const ssBenef = document.getElementById('trap-ss')?.value === 'yes';
+  const acaEnrl = document.getElementById('trap-aca-enrolled')?.value === 'yes';
+  const prem    = parseFloat(document.getElementById('trap-prem')?.value) || 0;
+  if (!dob) return;
+
+  const dobDate = new Date(dob);
+  const age65 = new Date(dobDate.getFullYear() + 65, dobDate.getMonth(), dobDate.getDate());
+  const today = new Date();
+  const daysToAge65 = Math.round((age65 - today) / (1000 * 60 * 60 * 24));
+  const monthsToAge65 = Math.round(daysToAge65 / 30.4);
+
+  // Build trap risk score
+  let riskScore = 0;
+  const riskFactors = [];
+  const protFactors = [];
+
+  if (!ssBenef) { riskScore += 3; riskFactors.push('Not on Social Security — Medicare will NOT auto-enroll at 65.'); }
+  else { protFactors.push('Receiving Social Security — Medicare auto-enrollment will occur.'); }
+
+  if (acaEnrl) { riskScore += 2; riskFactors.push('Currently enrolled in ACA marketplace — plan will auto-renew unless actively cancelled.'); }
+  if (daysToAge65 > 0 && monthsToAge65 <= 6) { riskScore += 2; riskFactors.push('Within 6-month critical window — IEP is active or approaching. Immediate action required.'); }
+  if (daysToAge65 <= 0) { riskScore += 4; riskFactors.push('Past age 65 — IEP may be partially or fully expired. Assess penalty exposure and remaining SEP options.'); }
+
+  const riskEl = document.getElementById('trap-risk-result');
+  if (riskEl) {
+    let riskClass, riskLabel;
+    if (riskScore >= 5)      { riskClass = 'notice-warn'; riskLabel = 'HIGH RISK — Immediate action required'; }
+    else if (riskScore >= 3) { riskClass = 'notice-caution'; riskLabel = 'MODERATE RISK — Active monitoring needed'; }
+    else                     { riskClass = 'notice-ok'; riskLabel = 'LOW RISK — Monitor timeline'; }
+
+    const penaltyYears = daysToAge65 < 0 ? Math.ceil(Math.abs(daysToAge65) / 365) : 0;
+    const partBPenaltyPct = penaltyYears * 10;
+    const monthlyPenaltyEst = 185 * (partBPenaltyPct / 100);
+
+    riskEl.innerHTML = `<div class="notice ${riskClass}"><strong>${riskLabel}</strong></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        ${riskFactors.length ? `<div style="padding:12px 14px;background:var(--warn-pale);border-radius:var(--r);border:0.5px solid rgba(192,57,43,0.2)"><div style="font-size:11px;color:#8a2a1a;font-weight:500;margin-bottom:6px">Risk factors present</div>${riskFactors.map(f => `<div style="font-size:12px;color:#7a2a1a;line-height:1.6;margin-bottom:4px">• ${f}</div>`).join('')}</div>` : ''}
+        ${protFactors.length ? `<div style="padding:12px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2)"><div style="font-size:11px;color:#2a6b52;font-weight:500;margin-bottom:6px">Protective factors</div>${protFactors.map(f => `<div style="font-size:12px;color:#3a6a52;line-height:1.6;margin-bottom:4px">• ${f}</div>`).join('')}</div>` : ''}
+      </div>
+      ${penaltyYears > 0 ? `<div class="notice notice-warn" style="margin-top:12px"><strong>Potential Part B penalty:</strong> If past age 65 with no creditable coverage for ${penaltyYears} year(s), estimated permanent Part B surcharge: ${partBPenaltyPct}% ($${Math.round(monthlyPenaltyEst).toLocaleString()}/mo per person, lifetime). Plus potential ACA subsidy repayment on advance credits received after Medicare eligibility began.</div>` : ''}
+      ${acaEnrl && daysToAge65 > 0 ? `<div class="notice notice-caution" style="margin-top:12px">ACA premium paid post-65 is not subsidizable. If advance credits were received for months after Medicare eligibility: full repayment required. Monthly cost at risk: $${prem.toLocaleString()}/mo in subsidies that will be clawed back.</div>` : ''}`;
+  }
+
+  const timeLine = document.getElementById('trap-timeline');
+  if (timeLine) timeLine.innerHTML = `<div class="timeline-items" style="padding-top:6px">${[
+    { n:'1', label:'Client turns 65 on ACA', detail:`ACA plan auto-renews. Subsidies stop being available — any advance premium tax credits received after this date will be repaid. Medicare eligibility begins. ${ssBenef ? 'Auto-enrollment occurs (SS recipient).' : 'NO auto-enrollment (not on SS). Must apply manually.'}`, warn: !ssBenef },
+    { n:'2', label:'ACA open enrollment arrives (Nov 1)', detail:'Client re-enrolls in ACA plan for the following year — now unaware this is illegal. No advance credits should be paid, but many clients do not update their eligibility status and continue receiving subsidies.', warn: true },
+    { n:'3', label:'Medicare Part B and D penalty clock runs', detail:`Every month without Medicare Part B = 1/12 of 10% annual penalty. Every month without Part D creditable coverage = 1% of national base premium. These months accumulate silently. ACA plans do NOT count as creditable coverage for Part D.`, warn: true },
+    { n:'4', label:'Tax filing — subsidy repayment notice', detail:'Form 1095-A reconciles advance premium credits against actual eligibility. All subsidies received after Medicare eligibility are disallowed — full repayment required. No income cap on repayment for Medicare-eligible individuals.', warn: true },
+    { n:'5', label:'GEP or SEP — late Medicare enrollment', detail:'Client enrolls in Medicare during General Enrollment Period (Jan–Mar) or a qualifying SEP. Coverage begins July 1 (GEP) or SEP date. Permanent Part B penalty applies to monthly premium for life.', warn: false },
+  ].map(step => `<div class="timeline-item"><div class="timeline-node ${step.warn ? '' : 'done'}" style="${step.warn ? 'background:var(--warn-pale);border-color:var(--warn);color:var(--warn)' : ''}">${step.n}</div><div><div class="timeline-label">${step.label}</div><div class="timeline-detail">${step.detail}</div></div></div>`).join('')}</div>`;
+
+  const prevention = document.getElementById('trap-prevention');
+  if (prevention) prevention.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+      <div style="padding:10px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2);color:#2a6b52"><strong>1.</strong> Set a calendar reminder for 3 months before the client's 65th birthday to initiate Medicare Part A and B enrollment at ssa.gov.</div>
+      <div style="padding:10px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2);color:#2a6b52"><strong>2.</strong> During your annual review, confirm no ACA plan auto-renewal has occurred for clients at or past age 65.</div>
+      <div style="padding:10px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2);color:#2a6b52"><strong>3.</strong> Instruct the client explicitly: ACA plans do NOT self-terminate at 65. Active cancellation is required before Medicare starts.</div>
+      <div style="padding:10px 14px;background:var(--accent-pale);border-radius:var(--r);border:0.5px solid rgba(61,139,110,0.2);color:#2a6b52"><strong>4.</strong> During open enrollment season (Nov–Jan), call or email all pre-65 bridge clients: confirm they have not re-enrolled in a marketplace plan, especially those approaching 65 in Q1 of the coming year.</div>
+      <div style="padding:10px 14px;background:var(--blue-pale);border-radius:var(--r);border:0.5px solid rgba(37,99,168,0.2);color:#1a3a6a"><strong>Documentation:</strong> Keep written records of Medicare enrollment dates, ACA cancellation confirmations, and any advance credit amounts received. These are needed at tax time for Form 8962 reconciliation in the transition year.</div>
+    </div>`;
+}
+
 // ─── AI Q&A ───────────────────────────────────────────────────────────────────
 function aiAppend(text,type){
   const msgs=document.getElementById('ai-msgs');
@@ -2289,6 +3585,333 @@ Only answer retirement and tax planning questions. For other topics say you are 
 }
 function aiAsk(q){document.getElementById('ai-input').value=q;aiSend();}
 
+// ─── INTERACTIVE TIMELINE CALCULATOR ──────────────────────────────────────────
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function tlFmtDate(d){ return MONTHS[d.getMonth()]+' '+d.getFullYear(); }
+function tlFmtDateFull(d){ return MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); }
+function tlAddMonths(d,m){ const r=new Date(d); r.setMonth(r.getMonth()+m); return r; }
+function tlAddYears(d,y){ const r=new Date(d); r.setFullYear(r.getFullYear()+y); return r; }
+function tlCountdown(target, today){
+  const ms=target-today;
+  const days=Math.round(ms/86400000);
+  if(days<-30) return {label:'Past', cls:'tl-cp-past'};
+  if(days<0) return {label:'This month', cls:'tl-cp-soon'};
+  if(days<=60) return {label:days+'d', cls:'tl-cp-urgent'};
+  const mo=Math.round(days/30.44);
+  if(mo<=18) return {label:mo+'mo', cls:'tl-cp-soon'};
+  const yr=(mo/12).toFixed(1).replace('.0','');
+  return {label:yr+'y', cls:'tl-cp-future'};
+}
+function tlAgeAt(dob, target){
+  if(!dob) return null;
+  let age=target.getFullYear()-dob.getFullYear();
+  const m=target.getMonth()-dob.getMonth();
+  if(m<0||(m===0&&target.getDate()<dob.getDate())) age--;
+  return age;
+}
+function tlBirthdayInYear(dob, year){ return new Date(year, dob.getMonth(), dob.getDate()); }
+function tlAge65(dob){ return new Date(dob.getFullYear()+65, dob.getMonth(), dob.getDate()); }
+function tlAge62(dob){ return new Date(dob.getFullYear()+62, dob.getMonth(), dob.getDate()); }
+function tlAge70(dob){ return new Date(dob.getFullYear()+70, dob.getMonth(), dob.getDate()); }
+function tlAge73(dob){ return new Date(dob.getFullYear()+73, dob.getMonth(), dob.getDate()); }
+
+function tlLoadFromSetup(){
+  const dob=document.getElementById('c1-dob')?.value;
+  const dob2=document.getElementById('c2-dob')?.value;
+  const retire=document.getElementById('c1-retire')?.value;
+  if(retire) document.getElementById('tl-retire-date').value=retire;
+  if(dob) document.getElementById('tl-dob').value=dob;
+  if(dob2) document.getElementById('tl-dob2').value=dob2;
+  tlGenerate();
+}
+
+let tlActiveFilter='all';
+function tlFilter(cat){
+  tlActiveFilter=cat;
+  document.querySelectorAll('.tl-filter-btn').forEach(b=>b.classList.toggle('active', b.dataset.cat===cat));
+  document.querySelectorAll('.tl-milestone').forEach(m=>{
+    if(cat==='all') m.classList.remove('hidden');
+    else m.classList.toggle('hidden', !m.dataset.cats?.split(',').includes(cat));
+  });
+}
+
+function tlGenerate(){
+  const retireVal=document.getElementById('tl-retire-date').value;
+  const dobVal=document.getElementById('tl-dob').value;
+  const dob2Val=document.getElementById('tl-dob2').value;
+  if(!retireVal){ return; }
+  const retire=new Date(retireVal+'T12:00:00');
+  const today=new Date();
+  const dob=dobVal?new Date(dobVal+'T12:00:00'):null;
+  const dob2=dob2Val?new Date(dob2Val+'T12:00:00'):null;
+  const retireAge=dob?tlAgeAt(dob,retire):null;
+
+  // Show summary
+  const sumEl=document.getElementById('tl-summary');
+  const sumTxt=document.getElementById('tl-summary-text');
+  const daysToRetire=Math.round((retire-today)/86400000);
+  let sumStr='Retirement date: '+tlFmtDateFull(retire);
+  if(retireAge) sumStr+=' · Client age at retirement: '+retireAge;
+  if(daysToRetire>0) sumStr+=' · '+Math.round(daysToRetire/30.44)+' months away ('+Math.round(daysToRetire/365.25*10)/10+' years)';
+  else sumStr+=' · Retirement date is in the past';
+  sumTxt.textContent=sumStr;
+  sumEl.style.display='block';
+
+  // Build milestones array
+  // Each: {date, label, detail, cats[], node, nodeStyle, critical?}
+  const milestones=[];
+  function addM(date, label, detail, cats, nodeLabel, nodeStyle='future', critical=false){
+    milestones.push({date, label, detail, cats: cats||[], nodeLabel, nodeStyle, critical});
+  }
+
+  // ── 5 YEARS OUT ──────────────────────────────────────────────────────────────
+  const y5=tlAddMonths(retire,-60);
+  addM(y5,
+    '5-Year Planning Horizon Opens',
+    'Begin comprehensive income gap analysis. Run break-even comparisons for SS claiming strategies. Model Roth conversion opportunity through retirement. Assess LTC insurability — premiums rise significantly after age 60. Review all beneficiary designations on retirement accounts and life insurance.',
+    ['ss','roth','ltc','estate'],'5yr','future');
+
+  // ── ROTH CONVERSION WINDOW ──
+  const rothStart=tlAddMonths(retire,-60);
+  addM(new Date(rothStart.getFullYear(), rothStart.getMonth(), 1),
+    'Roth Conversion Window — Begin Ladder',
+    'Peak Roth conversion window: 5 years of earned income still available to absorb converted amounts. Model multi-year ladder filling the 12% or 22% bracket top. Target: convert before RMDs begin at age 73/75 compound the tax burden. Each conversion year: confirm IRMAA lookback (converted amount shows on MAGI 2 years later).',
+    ['roth','tax'],'ROTH','gold');
+
+  // ── LTC ──
+  const ltcDeadline=tlAddMonths(retire,-48);
+  addM(ltcDeadline,
+    'LTC Insurability Assessment — Final Window',
+    'Apply for standalone LTC or hybrid life/LTC while still insurable. Underwriting becomes restrictive after age 60–65 and premiums escalate sharply. Run self-insure analysis: what asset drawdown rate does uninsured LTC represent? Confirm premium affordability in retirement income plan. If hybrid, confirm death benefit sizing.',
+    ['ltc'],'LTC','gold',true);
+
+  // ── SS FIRST ELIGIBLE (62) ──
+  if(dob){
+    const age62date=tlAge62(dob);
+    if(age62date>=tlAddMonths(today,-3)){
+      addM(age62date,
+        'SS Eligibility Begins — Age 62 (Earliest Claiming)',
+        'Client first eligible for Social Security at age 62, but at a significant reduction (up to 30% below FRA for those born 1960+). Claiming at 62 is rarely optimal unless health is poor or income is urgently needed. At this date: confirm SS break-even analysis has been completed. If still working, earnings test applies ($1 withheld per $2 over ~$22,320/yr).',
+        ['ss'],'62','future');
+    }
+    // FRA (67 for born 1960+)
+    const fraYear=dob.getFullYear()>=1960?67:66;
+    const fraDate=new Date(dob.getFullYear()+fraYear, dob.getMonth(), dob.getDate());
+    if(fraDate>=tlAddMonths(today,-3)){
+      addM(fraDate,
+        'Social Security Full Retirement Age (FRA) — Age '+fraYear,
+        'Client reaches Full Retirement Age. If delaying SS past retirement, this is the date the earnings test no longer applies. Delayed credits of 8%/year continue to accrue until age 70. Confirm final SS claiming decision: if married, coordinate with spousal benefit — higher earner delays to 70 to maximize survivor benefit.',
+        ['ss'],'FRA','future');
+    }
+    // SS age 70 max
+    const age70=tlAge70(dob);
+    if(age70>=tlAddMonths(today,-3)){
+      addM(age70,
+        'Social Security Maximum Delayed Benefit — Age 70',
+        'Delayed retirement credits stop accruing. If not already claiming, file immediately — there is zero benefit to delaying past 70. If married and this is the higher earner: confirm spousal benefit coordination. Survivor benefit is locked at this amount. File online at ssa.gov up to 4 months before desired start month.',
+        ['ss'],'70','future',true);
+    }
+  }
+
+  // ── SPOUSE SS (if dob2) ──
+  if(dob2){
+    const sAge70=tlAge70(dob2);
+    if(sAge70>=tlAddMonths(today,-3)){
+      addM(sAge70,
+        'Spouse Social Security — Age 70 Max Benefit',
+        'Spouse\'s delayed credits cap at age 70. File for SS benefits immediately if not already claiming. Coordinating both SS incomes correctly is critical: ensure the spousal benefit election has been evaluated (the spousal benefit is 50% of the higher earner\'s PIA if larger than the spouse\'s own). Survivor planning: the lower SS check disappears at first death.',
+        ['ss'],'S-70','future');
+    }
+  }
+
+  // ── IRMAA LOOKBACK WINDOW ──
+  const irmaaTrigger=tlAddMonths(retire,-24);
+  addM(irmaaTrigger,
+    'IRMAA 2-Year Lookback Window — Critical Tax Year',
+    'Medicare Part B and D premiums 2 years from now are determined by MAGI in THIS tax year. Roth conversions, capital gains realizations, and other income events in this year directly affect IRMAA surcharges in early retirement. Model the conversion amount carefully. Surcharges: Tier 1 adds ~$74/mo per person, escalating to $406/mo at Tier 5. For MFJ, this doubles.',
+    ['medicare','roth','tax'],'IRMAA','gold',true);
+
+  // ── SECOND IRMAA LOOKBACK ──
+  const irmaaTrigger2=tlAddMonths(retire,-12);
+  addM(irmaaTrigger2,
+    'Second IRMAA Lookback Year — Final Income Management',
+    'This calendar year\'s income determines Medicare surcharges beginning 2 years out (the year after retirement). Continue bracket-aware Roth conversion strategy. Cap MAGI below the nearest IRMAA threshold. If Roth conversion window is closing, maximize final conversions in January–October before year-end income is known.',
+    ['medicare','roth','tax'],'2nd LB','gold');
+
+  // ── 3 YEARS OUT ──
+  const y3=tlAddMonths(retire,-36);
+  addM(y3,
+    'Finalize Bucket Architecture — 3 Years Out',
+    'Complete bucket allocation design: Bucket A (money market, 1–2 years of distributions), Buckets B–F (5-year and 10-year FIAs with staggered maturities), Bucket G (equity/growth). Begin placing FIA positions now so first maturity coincides with Bucket A replenishment need. Lock interest rates while favorable.',
+    ['bucket'],'3yr','future');
+
+  // ── MEDICARE: PRE-65 ACA BRIDGE ──
+  if(dob){
+    const age65=tlAge65(dob);
+    const preAge65Gap=Math.round((age65-retire)/86400000/30.44);
+    if(preAge65Gap>1){
+      const acaStart=new Date(retire);
+      addM(acaStart,
+        'ACA Bridge Begins at Retirement',
+        'Client retires before age 65 — must bridge to Medicare with marketplace (ACA) coverage. Key risks: (1) MAGI management for premium tax credits (PTC) — income below 400% FPL qualifies; (2) Watch Roth conversions — they count as MAGI and can eliminate subsidies; (3) Set a hard calendar stop: ACA plan must be actively cancelled before Medicare Part A effective date. ACA does NOT self-terminate at 65.',
+        ['medicare','ltc'],'ACA','urgent',true);
+    }
+  }
+
+  // ── MEDICARE PART B ENROLLMENT WINDOW ──
+  if(dob){
+    const age65=tlAge65(dob);
+    const medEnrollOpen=tlAddMonths(age65,-3);
+    const medEnrollClose=tlAddMonths(age65,3);
+    if(medEnrollOpen>=tlAddMonths(today,-3)){
+      addM(medEnrollOpen,
+        'Medicare Initial Enrollment Period Opens — 3 Months Before Age 65',
+        'IEP is a 7-month window: 3 months before the birthday month, the birthday month itself, and 3 months after. Applying in the first 3 months (this date) ensures Part B starts on the first day of the birthday month. Delaying within the IEP delays Part B start and may create a coverage gap. Apply at ssa.gov. Enroll Part D or Medicare Advantage simultaneously.',
+        ['medicare'],'Med ↑','urgent',true);
+    }
+    if(age65>=tlAddMonths(today,-3)){
+      addM(age65,
+        'Medicare Eligibility — Age 65 / Birthday Month',
+        'Medicare Part A effective (if applied in prior 3 months). Part B effective if enrolled in first 3 months of IEP. Cancel any ACA marketplace plan for this month — do NOT let it auto-renew. If receiving Social Security: auto-enrolled in Parts A and B. If not: must apply manually at ssa.gov. Set up supplement (Medigap) or Medicare Advantage. Enroll Part D drug coverage.',
+        ['medicare'],'65','urgent',true);
+    }
+    if(dob2){
+      const age65_2=tlAge65(dob2);
+      const medOpen2=tlAddMonths(age65_2,-3);
+      if(medOpen2>=tlAddMonths(today,-3)){
+        addM(medOpen2,
+          'Spouse Medicare IEP Opens — 3 Months Before Age 65',
+          'Same rules apply for spouse. Medicare IEP opens 3 months before spouse\'s 65th birthday. Apply for Parts A and B now for seamless coverage start. Cancel ACA bridge plan if applicable. Do not assume the higher earner\'s Medicare election covers the spouse — each spouse has a separate enrollment.',
+          ['medicare'],'S-Med','future');
+      }
+    }
+  }
+
+  // ── 2 YEARS OUT ──
+  const y2=tlAddMonths(retire,-24);
+  addM(y2,
+    'Final Roth Conversion Plan — 2 Years Out',
+    'This is often the last practical Roth conversion year before retirement income mix changes. Confirm: how many brackets remain headroom? What IRMAA tier does converting push into? Complete estate-driven conversions (Roth avoids RMDs; heirs take 10-year distributions tax-free). If both spouses are converting, file separately vs jointly analysis may be warranted.',
+    ['roth','tax'],'2yr','future');
+
+  // ── FIA FINAL POSITIONS ──
+  const fiaPlacements=tlAddMonths(retire,-24);
+  addM(fiaPlacements,
+    'Place Final FIA Positions — Bucket B/C',
+    'Complete the FIA ladder for Bucket B (5-year maturity) and Bucket C (10-year maturity). Stagger surrender dates so at least one FIA matures and surrenders to Bucket A every 2–3 years. Confirm participation rates and caps are locked. Review carrier financial strength (A-rated or above). Document surrender schedule in income plan.',
+    ['bucket'],'FIA','future');
+
+  // ── PENSION ELECTION ──
+  addM(tlAddMonths(retire,-12),
+    'Pension Election Decision — 1 Year Out',
+    'If pension is present: evaluate lump sum vs. annuity election. Lump sum: must be invested and managed, but preserves legacy value. Annuity: lifetime income floor, but no survivor benefit unless joint-and-survivor option selected (which reduces payment). Joint-and-survivor vs. single life analysis: compare to SS survivor benefit. If taking annuity, confirm survivorship % and early death breakeven.',
+    ['income','estate'],'PEN','future');
+
+  // ── BUCKET A FUNDING ──
+  const bucketATarget=tlAddMonths(retire,-6);
+  addM(bucketATarget,
+    'Fund Bucket A to Target — 6 Months Before Retirement',
+    'Bucket A (money market / cash) should be fully funded to target level by this date — typically 12–24 months of net distributions. Source: liquidate taxable accounts, redirect bonuses, redirect savings. Do NOT fund from Roth (preserve tax-free growth). Confirm monthly distribution amount and ACH setup with custodian. Test distribution before retirement date.',
+    ['bucket'],'Bkt A','future',true);
+
+  // ── ESTATE DOCUMENTS ──
+  addM(tlAddMonths(retire,-18),
+    'Estate Document Review — 18 Months Out',
+    'Update or confirm: revocable living trust, powers of attorney (financial and healthcare), advance directive/living will, HIPAA authorization. Review all account titling — confirm community property vs. tenancy by entirety vs. TOD. Confirm Roth IRA beneficiary designations are correct (Roth passes outside of estate). Review life insurance beneficiaries.',
+    ['estate'],'EST','future');
+
+  // ── BENEFICIARY FINAL AUDIT ──
+  addM(tlAddMonths(retire,-3),
+    'Final Beneficiary & Titling Audit — 3 Months Before Retirement',
+    'Final check on all beneficiary designations: IRA, 401(k), life insurance, annuities, TOD accounts. Confirm primary and contingent beneficiaries. Confirm spouse is named on all accounts unless intentional. Verify trust is named correctly if using a trust as beneficiary. Confirm step-up basis strategy for taxable accounts — these assets should NOT go into Roth.',
+    ['estate'],'BEN','future',true);
+
+  // ── RETIREMENT DATE ──
+  addM(retire,
+    'RETIREMENT DATE — Activate Income Plan',
+    'Activate monthly distribution from Bucket A. Confirm all income sources are flowing: SS (if claiming at retirement), pension, Bucket A distributions. Submit Medicare enrollment if not already done. Cancel employer-sponsored health plan (if not already on Medicare). File change-of-address with SSA and pension administrator. Confirm tax withholding elections from distributions and SS.',
+    ['income','ss','medicare','bucket'],'R','retire',true);
+
+  // ── FIRST YEAR ──
+  addM(tlAddMonths(retire,3),
+    '90-Day Income Plan Review',
+    'Confirm Bucket A distributions are matching income target. Verify all income streams have started correctly. Review any gaps between projected and actual income. Confirm Medicare coverage is active and supplement/drug coverage is enrolled. File any IRMAA life event appeals if income dropped significantly at retirement.',
+    ['income','medicare'],'90d','post');
+
+  addM(tlAddMonths(retire,12),
+    'First Full Year Review — Income & Tax',
+    'Full income plan review: actual vs. projected distributions. Review Roth conversion opportunity for current tax year (now that income has dropped significantly from working years, often the best conversion window reopens). Assess Bucket G performance. Check if IRMAA lookback from retirement year will cause surcharges next year. Update all plan projections for next 3 years.',
+    ['roth','income','tax'],'1yr','post');
+
+  // ── RMD START ──
+  if(dob){
+    const rmdAge=73; // SECURE 2.0
+    const rmdDate=new Date(dob.getFullYear()+rmdAge, dob.getMonth(), dob.getDate());
+    if(rmdDate>=tlAddMonths(today,-3)){
+      addM(rmdDate,
+        'RMD Age 73 — Required Minimum Distributions Begin (SECURE 2.0)',
+        'First RMD must be taken by April 1 of the following year (only the first year gets this extension — all subsequent years must be taken by Dec 31). RMDs are calculated as prior year-end balance ÷ IRS life expectancy factor. Coordinate RMDs with Roth conversion strategy: RMDs cannot be converted; convert pre-RMD assets first. Consider QCDs (qualified charitable distributions) up to $105,000/year to satisfy RMDs tax-free if charitable goals exist.',
+        ['tax','roth'],'RMD','urgent',true);
+    }
+  }
+
+  // Sort by date
+  milestones.sort((a,b)=>a.date-b.date);
+
+  // Render
+  const out=document.getElementById('tl-output');
+  const prompt=document.getElementById('tl-prompt');
+  const filterBar=document.getElementById('tl-filter-bar');
+  const printBar=document.getElementById('tl-print-bar');
+
+  prompt.style.display='none';
+  out.style.display='block';
+  filterBar.style.display='block';
+  printBar.style.display='block';
+
+  // Group into sections
+  const sections=[
+    {label:'Before Retirement', filter:m=>m.date<retire},
+    {label:'Retirement Date', filter:m=>Math.abs(m.date-retire)<86400000*15},
+    {label:'Post-Retirement', filter:m=>m.date>retire && Math.abs(m.date-retire)>=86400000*15}
+  ];
+
+  let html='';
+  for(const sec of sections){
+    const items=milestones.filter(sec.filter);
+    if(!items.length) continue;
+    html+=`<div class="tl-section-header">${sec.label}</div>`;
+    for(const m of items){
+      const cd=tlCountdown(m.date, today);
+      const cats=m.cats.join(',');
+      const nodeClass = m.nodeStyle==='retire'?'tl-node-retire':
+                        m.nodeStyle==='post'?'tl-node-post':
+                        m.nodeStyle==='urgent'?'tl-node-urgent':
+                        m.nodeStyle==='gold'?'tl-node-gold':'tl-node-future';
+      const catTags=m.cats.map(c=>`<span class="tl-cat-tag tl-tag-${c}">${c}</span>`).join(' ');
+      const criticalBadge=m.critical?`<span class="tl-cat-tag tl-tag-critical">⚠ critical</span>`:'';
+      html+=`<div class="tl-milestone" data-cats="${cats}">
+        <div class="tl-node ${nodeClass}">${m.nodeLabel}</div>
+        <div class="tl-body">
+          <div class="tl-date-badge">${tlFmtDateFull(m.date)} ${dob?'· Age '+(tlAgeAt(dob,m.date)||'?'):''}
+            <span class="tl-countdown-pill ${cd.cls}">${cd.label}</span>
+          </div>
+          <div class="tl-label">${m.label} ${catTags} ${criticalBadge}</div>
+          <div class="tl-detail">${m.detail}</div>
+        </div>
+      </div>`;
+    }
+  }
+  out.innerHTML=html;
+
+  // Re-apply filter
+  if(tlActiveFilter!=='all') tlFilter(tlActiveFilter);
+}
+
+function tlPrint(){
+  window.print();
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 // Load saved client
 try{const s=localStorage.getItem('rph-client');if(s){clientData=JSON.parse(s);const d=clientData;if(d.c1First)document.getElementById('c1-first').value=d.c1First;if(d.c1Last)document.getElementById('c1-last').value=d.c1Last;if(d.c2First)document.getElementById('c2-first').value=d.c2First;if(d.incomeTarget)document.getElementById('income-target').value=d.incomeTarget;if(d.c1Ss)document.getElementById('c1-ss').value=d.c1Ss;if(d.c2Ss)document.getElementById('c2-ss').value=d.c2Ss;if(d.tradIra)document.getElementById('trad-ira').value=d.tradIra;if(d.rothIra)document.getElementById('roth-ira').value=d.rothIra;if(d.taxable)document.getElementById('taxable').value=d.taxable;if(d.cash)document.getElementById('cash').value=d.cash;updateClientBadge();if(d.totalAssets)document.getElementById('ip-total').textContent=fmt(d.totalAssets);if(d.incomeTarget)document.getElementById('ip-monthly').textContent=fmt(d.incomeTarget);if(d.c1Ss)document.getElementById('ss-c1').textContent=fmt(d.c1Ss);if(d.c2Ss)document.getElementById('ss-c2').textContent=fmt(d.c2Ss);document.getElementById('save-dot').style.background='var(--accent)';document.getElementById('save-status-txt').textContent=(d.c1First||'')+' '+(d.c1Last||'')+' — profile loaded';}}catch(e){}
@@ -2298,6 +3921,11 @@ rcRefresh();rcBracket();rcLadder();rcBasis();
 lbBuild();myBuild();
 ssRefresh();
 acaRefresh();
+fplRefresh();
+rcSubRefresh();
+cobraRefresh();
+trRefresh();
+trapRefresh();
 mcCalcEnrollment();
 mcCalcPenalties();
 
